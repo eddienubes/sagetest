@@ -1,0 +1,5 @@
+build
+coverage
+.run
+node_modules
+*.md
