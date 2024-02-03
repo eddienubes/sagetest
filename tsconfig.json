@@ -20,9 +20,8 @@
     "rootDirs": [
       "src"
     ],
-    "typeRoots": [
-      "node_modules/@types",
-      "src/common/@types"
+    "types": [
+      "vitest/globals"
     ],
     "esModuleInterop": true,
     "emitDecoratorMetadata": true,

@@ -1,8 +1,7 @@
 {
   "root": true,
   "env": {
-    "node": true,
-    "jest": true
+    "node": true
   },
   "ignorePatterns": [
     "build, node_modules"
@@ -28,9 +27,16 @@
     "@typescript-eslint/ban-ts-comment": "warn",
     "@typescript-eslint/no-inferrable-types": "off",
     "@typescript-eslint/no-unused-vars": "warn",
-    "@typescript-eslint/ban-types": "warn"
+    "@typescript-eslint/ban-types": "warn",
+    "import/no-unresolved": "error"
   },
   "settings": {
+    "import/parsers": {
+      "@typescript-eslint/parser": [
+        ".ts",
+        ".tsx"
+      ]
+    },
     "import/resolver": {
       "typescript": {
         "alwaysTryTypes": true,
