@@ -1,5 +1,5 @@
 // Not sure if I should add more of these methods
-const HTTP_METHODS = [
+export const jHTTP_METHODS = [
   'get',
   'post',
   'put',

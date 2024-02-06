@@ -1,10 +1,23 @@
 import { createServer } from 'node:http';
 import { Sage } from '../src/Sage.js';
+import { getExpressApp, getFastifyApp } from './utils.js';
 
 describe('Sage', () => {
   it('should initialize sage assistant', async () => {
+    const expressApp = getExpressApp();
+    const fastifyApp = getFastifyApp();
     const server = createServer();
-    const sage = new Sage(server);
-    expect(sage).toBeTruthy();
+
+    const sage1 = new Sage(expressApp);
+    const sage2 = new Sage(fastifyApp.server);
+    const sage3 = new Sage(server);
+
+    await sage1.listen();
+    await sage2.listen();
+    await sage3.listen();
+
+    expect(sage1).toBeTruthy();
+    expect(sage2).toBeTruthy();
+    expect(sage3).toBeTruthy();
   });
 });
