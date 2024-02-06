@@ -1,6 +1,6 @@
 import express, { ErrorRequestHandler, Express } from 'express';
 import Fastify, { FastifyError, FastifyReply, FastifyRequest } from 'fastify';
-import * as repl from 'repl';
+import { Server } from 'node:http';
 
 export const getExpressApp = (): Express => {
   const app = express();
@@ -21,7 +21,7 @@ export const getExpressApp = (): Express => {
   return app;
 };
 
-export const getFastifyApp = () => {
+export const getFastifyApp = (): Server => {
   const fastify = Fastify({
     logger: true
   });
@@ -39,5 +39,5 @@ export const getFastifyApp = () => {
     }
   );
 
-  return fastify;
+  return fastify.server;
 };

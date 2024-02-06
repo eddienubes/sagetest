@@ -9,7 +9,7 @@ describe('Sage', () => {
     const server = createServer();
 
     const sage1 = new Sage(expressApp);
-    const sage2 = new Sage(fastifyApp.server);
+    const sage2 = new Sage(fastifyApp);
     const sage3 = new Sage(server);
 
     await sage1.listen();
