@@ -11,5 +11,7 @@ export type RequestLineSetter<T> = (path: string) => T;
 export type HttpCallable<T> = {
   [K in (typeof HTTP_METHODS)[number]]: RequestLineSetter<T>;
 };
-export type HttpCallableSage = HttpCallable<Sage> & Sage;
 export type HttpMethod = Dispatcher.HttpMethod;
+
+export type ThenableResolve<T> = (value?: T | PromiseLike<T>) => void;
+export type ThenableReject = (reason?: any) => void;

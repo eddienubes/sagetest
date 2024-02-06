@@ -1,18 +1,19 @@
 import { Sage } from './Sage.js';
-import { HttpCallableSage, HttpMethod, SageServer } from './types.js';
+import {
+  HttpCallable,
+  HttpMethod,
+  RequestLineSetter,
+  SageServer
+} from './types.js';
 import { HTTP_METHODS } from './constants.js';
 
-export const request = (server: SageServer): HttpCallableSage => {
-  let sage = new Sage(server);
-  sage = new Proxy<Sage>(sage, {
-    get(target, propertyName): any {
-      if (propertyName in HTTP_METHODS) {
-        return (path: string) =>
-          Sage.fromRequestLine(server, propertyName as HttpMethod, path);
-      }
-      return target[propertyName];
-    }
-  });
+export const request = (server: SageServer): HttpCallable<Sage> => {
+  const factory: Record<string, RequestLineSetter<Sage>> = {};
 
-  return sage as HttpCallableSage;
+  for (const method of HTTP_METHODS) {
+    factory[method] = (path: string): Sage =>
+      Sage.fromRequestLine(server, method.toUpperCase() as HttpMethod, path);
+  }
+
+  return factory as HttpCallable<Sage>;
 };
