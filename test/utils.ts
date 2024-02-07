@@ -11,13 +11,17 @@ export const getExpressApp = (): Express => {
 
   app.use(bodyParser());
 
-  app.post('/api', (req, res) => {
+  app.post('/ping-pong', (req, res) => {
     console.log('Server has acknowledged request', req.ip);
     res.json({
       message: 'Success!',
       body: req.body,
       query: req.query
     });
+  });
+
+  app.get('/redirect', async (req, res) => {
+    res.redirect(301, 'https://www.google.com');
   });
 
   const errorHandler: ErrorRequestHandler = (err, req, res, next) => {

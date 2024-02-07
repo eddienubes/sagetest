@@ -1,4 +1,3 @@
-import { Sage } from './Sage.js';
 import {
   HttpCallable,
   HttpMethod,
@@ -6,6 +5,7 @@ import {
   SageServer
 } from './types.js';
 import { HTTP_METHODS } from './constants.js';
+import { Sage } from './Sage.js';
 
 export const request = (server: SageServer): HttpCallable<Sage> => {
   const factory: Record<string, RequestLineSetter<Sage>> = {};

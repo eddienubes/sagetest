@@ -1,7 +1,13 @@
 import { HttpStatusText } from './constants.js';
 
 export interface SageHttpResponse {
+  /**
+   * Beware that body could be null if server has redirected etc.
+   */
   body: any;
+  /**
+   * Text representation of the body
+   */
   text: string;
   statusCode: number;
   /**
@@ -23,4 +29,9 @@ export interface SageHttpResponse {
    * True if the status code is 301, 302, 303, 307, or 308
    */
   redirect: boolean;
+
+  /**
+   * Location header. Defined only if redirect is true
+   */
+  location?: string;
 }

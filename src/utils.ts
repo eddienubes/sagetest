@@ -23,3 +23,22 @@ export const statusCodeToMessage = (status: number): HttpStatusText => {
     'Unknown'
   );
 };
+
+export const parseJsonStr = (jsonString: string): object | null => {
+  try {
+    return JSON.parse(jsonString);
+  } catch (e) {
+    // No-op, just swallow the error here.
+    // Helps when we have redirects and such.
+    return null;
+  }
+};
+
+export const isBinary = (value: unknown): boolean => {
+  return (
+    value instanceof ArrayBuffer ||
+    value instanceof Blob ||
+    value instanceof File ||
+    value instanceof Buffer
+  );
+};
