@@ -17,6 +17,7 @@ import {
 import { SageHttpResponse } from './SageHttpResponse.js';
 import * as path from 'path';
 import * as fs from 'fs';
+import { FormDataOptions } from './FormDataOptions.js';
 
 /**
  * Greetings, I'm Sage - a chainable HTTP Testing Assistant
@@ -88,8 +89,13 @@ export class Sage {
    * @throws SageException if body is already set
    * @param field
    * @param file
+   * @param options
    */
-  attach(field: string, file: Blob | Buffer | Readable | string): this {
+  attach(
+    field: string,
+    file: Blob | Buffer | string,
+    options?: FormDataOptions
+  ): this {
     if (this.options.body) {
       throw new SageException('Cannot set both body and formData');
     }
@@ -102,12 +108,14 @@ export class Sage {
       const filePath = path.join(process.cwd(), file);
       const fileStream = fs.createReadStream(filePath);
 
-      this.options.formData.append(field, fileStream);
+      this.options.formData.append(field, fileStream, options?.filename);
       return this;
     }
 
     if (isBinary(file)) {
-      this.options.formData.append(field, file);
+      // Just handle Buffer to blob conversion for now
+      const blob = new Blob([file], { type: options?.type });
+      this.options.formData.append(field, blob, options?.filename);
       return this;
     }
 

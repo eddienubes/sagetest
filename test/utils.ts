@@ -5,6 +5,8 @@ import express, {
 } from 'express';
 import Fastify, { FastifyError, FastifyReply, FastifyRequest } from 'fastify';
 import { Server } from 'node:http';
+import multer from 'multer';
+import util from 'util';
 
 export const getExpressApp = (): Express => {
   const app = express();
@@ -24,10 +26,30 @@ export const getExpressApp = (): Express => {
     res.redirect(301, 'https://www.google.com');
   });
 
+  const upload = multer({ dest: 'test/fixtures/temp' });
+  app.post(
+    '/upload',
+    upload.fields([{ name: 'picture', maxCount: 1 }]),
+    (req, res) => {
+      console.log(
+        'Server has received file',
+        util.inspect(req.files, { depth: null })
+      );
+
+      res.json({
+        message: 'Success!',
+        body: req.body,
+        query: req.query
+      });
+    }
+  );
+
   const errorHandler: ErrorRequestHandler = (err, req, res, next) => {
     console.error(err.stack);
     res.status(500).json({
-      message: 'Internal Server Error!'
+      message: 'Internal Server Error!',
+      body: req.body,
+      query: req.query
     });
   };
 

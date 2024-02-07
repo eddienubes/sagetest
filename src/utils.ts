@@ -42,3 +42,7 @@ export const isBinary = (value: unknown): boolean => {
     value instanceof Buffer
   );
 };
+
+// export const readableToBuffer = async (readable: Readable): Promise<Buffer> => {
+//
+// }
