@@ -29,6 +29,7 @@
   },
   "dependencies": {
     "eslint-config-prettier": "^9.1.0",
+    "fast-json-stringify": "^5.12.0",
     "undici": "^6.6.0"
   }
 }

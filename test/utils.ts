@@ -1,12 +1,23 @@
-import express, { ErrorRequestHandler, Express } from 'express';
+import express, {
+  ErrorRequestHandler,
+  Express,
+  json as bodyParser
+} from 'express';
 import Fastify, { FastifyError, FastifyReply, FastifyRequest } from 'fastify';
 import { Server } from 'node:http';
 
 export const getExpressApp = (): Express => {
   const app = express();
+
+  app.use(bodyParser());
+
   app.post('/api', (req, res) => {
     console.log('Server has acknowledged request', req.ip);
-    res.json({ message: 'Success!' });
+    res.json({
+      message: 'Success!',
+      body: req.body,
+      query: req.query
+    });
   });
 
   const errorHandler: ErrorRequestHandler = (err, req, res, next) => {
@@ -27,7 +38,11 @@ export const getFastifyApp = (): Server => {
   });
 
   fastify.get('/api', async (request, reply) => {
-    reply.send({ message: 'Success!' });
+    reply.send({
+      message: 'Success!',
+      body: request.body,
+      query: request.query
+    });
   });
 
   fastify.setErrorHandler(

@@ -1,6 +1,5 @@
 import { RequestListener, Server as HttpServer } from 'node:http';
 import { HTTP_METHODS } from './constants.js';
-import { Sage } from './Sage.js';
 import { Dispatcher } from 'undici';
 
 /**
@@ -13,5 +12,5 @@ export type HttpCallable<T> = {
 };
 export type HttpMethod = Dispatcher.HttpMethod;
 
-export type ThenableResolve<T> = (value?: T | PromiseLike<T>) => void;
-export type ThenableReject = (reason?: any) => void;
+export type ThenableResolve<T> = (value: T | PromiseLike<T>) => void;
+export type ThenableReject = (reason?: unknown) => void;
