@@ -54,7 +54,7 @@ describe('request', () => {
     it('should handle multipart/form-data uploads', async () => {
       const res = await request(app)
         .post('/upload')
-        .attach('picture', Buffer.from('test'));
+        .attach('picture', 'test/fixtures/cat.jpg');
 
       expect(res).toEqual({
         statusCode: 200,

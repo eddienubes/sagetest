@@ -108,7 +108,7 @@ export class Sage {
       const filePath = path.join(process.cwd(), file);
       const fileStream = fs.createReadStream(filePath);
 
-      this.options.formData.append(field, fileStream, options?.filename);
+      this.options.formData.append(field, fileStream);
       return this;
     }
 

@@ -1,4 +1,5 @@
 import { HTTP_STATUS_TO_MESSAGE, HttpStatusText } from './constants.js';
+import { Readable } from 'node:stream';
 
 export const serializeToString = (value: unknown): string => {
   const result = JSON.stringify(value);
@@ -43,6 +44,12 @@ export const isBinary = (value: unknown): boolean => {
   );
 };
 
-// export const readableToBuffer = async (readable: Readable): Promise<Buffer> => {
-//
-// }
+export const readableToBuffer = async (readable: Readable): Promise<Buffer> => {
+  const chunks: Uint8Array[] = [];
+
+  for await (const chunk of readable) {
+    chunks.push(chunk);
+  }
+
+  return Buffer.concat(chunks);
+};
