@@ -39,7 +39,8 @@ export const getExpressApp = (): Express => {
       res.json({
         message: 'Success!',
         body: req.body,
-        query: req.query
+        query: req.query,
+        files: req.files
       });
     }
   );

@@ -12,12 +12,13 @@ import {
   serializeToString,
   statusCodeToMessage,
   parseJsonStr,
-  isBinary
+  isBinary,
+  getFilenameFromReadable
 } from './utils.js';
 import { SageHttpResponse } from './SageHttpResponse.js';
-import * as path from 'path';
-import * as fs from 'fs';
+import path from 'node:path';
 import { FormDataOptions } from './FormDataOptions.js';
+import { ReadStream, createReadStream } from 'node:fs';
 
 /**
  * Greetings, I'm Sage - a chainable HTTP Testing Assistant
@@ -85,16 +86,15 @@ export class Sage {
    * Method is designed to work only with FormData requests.
    * Cannot be combined with .send().
    * If file is a string, it will be treated as a path to a file starting from the working directory (process.cwd()).
-   *
    * @throws SageException if body is already set
    * @param field
    * @param file
-   * @param options
+   * @param options you can pass either object with type and filename or just a string with filename
    */
   attach(
     field: string,
-    file: Blob | Buffer | string,
-    options?: FormDataOptions
+    file: Blob | Buffer | Readable | string,
+    options?: FormDataOptions | string
   ): this {
     if (this.options.body) {
       throw new SageException('Cannot set both body and formData');
@@ -104,16 +104,46 @@ export class Sage {
       this.options.formData = new FormData();
     }
 
+    if (typeof options === 'string') {
+      options = { filename: options };
+    }
+
+    if (file instanceof Readable) {
+      const filename = getFilenameFromReadable(file);
+      // Hacky way to handle streaming in multipart undici
+      // https://github.com/nodejs/undici/issues/2202#issuecomment-1664134203
+      // To pass isBlobLike check: https://github.com/nodejs/undici/blob/e48df9620edf1428bd457f481d47fa2c77f75322/lib/fetch/formdata.js#L40
+      // Filename is also required due to: https://github.com/nodejs/undici/blob/e48df9620edf1428bd457f481d47fa2c77f75322/lib/fetch/formdata.js#L239
+      this.options.formData.append(field, {
+        [Symbol.toStringTag]: 'File',
+        name: options?.filename || filename,
+        type: options?.type,
+        stream: () => file
+      });
+
+      return this;
+    }
+
+    // Read file as a filename here
     if (typeof file === 'string') {
       const filePath = path.join(process.cwd(), file);
-      const fileStream = fs.createReadStream(filePath);
+      const fileStream = createReadStream(filePath);
 
-      this.options.formData.append(field, fileStream);
+      // Hacky way to handle multipart streaming in undici
+      // https://github.com/nodejs/undici/issues/2202#issuecomment-1664134203
+      // To pass isBlobLike check: https://github.com/nodejs/undici/blob/e48df9620edf1428bd457f481d47fa2c77f75322/lib/fetch/formdata.js#L40
+      // Filename is also required due to: https://github.com/nodejs/undici/blob/e48df9620edf1428bd457f481d47fa2c77f75322/lib/fetch/formdata.js#L239
+      this.options.formData.append(field, {
+        [Symbol.toStringTag]: 'File',
+        name: options?.filename || file,
+        type: options?.type,
+        stream: () => fileStream
+      });
       return this;
     }
 
     if (isBinary(file)) {
-      // Just handle Buffer to blob conversion for now
+      // Handle Buffer to blob conversion for now
       const blob = new Blob([file], { type: options?.type });
       this.options.formData.append(field, blob, options?.filename);
       return this;

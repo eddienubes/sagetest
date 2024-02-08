@@ -1,5 +1,7 @@
 import { HTTP_STATUS_TO_MESSAGE, HttpStatusText } from './constants.js';
 import { Readable } from 'node:stream';
+import path from 'node:path';
+import { ReadStream } from 'node:fs';
 
 export const serializeToString = (value: unknown): string => {
   const result = JSON.stringify(value);
@@ -44,12 +46,17 @@ export const isBinary = (value: unknown): boolean => {
   );
 };
 
-export const readableToBuffer = async (readable: Readable): Promise<Buffer> => {
-  const chunks: Uint8Array[] = [];
+export const getFilenameFromReadable = (readable: Readable): string | null => {
+  // Let's assume that it's a ReadStream first
+  let filePath = (readable as ReadStream).path;
 
-  for await (const chunk of readable) {
-    chunks.push(chunk);
+  if (!filePath) {
+    return null;
   }
 
-  return Buffer.concat(chunks);
+  if (filePath instanceof Buffer) {
+    filePath = filePath.toString();
+  }
+
+  return path.basename(filePath);
 };
