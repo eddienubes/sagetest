@@ -6,5 +6,6 @@ export class SageException extends Error {
     public readonly upstream?: unknown
   ) {
     super(`${message}${upstream ? `\n${util.inspect(upstream)}` : ''}`);
+    this.name = SageException.name;
   }
 }

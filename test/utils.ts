@@ -3,10 +3,16 @@ import express, {
   Express,
   json as bodyParser
 } from 'express';
-import Fastify, { FastifyError, FastifyReply, FastifyRequest } from 'fastify';
+import Fastify, {
+  FastifyError,
+  FastifyInstance,
+  FastifyReply,
+  FastifyRequest
+} from 'fastify';
 import { Server } from 'node:http';
 import multer from 'multer';
 import util from 'util';
+import { fastifyMultipart } from '@fastify/multipart';
 
 export const getExpressApp = (): Express => {
   const app = express();
@@ -59,16 +65,57 @@ export const getExpressApp = (): Express => {
   return app;
 };
 
-export const getFastifyApp = (): Server => {
+export const getFastifyApp = (): FastifyInstance => {
   const fastify = Fastify({
     logger: true
   });
 
-  fastify.get('/api', async (request, reply) => {
+  fastify.register(fastifyMultipart);
+
+  fastify.post('/ping-pong', async (request, reply) => {
     reply.send({
       message: 'Success!',
-      body: request.body,
-      query: request.query
+      body: request.body || {},
+      query: request.query || {}
+    });
+  });
+
+  fastify.get('/redirect', async (request, reply) => {
+    reply.redirect(301, 'https://www.google.com');
+  });
+
+  fastify.post('/upload', async (request, reply) => {
+    console.log(
+      'Server has received file',
+      util.inspect(request.body, { depth: null }),
+      util.inspect(request.files, { depth: null })
+    );
+
+    const files = [];
+    const filesIterator = request.files({
+      limits: {
+        fileSize: 1024 * 1000 * 1000000 // 1gb
+      }
+    });
+
+    for await (const file of filesIterator) {
+      const buffer = await file.toBuffer();
+
+      files.push({
+        fieldname: file.fieldname,
+        filename: file.filename,
+        encoding: file.encoding,
+        mimetype: file.mimetype,
+        fieldsCount: Object.keys(file.fields).length,
+        size: buffer.length
+      });
+    }
+
+    reply.send({
+      message: 'Success!',
+      body: request.body || {},
+      query: request.query || {},
+      files: files
     });
   });
 
@@ -81,5 +128,5 @@ export const getFastifyApp = (): Server => {
     }
   );
 
-  return fastify.server;
+  return fastify;
 };

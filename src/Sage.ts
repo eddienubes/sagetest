@@ -18,7 +18,8 @@ import {
 import { SageHttpResponse } from './SageHttpResponse.js';
 import path from 'node:path';
 import { FormDataOptions } from './FormDataOptions.js';
-import { ReadStream, createReadStream } from 'node:fs';
+import { createReadStream } from 'node:fs';
+import { EventEmitter } from 'node:events';
 
 /**
  * Greetings, I'm Sage - a chainable HTTP Testing Assistant
@@ -36,7 +37,12 @@ export class Sage {
    * @param path
    */
   constructor(server: SageServer, method: HttpMethod, path: string) {
-    this.server = createServer(server as RequestListener);
+    this.server = createServer(server as Server, (req, res) => {
+      // Fastify listens to the request event, otherwise the server hangs
+      if (server instanceof EventEmitter) {
+        server.emit('request', req, res);
+      }
+    });
 
     this.options.method = method;
     this.options.path = path;
@@ -152,9 +158,16 @@ export class Sage {
     throw new SageException('Cannot attach a non-binary file');
   }
 
-  field(field: string, value: string): this {
+  field(field: string, value: string | string[]): this {
     if (!this.options.formData) {
       this.options.formData = new FormData();
+    }
+
+    if (Array.isArray(value)) {
+      for (const val of value) {
+        this.options.formData.append(field, val);
+      }
+      return this;
     }
 
     this.options.formData.append(field, value);
@@ -193,7 +206,7 @@ export class Sage {
       } satisfies SageHttpResponse);
     } catch (e) {
       throw new SageException(
-        `Failed to make a request to the underlying server, please take a look at the upstream error for more details`,
+        `Failed to make a request to the underlying server, please take a look at the upstream error for more details: `,
         e
       );
     }

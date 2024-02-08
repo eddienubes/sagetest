@@ -1,8 +1,11 @@
 import { defineConfig } from 'vitest/config';
 
 export default defineConfig({
-  mode: 'benchmark',
+  // mode: 'benchmark',
   test: {
-    globals: true
+    globals: true,
+    reporters: ['verbose'],
+    disableConsoleIntercept: true,
+    testTimeout: 1000000
   }
 });
