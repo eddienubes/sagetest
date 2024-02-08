@@ -7,6 +7,10 @@ import {
 import { HTTP_METHODS } from './constants.js';
 import { Sage } from './Sage.js';
 
+/**
+ * Generates Sage Assistant with an appropriate http server
+ * @param server
+ */
 export const request = (server: SageServer): HttpCallable<Sage> => {
   const factory: Record<string, RequestLineSetter<Sage>> = {};
 
@@ -17,3 +21,5 @@ export const request = (server: SageServer): HttpCallable<Sage> => {
 
   return factory as HttpCallable<Sage>;
 };
+
+export * from './SageHttpResponse.js';
