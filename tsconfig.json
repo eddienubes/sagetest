@@ -1,5 +1,6 @@
 {
   "compilerOptions": {
+    "noEmit": true,
     "experimentalDecorators": true,
     "incremental": true,
     "module": "NodeNext",
@@ -12,14 +13,10 @@
     "declaration": true,
     "declarationMap": true,
     "sourceMap": true,
-    "outDir": "build",
     "strict": true,
     "noImplicitAny": true,
     "strictPropertyInitialization": false,
     "baseUrl": ".",
-    "rootDirs": [
-      "src"
-    ],
     "types": [
       "vitest/globals"
     ],
@@ -31,6 +28,8 @@
   },
   "include": [
     "src",
-    "test"
+    "test",
+    "vite.config.ts",
+    "vitest.config.ts"
   ]
 }

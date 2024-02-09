@@ -131,3 +131,6 @@ dist
 .pnp.*
 
 test/fixtures/temp/*
+.rollup.cache
+
+build

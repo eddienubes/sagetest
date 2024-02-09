@@ -1,4 +1,4 @@
-import { createServer, RequestListener, Server } from 'node:http';
+import { createServer, Server } from 'node:http';
 import { AddressInfo } from 'node:net';
 import { HttpMethod, SageServer, ThenableResolve } from './types.js';
 import { SageHttpRequest } from './SageHttpRequest.js';

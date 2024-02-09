@@ -9,7 +9,7 @@ describe('Sage', () => {
     const server = createServer();
 
     const sage1 = new Sage(expressApp, 'GET', '/test');
-    const sage2 = new Sage(fastifyApp, 'GET', '/test');
+    const sage2 = new Sage(fastifyApp.server, 'GET', '/test');
     const sage3 = new Sage(server, 'GET', '/test');
 
     expect(sage1).toBeTruthy();
