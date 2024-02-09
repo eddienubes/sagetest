@@ -1,6 +1,7 @@
 {
   "compilerOptions": {
-    "noEmit": true,
+    "outDir": "build",
+    "noEmit": false,
     "experimentalDecorators": true,
     "incremental": true,
     "module": "NodeNext",
@@ -30,6 +31,7 @@
     "src",
     "test",
     "vite.config.ts",
-    "vitest.config.ts"
+    "vitest.config.ts",
+    "benchmark"
   ]
 }

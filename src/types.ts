@@ -6,6 +6,7 @@ import { Dispatcher } from 'undici';
  * RequestListener and Server are both acceptable because Server implements ServerOptions interface
  */
 export type SageServer = HttpServer | RequestListener;
+export type ServerListenResolver = () => Promise<HttpServer>;
 export type RequestLineSetter<T> = (path: string) => T;
 export type HttpCallable<T> = {
   [K in (typeof HTTP_METHODS)[number]]: RequestLineSetter<T>;

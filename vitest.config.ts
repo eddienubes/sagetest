@@ -4,6 +4,9 @@ export default defineConfig({
   test: {
     globals: true,
     reporters: ['verbose'],
-    disableConsoleIntercept: true
+    disableConsoleIntercept: true,
+    benchmark: {
+
+    }
   }
 });

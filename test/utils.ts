@@ -9,9 +9,7 @@ import Fastify, {
   FastifyReply,
   FastifyRequest
 } from 'fastify';
-import { Server } from 'node:http';
 import multer from 'multer';
-import util from 'util';
 import { fastifyMultipart } from '@fastify/multipart';
 
 export const getExpressApp = (): Express => {
@@ -20,7 +18,7 @@ export const getExpressApp = (): Express => {
   app.use(bodyParser());
 
   app.post('/ping-pong', (req, res) => {
-    console.log('Server has acknowledged request', req.ip);
+    // console.log('Server has acknowledged request', req.ip);
     res.json({
       message: 'Success!',
       body: req.body,
@@ -37,10 +35,10 @@ export const getExpressApp = (): Express => {
     '/upload',
     upload.fields([{ name: 'picture', maxCount: 1 }]),
     (req, res) => {
-      console.log(
-        'Server has received file',
-        util.inspect(req.files, { depth: null })
-      );
+      // console.log(
+      //   'Server has received file',
+      //   util.inspect(req.files, { depth: null })
+      // );
 
       res.json({
         message: 'Success!',
@@ -85,11 +83,11 @@ export const getFastifyApp = (): FastifyInstance => {
   });
 
   fastify.post('/upload', async (request, reply) => {
-    console.log(
-      'Server has received file',
-      util.inspect(request.body, { depth: null }),
-      util.inspect(request.files, { depth: null })
-    );
+    // console.log(
+    //   'Server has received file',
+    //   util.inspect(request.body, { depth: null }),
+    //   util.inspect(request.files, { depth: null })
+    // );
 
     const files = [];
     const filesIterator = request.files({

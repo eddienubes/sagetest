@@ -1,51 +1,55 @@
-import { createServer, Server } from 'node:http';
-import { AddressInfo } from 'node:net';
-import { HttpMethod, SageServer, ThenableResolve } from './types.js';
+import { Server } from 'node:http';
+import { HttpMethod, ServerListenResolver, ThenableResolve } from './types.js';
 import { SageHttpRequest } from './SageHttpRequest.js';
 import { Readable } from 'node:stream';
-import { request, FormData } from 'undici';
+import { Client, FormData } from 'undici';
 import { Blob } from 'node:buffer';
 import { SageException } from './SageException.js';
 import {
   isOkay,
   isRedirect,
   serializeToString,
-  statusCodeToMessage,
-  parseJsonStr,
   isBinary,
-  getFilenameFromReadable
+  getFilenameFromReadable,
+  statusCodeToMessage
 } from './utils.js';
 import { SageHttpResponse } from './SageHttpResponse.js';
 import path from 'node:path';
 import { FormDataOptions } from './FormDataOptions.js';
 import { createReadStream } from 'node:fs';
-import { EventEmitter } from 'node:events';
 
 /**
  * Greetings, I'm Sage - a chainable HTTP Testing Assistant
  */
 export class Sage {
-  private server: Server;
+  private readonly serverListenResolver: () => Promise<Server>;
   private options: SageHttpRequest = {};
+  private client: Client;
 
   /**
    * Initiates Sage assistant but doesn't spin up the server yet.
    * Sets the HTTP method and path for the request.
    * Not meant to be called directly.
-   * @param server
+   * @param serverListenResolver
+   * @param port
    * @param method
    * @param path
    */
-  constructor(server: SageServer, method: HttpMethod, path: string) {
-    this.server = createServer(server as Server, (req, res) => {
-      // Fastify listens to the request event, otherwise the server hangs
-      if (server instanceof EventEmitter) {
-        server.emit('request', req, res);
-      }
-    });
+  constructor(
+    serverListenResolver: ServerListenResolver,
+    port: number,
+    method: HttpMethod,
+    path: string
+  ) {
+    this.serverListenResolver = serverListenResolver;
 
     this.options.method = method;
     this.options.path = path;
+
+    this.client = new Client(`http://localhost:${port}`, {
+      keepAliveTimeout: 1,
+      keepAliveMaxTimeout: 1
+    });
   }
 
   query(query: Record<string | number, string>): this {
@@ -176,34 +180,68 @@ export class Sage {
   }
 
   async then(resolve: ThenableResolve<SageHttpResponse>): Promise<void> {
-    const port = await this.listen();
+    // Make sure the server is listening before making a request
+    await this.serverListenResolver();
 
     try {
-      const res = await request(
-        `http://localhost:${port}${this.options.path}`,
-        {
-          method: this.options.method,
-          headers: this.options.headers,
-          // Only one of these is expected to be undefined at this point.
-          // If FormData is defined, undici will provide headers with the correct Content-Type
-          body: this.options.body || this.options.formData,
-          query: this.options.query
-        }
-      );
-      const text = await res.body.text();
-      const json = parseJsonStr(text);
+      const data: Uint8Array[] = [];
+      let responseHeaders: any;
+      let responseStatusCode: any;
+
+      await new Promise((resolve, reject) => {
+        this.client.dispatch(
+          {
+            method: this.options.method as HttpMethod,
+            path: this.options.path as string,
+            headers: this.options.headers,
+            // Only one of these is expected to be undefined at this point.
+            // If FormData is defined, undici will provide headers with the correct Content-Type
+            body: this.options.body || this.options.formData,
+            query: this.options.query,
+            reset: true
+          },
+          {
+            onConnect: () => {
+              // console.log('Connected!');
+            },
+            onError: (error) => {
+              // console.error(error);
+            },
+            onData(chunk: Buffer): boolean {
+              return true;
+            },
+            onHeaders: (statusCode, headers) => {
+              responseHeaders = headers;
+              responseStatusCode = statusCode;
+              return true;
+            },
+            onComplete: (trailers) => {
+              resolve(null);
+            }
+          }
+        );
+      });
+
+      // const data = response.opaque as Opaque;
+      const text = Buffer.concat(data).toString('utf-8');
+      // const json = parseJsonStr(text);
+
+      // const buffer = Buffer.concat(buffers);
+      // const text = await res.body.text();
+
+      // await res.body.dump();
 
       resolve({
-        statusCode: res.statusCode,
-        status: res.statusCode,
-        statusText: statusCodeToMessage(res.statusCode),
-        headers: res.headers,
-        body: json,
+        statusCode: responseStatusCode,
+        status: responseStatusCode,
+        statusText: statusCodeToMessage(responseStatusCode),
+        headers: responseHeaders,
+        body: {},
         text: text,
-        ok: isOkay(res.statusCode),
-        redirect: isRedirect(res.statusCode),
-        location: res.headers['location'] as string
-      } satisfies SageHttpResponse);
+        ok: isOkay(responseStatusCode),
+        redirect: isRedirect(responseStatusCode),
+        location: responseHeaders?.['location'] as string
+      } as SageHttpResponse);
     } catch (e) {
       throw new SageException(
         `Failed to make a request to the underlying server, please take a look at the upstream error for more details: `,
@@ -213,30 +251,19 @@ export class Sage {
   }
 
   /**
-   * Spins up the underlying server
-   */
-  private async listen(): Promise<number> {
-    return await new Promise((resolve) => {
-      // Listen on the ephemeral port
-      this.server.listen(0, () => {
-        const addressInfo = this.server.address() as AddressInfo;
-        resolve(addressInfo.port);
-      });
-    });
-  }
-
-  /**
    * Request Line term is taken from HTTP spec.
    * https://www.w3.org/Protocols/rfc2616/rfc2616-sec5.html
-   * @param server
+   * @param serverListenResolver
+   * @param port
    * @param method
    * @param path
    */
   static fromRequestLine(
-    server: SageServer,
+    serverListenResolver: ServerListenResolver,
+    port: number,
     method: HttpMethod,
     path: string
   ): Sage {
-    return new Sage(server, method, path);
+    return new Sage(serverListenResolver, port, method, path);
   }
 }
