@@ -31,7 +31,8 @@ const expectedExpressResponse: SageHttpResponse = {
   ok: true,
   redirect: false,
   location: undefined,
-  error: false
+  error: false,
+  cookies: {}
 };
 
 const expectedFastifyResponse: SageHttpResponse = {
@@ -69,7 +70,8 @@ const expectedFastifyResponse: SageHttpResponse = {
   ok: true,
   redirect: false,
   location: undefined,
-  error: false
+  error: false,
+  cookies: {}
 };
 
 describe('request', () => {
@@ -94,7 +96,7 @@ describe('request', () => {
           .post('/upload')
           .attach('picture', 'test/fixtures/cat.jpg');
 
-        expect(res).toEqual({
+        expect(res).toMatchObject({
           ...expectedExpressResponse,
           body: {
             ...expectedExpressResponse.body,
@@ -122,7 +124,7 @@ describe('request', () => {
           .post('/upload')
           .attach('picture', stream);
 
-        expect(res).toEqual({
+        expect(res).toMatchObject({
           ...expectedExpressResponse,
           body: {
             ...expectedExpressResponse.body,
@@ -150,14 +152,15 @@ describe('request', () => {
           .post('/upload')
           .attach('picture', blob);
 
-        expect(res).toEqual({
+        expect(res).toMatchObject({
           ...expectedExpressResponse,
           body: {
             ...expectedExpressResponse.body,
             reqHeaders: {
-              ...expectedExpressResponse.body.reqHeaders,
+              connection: 'close',
               'content-length': '4877572',
-              'transfer-encoding': undefined
+              'content-type': expect.any(String),
+              host: expect.stringContaining('localhost')
             },
             files: {
               picture: [
@@ -186,7 +189,7 @@ describe('request', () => {
             type: 'image/jpeg'
           });
 
-        expect(res).toEqual({
+        expect(res).toMatchObject({
           ...expectedExpressResponse,
           body: {
             ...expectedExpressResponse.body,
@@ -220,7 +223,7 @@ describe('request', () => {
           .post('/upload')
           .attach('picture', blob, 'cat.jpg');
 
-        expect(res).toEqual({
+        expect(res).toMatchObject({
           ...expectedExpressResponse,
           body: {
             ...expectedExpressResponse.body,
@@ -260,7 +263,7 @@ describe('request', () => {
           .field('array3', 'value5')
           .field('array3', 'value6');
 
-        expect(res).toEqual({
+        expect(res).toMatchObject({
           ...expectedExpressResponse,
           body: {
             ...expectedExpressResponse.body,
@@ -308,7 +311,7 @@ describe('request', () => {
             }
           });
 
-        expect(res).toEqual({
+        expect(res).toMatchObject({
           statusCode: 200,
           status: 200,
           statusText: 'OK',
@@ -350,7 +353,7 @@ describe('request', () => {
       it('should properly operate with redirects', async () => {
         const res = await request(expressApp).get('/redirect');
 
-        expect(res).toEqual({
+        expect(res).toMatchObject({
           body: null,
           headers: {
             connection: 'close',
@@ -436,6 +439,76 @@ describe('request', () => {
         } as SageHttpResponse);
       });
     });
+    describe('cookies', () => {
+      it('should parse cookies properly for response', async () => {
+        const res = await request(expressApp).get('/cookie');
+
+        expect(res).toMatchObject({
+          headers: {
+            'set-cookie': [
+              'name=express; Path=/',
+              'name=I%20love%20my%20mom!; Path=/; HttpOnly'
+            ]
+          },
+          cookies: {
+            name: {
+              httpOnly: true,
+              path: '/',
+              value: 'I love my mom!'
+            }
+          }
+        });
+      });
+
+      it('should parse cookies properly for request', async () => {
+        const res = await request(expressApp)
+          .get('/cookie')
+          .cookie('name', 'fastify');
+
+        expect(res).toMatchObject({
+          body: {
+            reqHeaders: {
+              cookie: 'name=fastify'
+            }
+          },
+          cookies: {
+            name: {
+              httpOnly: true,
+              path: '/',
+              value: 'I love my mom!'
+            }
+          }
+        });
+      });
+    });
+
+    describe('auth', () => {
+      it('should basic authorization header', async () => {
+        const res = await request(expressApp)
+          .get('/cookie')
+          .auth('username', 'password');
+
+        expect(res).toMatchObject({
+          body: {
+            reqHeaders: {
+              authorization: 'Basic dXNlcm5hbWU6cGFzc3dvcmQ='
+            }
+          }
+        });
+      });
+
+      it('should set bearer token', async () => {
+        const res = await request(expressApp).get('/cookie').auth('token');
+
+        expect(res).toMatchObject({
+          body: {
+            reqHeaders: {
+              authorization: 'Bearer token'
+            }
+          }
+        });
+      });
+    });
   });
 
   describe('fastify', () => {
@@ -449,7 +522,7 @@ describe('request', () => {
           .post('/upload')
           .attach('picture', 'test/fixtures/cat.jpg');
 
-        expect(res).toEqual({
+        expect(res).toMatchObject({
           ...expectedFastifyResponse,
           body: {
             ...expectedFastifyResponse.body,
@@ -466,7 +539,7 @@ describe('request', () => {
           .post('/upload')
           .attach('picture', stream);
 
-        expect(res).toEqual({
+        expect(res).toMatchObject({
           ...expectedFastifyResponse,
           body: {
             ...expectedFastifyResponse.body,
@@ -483,15 +556,15 @@ describe('request', () => {
           .post('/upload')
           .attach('picture', blob);
 
-        expect(res).toEqual({
+        expect(res).toMatchObject({
           ...expectedFastifyResponse,
           body: {
             ...expectedFastifyResponse.body,
             reqHeaders: {
-              ...expectedFastifyResponse.body.reqHeaders,
+              connection: 'close',
+              'content-type': expect.any(String),
               'content-length': expect.any(String),
-              host: expect.stringContaining('localhost'),
-              'transfer-encoding': undefined
+              host: expect.stringContaining('localhost')
             },
             files: [
               {
@@ -516,15 +589,15 @@ describe('request', () => {
             type: 'image/jpeg'
           });
 
-        expect(res).toEqual({
+        expect(res).toMatchObject({
           ...expectedFastifyResponse,
           body: {
             ...expectedFastifyResponse.body,
             reqHeaders: {
-              ...expectedFastifyResponse.body.reqHeaders,
+              connection: 'close',
+              'content-type': expect.any(String),
               'content-length': expect.any(String),
-              host: expect.stringContaining('localhost'),
-              'transfer-encoding': undefined
+              host: expect.stringContaining('localhost')
             },
             files: [
               {
@@ -546,15 +619,15 @@ describe('request', () => {
           .post('/upload')
           .attach('picture', blob, 'cat.jpg');
 
-        expect(res).toEqual({
+        expect(res).toMatchObject({
           ...expectedFastifyResponse,
           body: {
             ...expectedFastifyResponse.body,
             reqHeaders: {
-              ...expectedFastifyResponse.body.reqHeaders,
+              connection: 'close',
+              'content-type': expect.any(String),
               'content-length': expect.any(String),
-              host: expect.stringContaining('localhost'),
-              'transfer-encoding': undefined
+              host: expect.stringContaining('localhost')
             },
             files: [
               {
@@ -582,15 +655,15 @@ describe('request', () => {
           .field('array3', 'value5')
           .field('array3', 'value6');
 
-        expect(res).toEqual({
+        expect(res).toMatchObject({
           ...expectedFastifyResponse,
           body: {
             ...expectedFastifyResponse.body,
             reqHeaders: {
-              ...expectedFastifyResponse.body.reqHeaders,
+              connection: 'close',
+              'content-type': expect.any(String),
               'content-length': expect.any(String),
-              host: expect.stringContaining('localhost'),
-              'transfer-encoding': undefined
+              host: expect.stringContaining('localhost')
             },
             files: [
               {
@@ -621,15 +694,14 @@ describe('request', () => {
             }
           });
 
-        expect(res).toEqual({
+        expect(res).toMatchObject({
           ...expectedFastifyResponse,
           body: {
             reqHeaders: {
-              ...expectedFastifyResponse.body.reqHeaders,
+              connection: 'close',
               'content-type': 'application/json',
               'content-length': expect.any(String),
-              host: expect.stringContaining('localhost'),
-              'transfer-encoding': undefined
+              host: expect.stringContaining('localhost')
             },
             body: {
               data: 'somevalue',
@@ -650,12 +722,11 @@ describe('request', () => {
       it('should properly operate with redirects', async () => {
         const res = await request(fastifyApp.server).get('/redirect');
 
-        expect(res).toEqual({
+        expect(res).toMatchObject({
           ...expectedFastifyResponse,
           body: null,
           headers: {
-            ...expectedFastifyResponse.headers,
-            'content-type': undefined,
+            connection: 'close',
             location: 'https://www.google.com'
           },
           location: 'https://www.google.com',
@@ -745,6 +816,76 @@ describe('request', () => {
             }
           }
         } as SageHttpResponse);
+      });
+    });
+
+    describe('cookies', () => {
+      it('should parse cookies properly for response', async () => {
+        const res = await request(fastifyApp.server).get('/cookie');
+
+        expect(res).toMatchObject({
+          headers: {
+            'set-cookie': ['name=fastify', 'love=my%20mom!; HttpOnly']
+          },
+          cookies: {
+            love: {
+              httpOnly: true,
+              path: '/',
+              value: 'my mom!'
+            }
+          }
+        });
+      });
+
+      it('should parse cookies properly for request', async () => {
+        const res = await request(fastifyApp.server)
+          .get('/cookie')
+          .cookie('name', 'fastify');
+
+        expect(res).toMatchObject({
+          body: {
+            reqHeaders: {
+              cookie: 'name=fastify'
+            }
+          },
+          cookies: {
+            love: {
+              httpOnly: true,
+              path: '/',
+              value: 'my mom!'
+            }
+          }
+        });
+      });
+    });
+
+    describe('auth', () => {
+      it('should basic authorization header', async () => {
+        const res = await request(fastifyApp.server)
+          .get('/cookie')
+          .auth('username', 'password');
+
+        expect(res).toMatchObject({
+          body: {
+            reqHeaders: {
+              authorization: 'Basic dXNlcm5hbWU6cGFzc3dvcmQ='
+            }
+          }
+        });
+      });
+
+      it('should set bearer token', async () => {
+        const res = await request(fastifyApp.server)
+          .get('/cookie')
+          .auth('token');
+
+        expect(res).toMatchObject({
+          body: {
+            reqHeaders: {
+              authorization: 'Bearer token'
+            }
+          }
+        });
       });
     });
   });

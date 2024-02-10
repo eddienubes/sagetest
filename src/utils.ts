@@ -2,6 +2,11 @@ import { HTTP_STATUS_TO_MESSAGE, HttpStatusText } from './constants.js';
 import { Readable } from 'node:stream';
 import path from 'node:path';
 import { ReadStream } from 'node:fs';
+import {
+  CookieOptions,
+  CookieSameSiteProperty,
+  SetCookieHeaderProperties
+} from './types.js';
 
 export const serializeToString = (value: unknown): string => {
   const result = JSON.stringify(value);
@@ -85,4 +90,65 @@ export const wrapArray = <T>(value: T | T[]): T[] => {
   }
 
   return [value];
+};
+
+export const parseSetCookieHeader = (
+  setCookieHeader?: string[] | string
+): Record<string, CookieOptions> => {
+  if (!setCookieHeader) {
+    return {};
+  }
+
+  setCookieHeader = wrapArray(setCookieHeader);
+  const cookies: Record<string, CookieOptions> = {};
+
+  for (const cookieString of setCookieHeader) {
+    // Split each cookieString by '; ' to separate the key-value pair from the options
+    const parts = cookieString.split('; ');
+    const [nameValue, ...optionsParts] = parts;
+    const [name, value] = nameValue.split('=');
+
+    const cookieOptions: CookieOptions = {
+      value: decodeURIComponent(value), // Decode the value
+      path: '/' // Default path
+    };
+
+    // Iterate over the options to set them on the cookieOptions object
+    for (const option of optionsParts) {
+      const [optionName, optionValue] = option.split('=');
+      const lowerCaseOptionName =
+        optionName.toLowerCase() as Lowercase<SetCookieHeaderProperties>;
+      switch (lowerCaseOptionName) {
+        case 'domain':
+          cookieOptions.domain = optionValue;
+          break;
+        case 'expires':
+          cookieOptions.expires = new Date(optionValue);
+          break;
+        case 'httponly':
+          cookieOptions.httpOnly = true;
+          break;
+        case 'max-age':
+          cookieOptions.maxAge = parseInt(optionValue, 10);
+          break;
+        case 'partitioned':
+          cookieOptions.partitioned = true;
+          break;
+        case 'path':
+          cookieOptions.path = optionValue || '/';
+          break;
+        case 'samesite':
+          cookieOptions.sameSite =
+            optionValue.toLowerCase() as CookieSameSiteProperty;
+          break;
+        case 'secure':
+          cookieOptions.secure = true;
+          break;
+      }
+
+      cookies[name] = cookieOptions;
+    }
+  }
+
+  return cookies;
 };

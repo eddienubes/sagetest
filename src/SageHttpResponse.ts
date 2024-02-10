@@ -1,4 +1,5 @@
 import { HttpStatusText } from './constants.js';
+import { CookieOptions } from './types.js';
 
 export interface SageHttpResponse {
   /**
@@ -39,4 +40,9 @@ export interface SageHttpResponse {
    * Location header. Defined only if redirect is true
    */
   location?: string;
+
+  /**
+   * Cookies sent by the server. Also, accessible from headers['set-cookie']
+   */
+  cookies: Record<string, CookieOptions>;
 }

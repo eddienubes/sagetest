@@ -11,6 +11,7 @@ import Fastify, {
 } from 'fastify';
 import multer from 'multer';
 import { fastifyMultipart } from '@fastify/multipart';
+import fastifyCookie from '@fastify/cookie';
 
 export const getExpressApp = (): Express => {
   const app = express();
@@ -51,6 +52,21 @@ export const getExpressApp = (): Express => {
     }
   );
 
+  app.get('/cookie', (req, res) => {
+    res.cookie('name', 'express');
+    res.cookie('name', 'I love my mom!', { httpOnly: true }).json({
+      message: 'Success!',
+      body: req.body,
+      query: req.query,
+      files: req.files,
+      reqHeaders: req.headers
+    });
+  });
+
+  app.get('/error', (req, res, next) => {
+    next(new Error('This is a test error'));
+  });
+
   const errorHandler: ErrorRequestHandler = (err, req, res, next) => {
     console.error(err.stack);
     res.status(500).json({
@@ -72,6 +88,7 @@ export const getFastifyApp = (): FastifyInstance => {
   });
 
   fastify.register(fastifyMultipart);
+  fastify.register(fastifyCookie);
 
   fastify.post('/ping-pong', async (request, reply) => {
     reply.send({
@@ -87,12 +104,6 @@ export const getFastifyApp = (): FastifyInstance => {
   });
 
   fastify.post('/upload', async (request, reply) => {
-    // console.log(
-    //   'Server has received file',
-    //   util.inspect(request.body, { depth: null }),
-    //   util.inspect(request.files, { depth: null })
-    // );
-
     const files = [];
     const filesIterator = request.files({
       limits: {
@@ -120,6 +131,21 @@ export const getFastifyApp = (): FastifyInstance => {
       files: files,
       reqHeaders: request.headers
     });
+  });
+
+  fastify.get('/cookie', (request: FastifyRequest, reply: FastifyReply) => {
+    reply.setCookie('name', 'fastify');
+    reply.setCookie('love', 'my mom!', { httpOnly: true }).send({
+      message: 'Success!',
+      body: request.body,
+      query: request.query,
+      files: request.files,
+      reqHeaders: request.headers
+    });
+  });
+
+  fastify.get('/error', () => {
+    throw new Error('This is a test error');
   });
 
   fastify.setErrorHandler(

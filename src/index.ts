@@ -13,7 +13,7 @@ import { ConfigStore } from './ConfigStore.js';
 import { SageException } from './SageException.js';
 
 /**
- * Generates Sage Assistant with for a given HTTP server
+ * Generates Sage Assistant for a given HTTP server
  * @param serverSource
  * @param overrides
  */

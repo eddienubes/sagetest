@@ -14,7 +14,8 @@ import {
   parseJsonStr,
   isRedirect,
   isError,
-  wrapArray
+  wrapArray,
+  parseSetCookieHeader
 } from './utils.js';
 import { SageHttpResponse } from './SageHttpResponse.js';
 import path from 'node:path';
@@ -82,7 +83,7 @@ export class Sage {
   /**
    * Sets body payload for the request.
    * If body is an object, it will be stringified to JSON. Content-Type will be set to application/json.
-   * If body is a string, it will be used as is. Content-Type will be set to application/json.
+   * If body is a string, it will be used as is. Content-Type will remain plain/text.
    * If body is a Readable stream, it will be used as is.
    * If you need to set a different Content-Type, use the set method.
    * @throws SageException if formData is already set
@@ -281,28 +282,12 @@ export class Sage {
         ok: isOkay(res.statusCode),
         redirect: isRedirect(res.statusCode),
         location: res.headers?.['location'] as string,
-        error: isError(res.statusCode)
+        error: isError(res.statusCode),
+        cookies: parseSetCookieHeader(res.headers['set-cookie'])
       } satisfies SageHttpResponse);
     } catch (e) {
       throw new SageException(
-        `
-    Failed;
-    to;
-    make;
-    a;
-    request;
-    to;
-    the;
-    underlying;
-    server, please;
-    take;
-    a;
-    look;
-    at;
-    the;
-    upstream;
-    error;
-    for more details: `,
+        `Failed to make a request to the underlying server, please take a look at the upstream error for more details: `,
         e
       );
     } finally {
