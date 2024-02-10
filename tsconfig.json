@@ -1,7 +1,6 @@
 {
   "compilerOptions": {
-    "outDir": "build",
-    "noEmit": false,
+    "noEmit": true,
     "experimentalDecorators": true,
     "incremental": true,
     "module": "NodeNext",

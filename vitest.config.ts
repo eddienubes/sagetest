@@ -5,8 +5,7 @@ export default defineConfig({
     globals: true,
     reporters: ['verbose'],
     disableConsoleIntercept: true,
-    benchmark: {
-
-    }
+    setupFiles: ['test/setup.ts'],
+    include: ['test/**/*.spec.ts']
   }
 });
