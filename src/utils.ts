@@ -7,6 +7,7 @@ import {
   CookieSameSiteProperty,
   SetCookieHeaderProperties
 } from './types.js';
+import { Blob } from 'node:buffer';
 
 export const serializeToString = (value: unknown): string => {
   const result = JSON.stringify(value);
@@ -48,7 +49,6 @@ export const isBinary = (value: unknown): boolean => {
   return (
     value instanceof ArrayBuffer ||
     value instanceof Blob ||
-    value instanceof File ||
     value instanceof Buffer
   );
 };
