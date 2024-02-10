@@ -18,8 +18,14 @@ export type ServerListenResolver = () => Promise<void>;
 export type RequestLineSetter<T> = (path: string) => T;
 export type HttpCallable<T> = {
   [K in (typeof HTTP_METHODS)[number]]: RequestLineSetter<T>;
-};
+} & ServerShutdownCapable;
 export type HttpMethod = Dispatcher.HttpMethod;
+export type ServerShutdownCapable = {
+  /**
+   * Shutdowns
+   */
+  shutdown: () => Promise<void>;
+};
 
 export type ThenableResolve<T> = (value: T | PromiseLike<T>) => void;
 export type ThenableReject = (reason?: unknown) => void;

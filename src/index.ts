@@ -2,16 +2,15 @@ import {
   DeepPartial,
   HttpCallable,
   HttpMethod,
-  RequestLineSetter,
   ServerSource
 } from './types.js';
 import { HTTP_METHODS, SAGE_DEFAULT_CONFIG } from './constants.js';
 import { Sage } from './Sage.js';
 import { createServer, Server } from 'node:http';
 import { EventEmitter } from 'node:events';
-import { AddressInfo } from 'node:net';
 import { SageConfig } from './SageConfig.js';
 import { ConfigStore } from './ConfigStore.js';
+import { SageException } from './SageException.js';
 
 /**
  * Generates Sage Assistant with for a given HTTP server
@@ -34,29 +33,44 @@ export const request = (
       server.emit('request', req, res);
     }
   });
-
-  const listenResolver = new Promise<void>((resolve) => {
+  const listenPromise = new Promise<void>((resolve) => {
     server.on('listening', () => {
       resolve();
     });
   });
 
-  if (!config.dedicated) {
+  if (config.dedicated) {
     // Listen to an ephemeral port
-    server.listen(0);
+    server.listen(config.port);
   }
 
-  const factory: Record<string, RequestLineSetter<Sage>> = {};
+  const factory = {
+    shutdown: () => {
+      if (!config.dedicated) {
+        throw new SageException(
+          'Cannot shutdown a non-dedicated server. One-time servers are automatically closed after the request is finished. Use this method only for dedicated servers.'
+        );
+      }
+      return new Promise((resolve) => {
+        server.close(() => {
+          resolve();
+        });
+      });
+    }
+  } as HttpCallable<Sage>;
+
+  // Fills up the factory with HTTP methods.
   for (const method of HTTP_METHODS) {
     factory[method] = (path: string): Sage =>
       Sage.fromRequestLine(
         {
           server,
-          listenResolver,
-          launched: true
+          listenResolver: () => listenPromise,
+          launched: config.dedicated
         },
         method.toUpperCase() as HttpMethod,
-        path
+        path,
+        config
       );
   }
 

@@ -11,20 +11,23 @@ import {
   serializeToString,
   isBinary,
   getFilenameFromReadable,
-  statusCodeToMessage
+  statusCodeToMessage,
+  parseJsonStr
 } from './utils.js';
 import { SageHttpResponse } from './SageHttpResponse.js';
 import path from 'node:path';
 import { FormDataOptions } from './FormDataOptions.js';
 import { createReadStream } from 'node:fs';
 import { AddressInfo } from 'node:net';
+import { SageConfig } from './SageConfig.js';
 
 /**
  * Greetings, I'm Sage - a chainable HTTP Testing Assistant
  */
 export class Sage {
   private sageServer: SageServer;
-  private options: SageHttpRequest = {};
+  private config: SageConfig;
+  private request: SageHttpRequest = {};
   private client: Client;
 
   /**
@@ -33,12 +36,18 @@ export class Sage {
    * @param sageServer
    * @param method
    * @param path
+   * @param config
    */
-  constructor(sageServer: SageServer, method: HttpMethod, path: string) {
+  constructor(
+    sageServer: SageServer,
+    method: HttpMethod,
+    path: string,
+    config: SageConfig
+  ) {
     this.sageServer = sageServer;
-
-    this.options.method = method;
-    this.options.path = path;
+    this.config = config;
+    this.request.method = method;
+    this.request.path = path;
 
     const httpClientOptions: Client.Options = {
       keepAliveTimeout: 1,
@@ -60,7 +69,7 @@ export class Sage {
   }
 
   query(query: Record<string | number, string>): this {
-    this.options.query = query;
+    this.request.query = query;
     return this;
   }
 
@@ -74,17 +83,17 @@ export class Sage {
    * @param body
    */
   send(body: string | object): this {
-    if (this.options.formData) {
+    if (this.request.formData) {
       throw new SageException('Cannot set both body and formData');
     }
 
     if (typeof body != 'string') {
       this.set('Content-Type', 'application/json');
-      this.options.body = serializeToString(body);
+      this.request.body = serializeToString(body);
       return this;
     }
 
-    this.options.body = body;
+    this.request.body = body;
     return this;
   }
 
@@ -95,7 +104,7 @@ export class Sage {
    * @param value
    */
   set(key: string, value: string): this {
-    this.options.headers = { ...(this.options.headers || {}), [key]: value };
+    this.request.headers = { ...(this.request.headers || {}), [key]: value };
     return this;
   }
 
@@ -113,12 +122,12 @@ export class Sage {
     file: Blob | Buffer | Readable | string,
     options?: FormDataOptions | string
   ): this {
-    if (this.options.body) {
+    if (this.request.body) {
       throw new SageException('Cannot set both body and formData');
     }
 
-    if (!this.options.formData) {
-      this.options.formData = new FormData();
+    if (!this.request.formData) {
+      this.request.formData = new FormData();
     }
 
     if (typeof options === 'string') {
@@ -131,7 +140,7 @@ export class Sage {
       // https://github.com/nodejs/undici/issues/2202#issuecomment-1664134203
       // To pass isBlobLike check: https://github.com/nodejs/undici/blob/e48df9620edf1428bd457f481d47fa2c77f75322/lib/fetch/formdata.js#L40
       // Filename is also required due to: https://github.com/nodejs/undici/blob/e48df9620edf1428bd457f481d47fa2c77f75322/lib/fetch/formdata.js#L239
-      this.options.formData.append(field, {
+      this.request.formData.append(field, {
         [Symbol.toStringTag]: 'File',
         name: options?.filename || filename,
         type: options?.type,
@@ -150,7 +159,7 @@ export class Sage {
       // https://github.com/nodejs/undici/issues/2202#issuecomment-1664134203
       // To pass isBlobLike check: https://github.com/nodejs/undici/blob/e48df9620edf1428bd457f481d47fa2c77f75322/lib/fetch/formdata.js#L40
       // Filename is also required due to: https://github.com/nodejs/undici/blob/e48df9620edf1428bd457f481d47fa2c77f75322/lib/fetch/formdata.js#L239
-      this.options.formData.append(field, {
+      this.request.formData.append(field, {
         [Symbol.toStringTag]: 'File',
         name: options?.filename || file,
         type: options?.type,
@@ -162,7 +171,7 @@ export class Sage {
     if (isBinary(file)) {
       // Handle Buffer to blob conversion for now
       const blob = new Blob([file], { type: options?.type });
-      this.options.formData.append(field, blob, options?.filename);
+      this.request.formData.append(field, blob, options?.filename);
       return this;
     }
 
@@ -170,90 +179,62 @@ export class Sage {
   }
 
   field(field: string, value: string | string[]): this {
-    if (!this.options.formData) {
-      this.options.formData = new FormData();
+    if (!this.request.formData) {
+      this.request.formData = new FormData();
     }
 
     if (Array.isArray(value)) {
       for (const val of value) {
-        this.options.formData.append(field, val);
+        this.request.formData.append(field, val);
       }
       return this;
     }
 
-    this.options.formData.append(field, value);
+    this.request.formData.append(field, value);
 
     return this;
   }
 
   async then(resolve: ThenableResolve<SageHttpResponse>): Promise<void> {
     // Make sure the server is listening before making a request
-    await this.serverListenResolver();
+    await this.sageServer.listenResolver();
 
     try {
-      const data: Uint8Array[] = [];
-      let responseHeaders: any;
-      let responseStatusCode: any;
-
-      await new Promise((resolve, reject) => {
-        this.client.dispatch(
-          {
-            method: this.options.method as HttpMethod,
-            path: this.options.path as string,
-            headers: this.options.headers,
-            // Only one of these is expected to be undefined at this point.
-            // If FormData is defined, undici will provide headers with the correct Content-Type
-            body: this.options.body || this.options.formData,
-            query: this.options.query,
-            reset: true
-          },
-          {
-            onConnect: () => {
-              // console.log('Connected!');
-            },
-            onError: (error) => {
-              // console.error(error);
-            },
-            onData(chunk: Buffer): boolean {
-              return true;
-            },
-            onHeaders: (statusCode, headers) => {
-              responseHeaders = headers;
-              responseStatusCode = statusCode;
-              return true;
-            },
-            onComplete: (trailers) => {
-              resolve(null);
-            }
-          }
-        );
+      const res = await this.client.request({
+        method: this.request.method as HttpMethod,
+        path: this.request.path as string,
+        headers: this.request.headers,
+        // Only one of these is expected to be undefined at this point.
+        // If FormData is defined, undici will provide headers with the correct Content-Type
+        body: this.request.body || this.request.formData,
+        query: this.request.query,
+        reset: true
       });
 
-      // const data = response.opaque as Opaque;
-      const text = Buffer.concat(data).toString('utf-8');
-      // const json = parseJsonStr(text);
-
-      // const buffer = Buffer.concat(buffers);
-      // const text = await res.body.text();
-
-      // await res.body.dump();
+      const text = await res.body.text();
+      const json = parseJsonStr(text);
 
       resolve({
-        statusCode: responseStatusCode,
-        status: responseStatusCode,
-        statusText: statusCodeToMessage(responseStatusCode),
-        headers: responseHeaders,
-        body: {},
+        statusCode: res.statusCode,
+        status: res.statusCode,
+        statusText: statusCodeToMessage(res.statusCode),
+        headers: res.headers,
+        body: json,
         text: text,
-        ok: isOkay(responseStatusCode),
-        redirect: isRedirect(responseStatusCode),
-        location: responseHeaders?.['location'] as string
+        ok: isOkay(res.statusCode),
+        redirect: isRedirect(res.statusCode),
+        location: res.headers?.['location'] as string
       } as SageHttpResponse);
     } catch (e) {
       throw new SageException(
         `Failed to make a request to the underlying server, please take a look at the upstream error for more details: `,
         e
       );
+    } finally {
+      // If there is a dedicated server, skip its shutdown
+      if (!this.config.dedicated) {
+        this.sageServer.server.close();
+      }
     }
   }
 
@@ -275,12 +256,14 @@ export class Sage {
    * @param sageServer
    * @param method
    * @param path
+   * @param config
    */
   static fromRequestLine(
     sageServer: SageServer,
     method: HttpMethod,
-    path: string
+    path: string,
+    config: SageConfig
   ): Sage {
-    return new Sage(sageServer, method, path);
+    return new Sage(sageServer, method, path, config);
   }
 }

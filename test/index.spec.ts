@@ -1,8 +1,20 @@
 import { getExpressApp, getFastifyApp } from './utils.js';
 import { request } from '../src/index.js';
-import fs from 'fs';
+import fs from 'node:fs';
+import { readdir, unlink } from 'node:fs/promises';
 
 describe('request', () => {
+  afterAll(async () => {
+    const files = await readdir('test/fixtures/temp');
+
+    for (const file of files) {
+      if (file === '.gitkeep') {
+        continue;
+      }
+      await unlink(`test/fixtures/temp/${file}`);
+    }
+  });
+
   const expressApp = getExpressApp();
   const fastifyApp = getFastifyApp();
 
@@ -23,8 +35,7 @@ describe('request', () => {
             'content-length': expect.any(String),
             etag: expect.any(String),
             date: expect.any(String),
-            connection: 'keep-alive',
-            'keep-alive': 'timeout=5'
+            connection: 'close'
           },
           body: {
             message: 'Success!',
@@ -67,8 +78,7 @@ describe('request', () => {
             'content-length': expect.any(String),
             etag: expect.any(String),
             date: expect.any(String),
-            connection: 'keep-alive',
-            'keep-alive': 'timeout=5'
+            connection: 'close'
           },
           body: {
             message: 'Success!',
@@ -111,8 +121,7 @@ describe('request', () => {
             'content-length': expect.any(String),
             etag: expect.any(String),
             date: expect.any(String),
-            connection: 'keep-alive',
-            'keep-alive': 'timeout=5'
+            connection: 'close'
           },
           body: {
             message: 'Success!',
@@ -158,8 +167,7 @@ describe('request', () => {
             'content-length': expect.any(String),
             etag: expect.any(String),
             date: expect.any(String),
-            connection: 'keep-alive',
-            'keep-alive': 'timeout=5'
+            connection: 'close'
           },
           body: {
             message: 'Success!',
@@ -202,8 +210,7 @@ describe('request', () => {
             'content-length': expect.any(String),
             etag: expect.any(String),
             date: expect.any(String),
-            connection: 'keep-alive',
-            'keep-alive': 'timeout=5'
+            connection: 'close'
           },
           body: {
             message: 'Success!',
@@ -252,8 +259,7 @@ describe('request', () => {
             'content-length': expect.any(String),
             etag: expect.any(String),
             date: expect.any(String),
-            connection: 'keep-alive',
-            'keep-alive': 'timeout=5'
+            connection: 'close'
           },
           body: {
             message: 'Success!',
@@ -310,8 +316,7 @@ describe('request', () => {
             'content-length': expect.any(String),
             etag: expect.any(String),
             date: expect.any(String),
-            connection: 'keep-alive',
-            'keep-alive': 'timeout=5'
+            connection: 'close'
           },
           body: {
             message: 'Success!',
@@ -339,11 +344,10 @@ describe('request', () => {
         expect(res).toEqual({
           body: null,
           headers: {
-            connection: 'keep-alive',
+            connection: 'close',
             date: expect.any(String),
             'content-length': expect.any(String),
             'content-type': 'text/plain; charset=utf-8',
-            'keep-alive': 'timeout=5',
             location: 'https://www.google.com',
             vary: 'Accept',
             'x-powered-by': 'Express'
@@ -379,8 +383,7 @@ describe('request', () => {
             'content-type': 'application/json; charset=utf-8',
             'content-length': expect.any(String),
             date: expect.any(String),
-            connection: 'keep-alive',
-            'keep-alive': 'timeout=72'
+            connection: 'close'
           },
           body: {
             message: 'Success!',
@@ -418,8 +421,7 @@ describe('request', () => {
             'content-type': 'application/json; charset=utf-8',
             'content-length': expect.any(String),
             date: expect.any(String),
-            connection: 'keep-alive',
-            'keep-alive': 'timeout=72'
+            connection: 'close'
           },
           body: {
             message: 'Success!',
@@ -457,8 +459,7 @@ describe('request', () => {
             'content-type': 'application/json; charset=utf-8',
             'content-length': expect.any(String),
             date: expect.any(String),
-            connection: 'keep-alive',
-            'keep-alive': 'timeout=72'
+            connection: 'close'
           },
           body: {
             message: 'Success!',
@@ -499,8 +500,7 @@ describe('request', () => {
             'content-type': 'application/json; charset=utf-8',
             'content-length': expect.any(String),
             date: expect.any(String),
-            connection: 'keep-alive',
-            'keep-alive': 'timeout=72'
+            connection: 'close'
           },
           body: {
             message: 'Success!',
@@ -538,8 +538,7 @@ describe('request', () => {
             'content-type': 'application/json; charset=utf-8',
             'content-length': expect.any(String),
             date: expect.any(String),
-            connection: 'keep-alive',
-            'keep-alive': 'timeout=72'
+            connection: 'close'
           },
           body: {
             message: 'Success!',
@@ -583,8 +582,7 @@ describe('request', () => {
             'content-type': 'application/json; charset=utf-8',
             'content-length': expect.any(String),
             date: expect.any(String),
-            connection: 'keep-alive',
-            'keep-alive': 'timeout=72'
+            connection: 'close'
           },
           body: {
             message: 'Success!',
@@ -631,8 +629,7 @@ describe('request', () => {
             'content-type': 'application/json; charset=utf-8',
             'content-length': expect.any(String),
             date: expect.any(String),
-            connection: 'keep-alive',
-            'keep-alive': 'timeout=72'
+            connection: 'close'
           },
           body: {
             message: 'Success!',
@@ -660,10 +657,9 @@ describe('request', () => {
         expect(res).toEqual({
           body: null,
           headers: {
-            connection: 'keep-alive',
+            connection: 'close',
             date: expect.any(String),
             'content-length': expect.any(String),
-            'keep-alive': 'timeout=72',
             location: 'https://www.google.com'
           },
           location: 'https://www.google.com',

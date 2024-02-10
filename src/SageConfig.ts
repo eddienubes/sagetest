@@ -1,8 +1,10 @@
 export interface SageConfig {
   /**
-   * Launch a dedicated server for each HTTP .method() call. E.g. request(app).get('/'), where .get() is a method.
-   * By default, Sage uses a predefined server listening to an ephemeral port.
-   * This server is created within the first request(app) call.
+   * Launch a dedicated server which will be preserved between requests.
+   * When you call request(), it will spin up a new server for you.
+   * This server will persist throughout testing, so you'll have to shut down it manually via shutdown().
+   * When this option is set to false, sagetest mimics supertest behaviour and spins up a new server for each request,
+   * as well as handles its graceful shutdown.
    * @default false
    */
   dedicated: boolean;
