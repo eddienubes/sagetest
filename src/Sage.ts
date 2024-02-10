@@ -7,12 +7,13 @@ import { Blob } from 'node:buffer';
 import { SageException } from './SageException.js';
 import {
   isOkay,
-  isRedirect,
   serializeToString,
   isBinary,
   getFilenameFromReadable,
   statusCodeToMessage,
-  parseJsonStr
+  parseJsonStr,
+  isRedirect,
+  isError
 } from './utils.js';
 import { SageHttpResponse } from './SageHttpResponse.js';
 import path from 'node:path';
@@ -223,8 +224,9 @@ export class Sage {
         text: text,
         ok: isOkay(res.statusCode),
         redirect: isRedirect(res.statusCode),
-        location: res.headers?.['location'] as string
-      } as SageHttpResponse);
+        location: res.headers?.['location'] as string,
+        error: isError(res.statusCode)
+      } satisfies SageHttpResponse);
     } catch (e) {
       throw new SageException(
         `Failed to make a request to the underlying server, please take a look at the upstream error for more details: `,

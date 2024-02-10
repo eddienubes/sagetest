@@ -1,7 +1,64 @@
 import { getExpressApp, getFastifyApp } from './utils.js';
-import { request } from '../src/index.js';
+import { request, SageHttpResponse } from '../src/index.js';
 import fs from 'node:fs';
 import { readdir, unlink } from 'node:fs/promises';
+
+const expectedExpressResponse: SageHttpResponse = {
+  statusCode: 200,
+  status: 200,
+  statusText: 'OK',
+  headers: {
+    'x-powered-by': 'Express',
+    'content-type': 'application/json; charset=utf-8',
+    'content-length': expect.any(String),
+    etag: expect.any(String),
+    date: expect.any(String),
+    connection: 'close'
+  },
+  body: {
+    message: 'Success!',
+    body: {},
+    query: {},
+    files: {}
+  },
+  text: expect.any(String),
+  ok: true,
+  redirect: false,
+  location: undefined,
+  error: false
+};
+
+const expectedFastifyResponse: SageHttpResponse = {
+  statusCode: 200,
+  status: 200,
+  statusText: 'OK',
+  headers: {
+    'content-type': 'application/json; charset=utf-8',
+    'content-length': expect.any(String),
+    date: expect.any(String),
+    connection: 'close'
+  },
+  body: {
+    message: 'Success!',
+    body: {},
+    query: {},
+    files: [
+      {
+        encoding: '7bit',
+        fieldname: 'picture',
+        fieldsCount: 1,
+        filename: 'cat.jpg',
+        mimetype: 'application/octet-stream',
+        size: 4877386
+      }
+    ]
+  },
+  text: expect.any(String),
+  ok: true,
+  redirect: false,
+  location: undefined,
+  error: false
+};
 
 describe('request', () => {
   afterAll(async () => {
@@ -26,21 +83,9 @@ describe('request', () => {
           .attach('picture', 'test/fixtures/cat.jpg');
 
         expect(res).toEqual({
-          statusCode: 200,
-          status: 200,
-          statusText: 'OK',
-          headers: {
-            'x-powered-by': 'Express',
-            'content-type': 'application/json; charset=utf-8',
-            'content-length': expect.any(String),
-            etag: expect.any(String),
-            date: expect.any(String),
-            connection: 'close'
-          },
+          ...expectedExpressResponse,
           body: {
-            message: 'Success!',
-            body: {},
-            query: {},
+            ...expectedExpressResponse.body,
             files: {
               picture: [
                 {
@@ -55,13 +100,10 @@ describe('request', () => {
                 }
               ]
             }
-          },
-          text: expect.any(String),
-          ok: true,
-          redirect: false,
-          location: undefined
-        });
+          }
+        } as SageHttpResponse);
       });
+
       it('should work with streams', async () => {
         const stream = fs.createReadStream('test/fixtures/cat.jpg');
         const res = await request(expressApp)
@@ -69,21 +111,9 @@ describe('request', () => {
           .attach('picture', stream);
 
         expect(res).toEqual({
-          statusCode: 200,
-          status: 200,
-          statusText: 'OK',
-          headers: {
-            'x-powered-by': 'Express',
-            'content-type': 'application/json; charset=utf-8',
-            'content-length': expect.any(String),
-            etag: expect.any(String),
-            date: expect.any(String),
-            connection: 'close'
-          },
+          ...expectedExpressResponse,
           body: {
-            message: 'Success!',
-            body: {},
-            query: {},
+            ...expectedExpressResponse.body,
             files: {
               picture: [
                 {
@@ -98,13 +128,10 @@ describe('request', () => {
                 }
               ]
             }
-          },
-          text: expect.any(String),
-          ok: true,
-          redirect: false,
-          location: undefined
+          }
         });
       });
+
       it('should work with blobs', async () => {
         const blob = await fs.openAsBlob('test/fixtures/cat.jpg');
         const res = await request(expressApp)
@@ -112,21 +139,9 @@ describe('request', () => {
           .attach('picture', blob);
 
         expect(res).toEqual({
-          statusCode: 200,
-          status: 200,
-          statusText: 'OK',
-          headers: {
-            'x-powered-by': 'Express',
-            'content-type': 'application/json; charset=utf-8',
-            'content-length': expect.any(String),
-            etag: expect.any(String),
-            date: expect.any(String),
-            connection: 'close'
-          },
+          ...expectedExpressResponse,
           body: {
-            message: 'Success!',
-            body: {},
-            query: {},
+            ...expectedExpressResponse.body,
             files: {
               picture: [
                 {
@@ -141,13 +156,10 @@ describe('request', () => {
                 }
               ]
             }
-          },
-          text: expect.any(String),
-          ok: true,
-          redirect: false,
-          location: undefined
+          }
         });
       });
+
       it('should work with options object', async () => {
         const blob = await fs.openAsBlob('test/fixtures/cat.jpg');
         const res = await request(expressApp)
@@ -158,21 +170,9 @@ describe('request', () => {
           });
 
         expect(res).toEqual({
-          statusCode: 200,
-          status: 200,
-          statusText: 'OK',
-          headers: {
-            'x-powered-by': 'Express',
-            'content-type': 'application/json; charset=utf-8',
-            'content-length': expect.any(String),
-            etag: expect.any(String),
-            date: expect.any(String),
-            connection: 'close'
-          },
+          ...expectedExpressResponse,
           body: {
-            message: 'Success!',
-            body: {},
-            query: {},
+            ...expectedExpressResponse.body,
             files: {
               picture: [
                 {
@@ -187,13 +187,10 @@ describe('request', () => {
                 }
               ]
             }
-          },
-          text: expect.any(String),
-          ok: true,
-          redirect: false,
-          location: undefined
+          }
         });
       });
+
       it('should work with options as a string', async () => {
         const blob = await fs.openAsBlob('test/fixtures/cat.jpg');
         const res = await request(expressApp)
@@ -201,21 +198,9 @@ describe('request', () => {
           .attach('picture', blob, 'cat.jpg');
 
         expect(res).toEqual({
-          statusCode: 200,
-          status: 200,
-          statusText: 'OK',
-          headers: {
-            'x-powered-by': 'Express',
-            'content-type': 'application/json; charset=utf-8',
-            'content-length': expect.any(String),
-            etag: expect.any(String),
-            date: expect.any(String),
-            connection: 'close'
-          },
+          ...expectedExpressResponse,
           body: {
-            message: 'Success!',
-            body: {},
-            query: {},
+            ...expectedExpressResponse.body,
             files: {
               picture: [
                 {
@@ -230,13 +215,10 @@ describe('request', () => {
                 }
               ]
             }
-          },
-          text: expect.any(String),
-          ok: true,
-          redirect: false,
-          location: undefined
+          }
         });
       });
+
       it('should work with mixed multipart/form-data', async () => {
         const blob = await fs.openAsBlob('test/fixtures/cat.jpg');
         const res = await request(expressApp)
@@ -250,26 +232,15 @@ describe('request', () => {
           .field('array3', 'value6');
 
         expect(res).toEqual({
-          statusCode: 200,
-          status: 200,
-          statusText: 'OK',
-          headers: {
-            'x-powered-by': 'Express',
-            'content-type': 'application/json; charset=utf-8',
-            'content-length': expect.any(String),
-            etag: expect.any(String),
-            date: expect.any(String),
-            connection: 'close'
-          },
+          ...expectedExpressResponse,
           body: {
-            message: 'Success!',
+            ...expectedExpressResponse.body,
             body: {
               array: ['value1', 'value2'],
               array2: ['value3', 'value4'],
               array3: ['value5', 'value6'],
               key: 'value'
             },
-            query: {},
             files: {
               picture: [
                 {
@@ -284,11 +255,7 @@ describe('request', () => {
                 }
               ]
             }
-          },
-          text: expect.any(String),
-          ok: true,
-          redirect: false,
-          location: undefined
+          }
         });
       });
     });
@@ -333,7 +300,8 @@ describe('request', () => {
           text: `{"message":"Success!","body":{"data":"somevalue","nestedObj":{"nestedKey":"nestedValue"}},"query":{"key":"value"}}`,
           ok: true,
           redirect: false,
-          location: undefined
+          location: undefined,
+          error: false
         });
       });
     });
@@ -358,7 +326,8 @@ describe('request', () => {
           status: 301,
           statusCode: 301,
           statusText: 'Moved Permanently',
-          text: 'Moved Permanently. Redirecting to https://www.google.com'
+          text: 'Moved Permanently. Redirecting to https://www.google.com',
+          error: false
         });
       });
     });
@@ -375,36 +344,7 @@ describe('request', () => {
           .post('/upload')
           .attach('picture', 'test/fixtures/cat.jpg');
 
-        expect(res).toEqual({
-          statusCode: 200,
-          status: 200,
-          statusText: 'OK',
-          headers: {
-            'content-type': 'application/json; charset=utf-8',
-            'content-length': expect.any(String),
-            date: expect.any(String),
-            connection: 'close'
-          },
-          body: {
-            message: 'Success!',
-            body: {},
-            query: {},
-            files: [
-              {
-                encoding: '7bit',
-                fieldname: 'picture',
-                fieldsCount: 1,
-                filename: 'cat.jpg',
-                mimetype: 'application/octet-stream',
-                size: 4877386
-              }
-            ]
-          },
-          text: expect.any(String),
-          ok: true,
-          redirect: false,
-          location: undefined
-        });
+        expect(res).toEqual(expectedFastifyResponse);
       });
 
       it('should work with streams', async () => {
@@ -413,36 +353,7 @@ describe('request', () => {
           .post('/upload')
           .attach('picture', stream);
 
-        expect(res).toEqual({
-          statusCode: 200,
-          status: 200,
-          statusText: 'OK',
-          headers: {
-            'content-type': 'application/json; charset=utf-8',
-            'content-length': expect.any(String),
-            date: expect.any(String),
-            connection: 'close'
-          },
-          body: {
-            message: 'Success!',
-            body: {},
-            query: {},
-            files: [
-              {
-                encoding: '7bit',
-                fieldname: 'picture',
-                fieldsCount: 1,
-                filename: 'cat.jpg',
-                mimetype: 'application/octet-stream',
-                size: 4877386
-              }
-            ]
-          },
-          text: expect.any(String),
-          ok: true,
-          redirect: false,
-          location: undefined
-        });
+        expect(res).toEqual(expectedFastifyResponse);
       });
 
       it('should work with blobs', async () => {
@@ -452,19 +363,9 @@ describe('request', () => {
           .attach('picture', blob);
 
         expect(res).toEqual({
-          statusCode: 200,
-          status: 200,
-          statusText: 'OK',
-          headers: {
-            'content-type': 'application/json; charset=utf-8',
-            'content-length': expect.any(String),
-            date: expect.any(String),
-            connection: 'close'
-          },
+          ...expectedFastifyResponse,
           body: {
-            message: 'Success!',
-            body: {},
-            query: {},
+            ...expectedFastifyResponse.body,
             files: [
               {
                 encoding: '7bit',
@@ -475,11 +376,7 @@ describe('request', () => {
                 size: 4877386
               }
             ]
-          },
-          text: expect.any(String),
-          ok: true,
-          redirect: false,
-          location: undefined
+          }
         });
       });
 
@@ -493,19 +390,9 @@ describe('request', () => {
           });
 
         expect(res).toEqual({
-          statusCode: 200,
-          status: 200,
-          statusText: 'OK',
-          headers: {
-            'content-type': 'application/json; charset=utf-8',
-            'content-length': expect.any(String),
-            date: expect.any(String),
-            connection: 'close'
-          },
+          ...expectedFastifyResponse,
           body: {
-            message: 'Success!',
-            body: {},
-            query: {},
+            ...expectedFastifyResponse.body,
             files: [
               {
                 filename: 'cat.jpg',
@@ -516,11 +403,7 @@ describe('request', () => {
                 size: 4877386
               }
             ]
-          },
-          text: expect.any(String),
-          ok: true,
-          redirect: false,
-          location: undefined
+          }
         });
       });
 
@@ -531,19 +414,9 @@ describe('request', () => {
           .attach('picture', blob, 'cat.jpg');
 
         expect(res).toEqual({
-          statusCode: 200,
-          status: 200,
-          statusText: 'OK',
-          headers: {
-            'content-type': 'application/json; charset=utf-8',
-            'content-length': expect.any(String),
-            date: expect.any(String),
-            connection: 'close'
-          },
+          ...expectedFastifyResponse,
           body: {
-            message: 'Success!',
-            body: {},
-            query: {},
+            ...expectedFastifyResponse.body,
             files: [
               {
                 encoding: '7bit',
@@ -554,11 +427,7 @@ describe('request', () => {
                 size: 4877386
               }
             ]
-          },
-          text: expect.any(String),
-          ok: true,
-          redirect: false,
-          location: undefined
+          }
         });
       });
 
@@ -575,19 +444,9 @@ describe('request', () => {
           .field('array3', 'value6');
 
         expect(res).toEqual({
-          statusCode: 200,
-          status: 200,
-          statusText: 'OK',
-          headers: {
-            'content-type': 'application/json; charset=utf-8',
-            'content-length': expect.any(String),
-            date: expect.any(String),
-            connection: 'close'
-          },
+          ...expectedFastifyResponse,
           body: {
-            message: 'Success!',
-            body: {},
-            query: {},
+            ...expectedFastifyResponse.body,
             files: [
               {
                 encoding: '7bit',
@@ -598,11 +457,7 @@ describe('request', () => {
                 size: 4877386
               }
             ]
-          },
-          text: expect.any(String),
-          ok: true,
-          redirect: false,
-          location: undefined
+          }
         });
       });
     });
@@ -622,54 +477,43 @@ describe('request', () => {
           });
 
         expect(res).toEqual({
-          statusCode: 200,
-          status: 200,
-          statusText: 'OK',
-          headers: {
-            'content-type': 'application/json; charset=utf-8',
-            'content-length': expect.any(String),
-            date: expect.any(String),
-            connection: 'close'
-          },
+          ...expectedFastifyResponse,
           body: {
-            message: 'Success!',
             body: {
               data: 'somevalue',
               nestedObj: {
                 nestedKey: 'nestedValue'
               }
             },
+            message: 'Success!',
             query: {
               key: 'value'
             }
-          },
-          text: `{"message":"Success!","body":{"data":"somevalue","nestedObj":{"nestedKey":"nestedValue"}},"query":{"key":"value"}}`,
-          ok: true,
-          redirect: false,
-          location: undefined
+          }
         });
       });
     });
+
     describe('redirects', () => {
       it('should properly operate with redirects', async () => {
         const res = await request(fastifyApp.server).get('/redirect');
 
         expect(res).toEqual({
+          ...expectedFastifyResponse,
           body: null,
           headers: {
-            connection: 'close',
-            date: expect.any(String),
-            'content-length': expect.any(String),
+            ...expectedFastifyResponse.headers,
+            'content-type': undefined,
             location: 'https://www.google.com'
           },
           location: 'https://www.google.com',
-          ok: false,
           redirect: true,
+          statusText: 'Moved Permanently',
           status: 301,
           statusCode: 301,
-          statusText: 'Moved Permanently',
-          text: ''
-        });
+          text: '',
+          ok: false
+        } as SageHttpResponse);
       });
     });
   });

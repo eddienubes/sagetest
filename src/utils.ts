@@ -22,6 +22,8 @@ export const isRedirect = (status: number): boolean => {
   return [301, 302, 303, 307, 308].includes(status);
 };
 
+export const isError = (status: number): boolean => status >= 400;
+
 export const statusCodeToMessage = (status: number): HttpStatusText => {
   return (
     HTTP_STATUS_TO_MESSAGE[status as keyof typeof HTTP_STATUS_TO_MESSAGE] ||
@@ -78,4 +80,3 @@ export const isObject = (candidate: unknown): candidate is object => {
 export const copyObject = <T>(obj: T): T => {
   return JSON.parse(JSON.stringify(obj));
 };
-

@@ -31,6 +31,11 @@ export interface SageHttpResponse {
   redirect: boolean;
 
   /**
+   * True if the status code is 400 or higher
+   */
+  error: boolean;
+
+  /**
    * Location header. Defined only if redirect is true
    */
   location?: string;

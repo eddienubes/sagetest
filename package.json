@@ -24,7 +24,6 @@
   "author": "eddienubes",
   "license": "ISC",
   "devDependencies": {
-    "0x": "^5.7.0",
     "@fastify/multipart": "^8.1.0",
     "@rollup/plugin-commonjs": "^25.0.7",
     "@rollup/plugin-node-resolve": "^15.2.3",
@@ -35,7 +34,6 @@
     "@types/supertest": "^6.0.2",
     "@typescript-eslint/eslint-plugin": "^6.20.0",
     "@typescript-eslint/parser": "^6.20.0",
-    "clinic": "^13.0.0",
     "eslint": "^8.56.0",
     "eslint-config-prettier": "^9.1.0",
     "eslint-import-resolver-typescript": "^3.6.1",
@@ -47,7 +45,6 @@
     "multer": "1.4.5-lts.1",
     "prettier": "^3.2.4",
     "supertest": "^6.3.4",
-    "tinybench": "^2.6.0",
     "tsx": "^4.7.0",
     "typescript": "^5.3.3",
     "vitest": "^1.2.2"
