@@ -1,5 +1,5 @@
 import { Server } from 'node:http';
-import { HttpMethod, ServerListenResolver, ThenableResolve } from './types.js';
+import { HttpMethod, SageServer, ThenableResolve } from './types.js';
 import { SageHttpRequest } from './SageHttpRequest.js';
 import { Readable } from 'node:stream';
 import { Client, FormData } from 'undici';
@@ -17,39 +17,46 @@ import { SageHttpResponse } from './SageHttpResponse.js';
 import path from 'node:path';
 import { FormDataOptions } from './FormDataOptions.js';
 import { createReadStream } from 'node:fs';
+import { AddressInfo } from 'node:net';
 
 /**
  * Greetings, I'm Sage - a chainable HTTP Testing Assistant
  */
 export class Sage {
-  private readonly serverListenResolver: () => Promise<Server>;
+  private sageServer: SageServer;
   private options: SageHttpRequest = {};
   private client: Client;
 
   /**
-   * Initiates Sage assistant but doesn't spin up the server yet.
    * Sets the HTTP method and path for the request.
    * Not meant to be called directly.
-   * @param serverListenResolver
-   * @param port
+   * @param sageServer
    * @param method
    * @param path
    */
-  constructor(
-    serverListenResolver: ServerListenResolver,
-    port: number,
-    method: HttpMethod,
-    path: string
-  ) {
-    this.serverListenResolver = serverListenResolver;
+  constructor(sageServer: SageServer, method: HttpMethod, path: string) {
+    this.sageServer = sageServer;
 
     this.options.method = method;
     this.options.path = path;
 
-    this.client = new Client(`http://localhost:${port}`, {
+    const httpClientOptions: Client.Options = {
       keepAliveTimeout: 1,
       keepAliveMaxTimeout: 1
-    });
+    };
+
+    // If the server is already launched, the port should be available
+    if (this.sageServer.launched) {
+      const port = this.getServerPort(this.sageServer.server);
+
+      this.client = new Client(`http://localhost:${port}`, httpClientOptions);
+      return;
+    }
+
+    this.sageServer.server.listen(0);
+    const port = this.getServerPort(this.sageServer.server);
+
+    this.client = new Client(`http://localhost:${port}`, httpClientOptions);
   }
 
   query(query: Record<string | number, string>): this {
@@ -250,20 +257,30 @@ export class Sage {
     }
   }
 
+  private getServerPort(server: Server): number {
+    const address = server.address() as AddressInfo | null;
+
+    if (!address?.port) {
+      throw new SageException(
+        'Server is not listening, please report this error if encountered'
+      );
+    }
+
+    return address.port;
+  }
+
   /**
    * Request Line term is taken from HTTP spec.
    * https://www.w3.org/Protocols/rfc2616/rfc2616-sec5.html
-   * @param serverListenResolver
-   * @param port
+   * @param sageServer
    * @param method
    * @param path
    */
   static fromRequestLine(
-    serverListenResolver: ServerListenResolver,
-    port: number,
+    sageServer: SageServer,
     method: HttpMethod,
     path: string
   ): Sage {
-    return new Sage(serverListenResolver, port, method, path);
+    return new Sage(sageServer, method, path);
   }
 }

@@ -1,4 +1,6 @@
 // Not sure if I should add more of these
+import { SageConfig } from './SageConfig.js';
+
 export const HTTP_METHODS = [
   'get',
   'post',
@@ -74,3 +76,8 @@ export const HTTP_STATUS_TO_MESSAGE = {
 export type HttpStatusText =
   | (typeof HTTP_STATUS_TO_MESSAGE)[keyof typeof HTTP_STATUS_TO_MESSAGE]
   | 'Unknown';
+
+export const SAGE_DEFAULT_CONFIG: SageConfig = {
+  dedicated: false,
+  port: 0
+};

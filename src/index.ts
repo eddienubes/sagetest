@@ -1,45 +1,60 @@
 import {
+  DeepPartial,
   HttpCallable,
   HttpMethod,
   RequestLineSetter,
-  SageServer
+  ServerSource
 } from './types.js';
-import { HTTP_METHODS } from './constants.js';
+import { HTTP_METHODS, SAGE_DEFAULT_CONFIG } from './constants.js';
 import { Sage } from './Sage.js';
 import { createServer, Server } from 'node:http';
 import { EventEmitter } from 'node:events';
 import { AddressInfo } from 'node:net';
+import { SageConfig } from './SageConfig.js';
+import { ConfigStore } from './ConfigStore.js';
 
 /**
  * Generates Sage Assistant with for a given HTTP server
- * @param sageServer
+ * @param serverSource
+ * @param overrides
  */
-export const request = (sageServer: SageServer): HttpCallable<Sage> => {
-  const factory: Record<string, RequestLineSetter<Sage>> = {};
+export const request = (
+  serverSource: ServerSource,
+  overrides?: DeepPartial<SageConfig>
+): HttpCallable<Sage> => {
+  const configStore = new ConfigStore<SageConfig>(
+    SAGE_DEFAULT_CONFIG,
+    overrides
+  );
+  const config = configStore.getConfig();
 
-  const server = createServer(sageServer as Server, (req, res) => {
+  const server = createServer(serverSource as Server, (req, res) => {
     // Fastify listens to the request event, otherwise the server hangs
-    if (sageServer instanceof EventEmitter) {
+    if (serverSource instanceof EventEmitter) {
       server.emit('request', req, res);
     }
   });
 
-  // Immediately start listening
-  const listen = (): Promise<Server> => {
-    return new Promise((resolve) => {
-      server.listen(0, () => {
-        resolve(server);
-      });
+  const listenResolver = new Promise<void>((resolve) => {
+    server.on('listening', () => {
+      resolve();
     });
-  };
+  });
 
-  const port = (server.address() as AddressInfo).port as number;
+  if (!config.dedicated) {
+    // Listen to an ephemeral port
+    server.listen(0);
+  }
 
+  const factory: Record<string, RequestLineSetter<Sage>> = {};
   for (const method of HTTP_METHODS) {
     factory[method] = (path: string): Sage =>
       Sage.fromRequestLine(
-        listen,
-        port,
+        {
+          server,
+          listenResolver,
+          launched: true
+        },
         method.toUpperCase() as HttpMethod,
         path
       );

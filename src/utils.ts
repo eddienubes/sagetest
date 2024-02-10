@@ -2,6 +2,8 @@ import { HTTP_STATUS_TO_MESSAGE, HttpStatusText } from './constants.js';
 import { Readable } from 'node:stream';
 import path from 'node:path';
 import { ReadStream } from 'node:fs';
+import { Server } from 'node:http';
+import { AddressInfo } from 'node:net';
 
 export const serializeToString = (value: unknown): string => {
   const result = JSON.stringify(value);
@@ -60,3 +62,20 @@ export const getFilenameFromReadable = (readable: Readable): string | null => {
 
   return path.basename(filePath);
 };
+
+export const isObject = (candidate: unknown): candidate is object => {
+  return (
+    typeof candidate === 'object' &&
+    candidate !== null &&
+    !Array.isArray(candidate)
+  );
+};
+
+/**
+ * Doesn't preserver functions and other non-serializable values
+ * @param obj
+ */
+export const copyObject = <T>(obj: T): T => {
+  return JSON.parse(JSON.stringify(obj));
+};
+
