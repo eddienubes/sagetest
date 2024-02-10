@@ -30,7 +30,7 @@ export const request = (
   const server = createServer(serverSource as Server, (req, res) => {
     // Fastify listens to the request event, otherwise the server hangs
     if (serverSource instanceof EventEmitter) {
-      server.emit('request', req, res);
+      serverSource.emit('request', req, res);
     }
   });
   const listenPromise = new Promise<void>((resolve) => {
