@@ -231,7 +231,7 @@ export class Sage {
         e
       );
     } finally {
-      // If there is a dedicated server, skip its shutdown
+      // If there is a dedicated server, skip its shutdown. User is responsible for it.
       if (!this.config.dedicated) {
         this.sageServer.server.close();
       }
