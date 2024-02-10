@@ -110,6 +110,31 @@ export class Sage {
   }
 
   /**
+   * Sets the Authorization header to base64 of Bearer token with a Basic Prefix.
+   * @param username
+   * @param password
+   */
+  basic(username: string, password: string): this {
+    const encoded = Buffer.from(`${username}:${password}`).toString('base64');
+    this.set('Authorization', `Basic ${encoded}`);
+    return this;
+  }
+
+  /**
+   * Sets the Authorization header to Bearer token. The prefix will be added.
+   * @param token
+   */
+  bearer(token: string): this {
+    this.set('Authorization', `Bearer ${token}`);
+    return this;
+  }
+
+  cookie(key: string, value: string): this {
+    this.set('Cookie', `${key}=${value}`);
+    return this;
+  }
+
+  /**
    * Method is designed to work only with FormData requests.
    * Cannot be combined with .send().
    * If file is a string, it will be treated as a path to a file starting from the working directory (process.cwd()).

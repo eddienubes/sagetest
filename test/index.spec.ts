@@ -16,6 +16,12 @@ const expectedExpressResponse: SageHttpResponse = {
     connection: 'close'
   },
   body: {
+    reqHeaders: {
+      connection: 'close',
+      'content-type': expect.any(String),
+      host: expect.stringContaining('localhost'),
+      'transfer-encoding': 'chunked'
+    },
     message: 'Success!',
     body: {},
     query: {},
@@ -39,6 +45,12 @@ const expectedFastifyResponse: SageHttpResponse = {
     connection: 'close'
   },
   body: {
+    reqHeaders: {
+      connection: 'close',
+      'content-type': expect.any(String),
+      host: expect.stringContaining('localhost'),
+      'transfer-encoding': 'chunked'
+    },
     message: 'Success!',
     body: {},
     query: {},
@@ -142,6 +154,11 @@ describe('request', () => {
           ...expectedExpressResponse,
           body: {
             ...expectedExpressResponse.body,
+            reqHeaders: {
+              ...expectedExpressResponse.body.reqHeaders,
+              'content-length': '4877572',
+              'transfer-encoding': undefined
+            },
             files: {
               picture: [
                 {
@@ -173,6 +190,12 @@ describe('request', () => {
           ...expectedExpressResponse,
           body: {
             ...expectedExpressResponse.body,
+            reqHeaders: {
+              connection: 'close',
+              'content-length': expect.any(String),
+              host: expect.stringContaining('localhost'),
+              'content-type': expect.any(String)
+            },
             files: {
               picture: [
                 {
@@ -201,6 +224,12 @@ describe('request', () => {
           ...expectedExpressResponse,
           body: {
             ...expectedExpressResponse.body,
+            reqHeaders: {
+              connection: 'close',
+              'content-length': expect.any(String),
+              host: expect.stringContaining('localhost'),
+              'content-type': expect.any(String)
+            },
             files: {
               picture: [
                 {
@@ -240,6 +269,12 @@ describe('request', () => {
               array2: ['value3', 'value4'],
               array3: ['value5', 'value6'],
               key: 'value'
+            },
+            reqHeaders: {
+              connection: 'close',
+              'content-length': expect.any(String),
+              host: expect.stringContaining('localhost'),
+              'content-type': expect.any(String)
             },
             files: {
               picture: [
@@ -286,6 +321,12 @@ describe('request', () => {
             connection: 'close'
           },
           body: {
+            reqHeaders: {
+              connection: 'close',
+              'content-length': expect.any(String),
+              'content-type': 'application/json',
+              host: expect.stringContaining('localhost')
+            },
             message: 'Success!',
             body: {
               data: 'somevalue',
@@ -297,7 +338,7 @@ describe('request', () => {
               key: 'value'
             }
           },
-          text: `{"message":"Success!","body":{"data":"somevalue","nestedObj":{"nestedKey":"nestedValue"}},"query":{"key":"value"}}`,
+          text: expect.any(String),
           ok: true,
           redirect: false,
           location: undefined,
@@ -344,7 +385,15 @@ describe('request', () => {
           .post('/upload')
           .attach('picture', 'test/fixtures/cat.jpg');
 
-        expect(res).toEqual(expectedFastifyResponse);
+        expect(res).toEqual({
+          ...expectedFastifyResponse,
+          body: {
+            ...expectedFastifyResponse.body,
+            reqHeaders: {
+              ...expectedFastifyResponse.body.reqHeaders
+            }
+          }
+        });
       });
 
       it('should work with streams', async () => {
@@ -353,7 +402,15 @@ describe('request', () => {
           .post('/upload')
           .attach('picture', stream);
 
-        expect(res).toEqual(expectedFastifyResponse);
+        expect(res).toEqual({
+          ...expectedFastifyResponse,
+          body: {
+            ...expectedFastifyResponse.body,
+            reqHeaders: {
+              ...expectedFastifyResponse.body.reqHeaders
+            }
+          }
+        });
       });
 
       it('should work with blobs', async () => {
@@ -366,6 +423,12 @@ describe('request', () => {
           ...expectedFastifyResponse,
           body: {
             ...expectedFastifyResponse.body,
+            reqHeaders: {
+              ...expectedFastifyResponse.body.reqHeaders,
+              'content-length': expect.any(String),
+              host: expect.stringContaining('localhost'),
+              'transfer-encoding': undefined
+            },
             files: [
               {
                 encoding: '7bit',
@@ -393,6 +456,12 @@ describe('request', () => {
           ...expectedFastifyResponse,
           body: {
             ...expectedFastifyResponse.body,
+            reqHeaders: {
+              ...expectedFastifyResponse.body.reqHeaders,
+              'content-length': expect.any(String),
+              host: expect.stringContaining('localhost'),
+              'transfer-encoding': undefined
+            },
             files: [
               {
                 filename: 'cat.jpg',
@@ -417,6 +486,12 @@ describe('request', () => {
           ...expectedFastifyResponse,
           body: {
             ...expectedFastifyResponse.body,
+            reqHeaders: {
+              ...expectedFastifyResponse.body.reqHeaders,
+              'content-length': expect.any(String),
+              host: expect.stringContaining('localhost'),
+              'transfer-encoding': undefined
+            },
             files: [
               {
                 encoding: '7bit',
@@ -447,6 +522,12 @@ describe('request', () => {
           ...expectedFastifyResponse,
           body: {
             ...expectedFastifyResponse.body,
+            reqHeaders: {
+              ...expectedFastifyResponse.body.reqHeaders,
+              'content-length': expect.any(String),
+              host: expect.stringContaining('localhost'),
+              'transfer-encoding': undefined
+            },
             files: [
               {
                 encoding: '7bit',
@@ -479,6 +560,13 @@ describe('request', () => {
         expect(res).toEqual({
           ...expectedFastifyResponse,
           body: {
+            reqHeaders: {
+              ...expectedFastifyResponse.body.reqHeaders,
+              'content-type': 'application/json',
+              'content-length': expect.any(String),
+              host: expect.stringContaining('localhost'),
+              'transfer-encoding': undefined
+            },
             body: {
               data: 'somevalue',
               nestedObj: {

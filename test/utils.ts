@@ -22,7 +22,8 @@ export const getExpressApp = (): Express => {
     res.json({
       message: 'Success!',
       body: req.body,
-      query: req.query
+      query: req.query,
+      reqHeaders: req.headers
     });
   });
 
@@ -44,7 +45,8 @@ export const getExpressApp = (): Express => {
         message: 'Success!',
         body: req.body,
         query: req.query,
-        files: req.files
+        files: req.files,
+        reqHeaders: req.headers
       });
     }
   );
@@ -54,7 +56,8 @@ export const getExpressApp = (): Express => {
     res.status(500).json({
       message: 'Internal Server Error!',
       body: req.body,
-      query: req.query
+      query: req.query,
+      reqHeaders: req.headers
     });
   };
 
@@ -74,7 +77,8 @@ export const getFastifyApp = (): FastifyInstance => {
     reply.send({
       message: 'Success!',
       body: request.body || {},
-      query: request.query || {}
+      query: request.query || {},
+      reqHeaders: request.headers
     });
   });
 
@@ -113,7 +117,8 @@ export const getFastifyApp = (): FastifyInstance => {
       message: 'Success!',
       body: request.body || {},
       query: request.query || {},
-      files: files
+      files: files,
+      reqHeaders: request.headers
     });
   });
 
@@ -121,7 +126,10 @@ export const getFastifyApp = (): FastifyInstance => {
     (error: FastifyError, request: FastifyRequest, reply: FastifyReply) => {
       console.error(error.stack);
       reply.send({
-        message: 'Internal Server Error!'
+        message: 'Internal Server Error!',
+        body: request.body || {},
+        query: request.query || {},
+        reqHeaders: request.headers
       });
     }
   );

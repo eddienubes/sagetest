@@ -2,8 +2,6 @@ import { HTTP_STATUS_TO_MESSAGE, HttpStatusText } from './constants.js';
 import { Readable } from 'node:stream';
 import path from 'node:path';
 import { ReadStream } from 'node:fs';
-import { Server } from 'node:http';
-import { AddressInfo } from 'node:net';
 
 export const serializeToString = (value: unknown): string => {
   const result = JSON.stringify(value);
