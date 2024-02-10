@@ -142,8 +142,8 @@ export class Sage {
   }
 
   /**
-   * If password is provided, it will be used to create a Basic Auth header.
-   * If password is not provided, it will be used as a Bearer token.
+   * If password is provided, Basic Auth header will be added.
+   * If password is not provided, Bearer token header will be added.
    * Automatically adds Basic or Bearer prefix to the token.
    * @param usernameOrToken
    * @param password

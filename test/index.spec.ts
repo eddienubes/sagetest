@@ -483,7 +483,7 @@ describe('request', () => {
     });
 
     describe('auth', () => {
-      it('should basic authorization header', async () => {
+      it('should set basic authorization header', async () => {
         const res = await request(expressApp)
           .get('/cookie')
           .auth('username', 'password');
