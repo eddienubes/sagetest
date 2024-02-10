@@ -78,3 +78,11 @@ export const isObject = (candidate: unknown): candidate is object => {
 export const copyObject = <T>(obj: T): T => {
   return JSON.parse(JSON.stringify(obj));
 };
+
+export const wrapArray = <T>(value: T | T[]): T[] => {
+  if (Array.isArray(value)) {
+    return value;
+  }
+
+  return [value];
+};

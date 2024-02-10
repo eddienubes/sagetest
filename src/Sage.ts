@@ -13,7 +13,8 @@ import {
   statusCodeToMessage,
   parseJsonStr,
   isRedirect,
-  isError
+  isError,
+  wrapArray
 } from './utils.js';
 import { SageHttpResponse } from './SageHttpResponse.js';
 import path from 'node:path';
@@ -69,6 +70,10 @@ export class Sage {
     this.client = new Client(`http://localhost:${port}`, httpClientOptions);
   }
 
+  /**
+   * Sets query parameters for the request.
+   * @param query
+   */
   query(query: Record<string | number, string>): this {
     this.request.query = query;
     return this;
@@ -104,28 +109,54 @@ export class Sage {
    * @param key
    * @param value
    */
-  set(key: string, value: string): this {
-    this.request.headers = { ...(this.request.headers || {}), [key]: value };
+  set(key: string, value: string | string[]): this {
+    if (!this.request.headers) {
+      this.request.headers = {};
+    }
+
+    value = wrapArray(value);
+
+    // If already an array
+    if (Array.isArray(this.request.headers[key])) {
+      const existingValue = this.request.headers[key] as string[];
+      existingValue.push(...value);
+      return this;
+    }
+
+    // If an existing value is a string, convert it to an array
+    if (typeof this.request.headers[key] === 'string') {
+      const existingValue = this.request.headers[key] as string;
+      this.request.headers[key] = [existingValue, ...value];
+      return this;
+    }
+
+    // If a single value is passed, don't wrap it in an array
+    if (value.length === 1) {
+      this.request.headers[key] = value[0];
+      return this;
+    }
+
+    this.request.headers[key] = value;
     return this;
   }
 
   /**
-   * Sets the Authorization header to base64 of Bearer token with a Basic Prefix.
-   * @param username
+   * If password is provided, it will be used to create a Basic Auth header.
+   * If password is not provided, it will be used as a Bearer token.
+   * Automatically adds Basic or Bearer prefix to the token.
+   * @param usernameOrToken
    * @param password
    */
-  basic(username: string, password: string): this {
-    const encoded = Buffer.from(`${username}:${password}`).toString('base64');
-    this.set('Authorization', `Basic ${encoded}`);
-    return this;
-  }
+  auth(usernameOrToken: string, password?: string): this {
+    if (password) {
+      const credentials = Buffer.from(
+        `${usernameOrToken}:${password}`
+      ).toString('base64');
+      this.set('Authorization', `Basic ${credentials}`);
+      return this;
+    }
 
-  /**
-   * Sets the Authorization header to Bearer token. The prefix will be added.
-   * @param token
-   */
-  bearer(token: string): this {
-    this.set('Authorization', `Bearer ${token}`);
+    this.set('Authorization', `Bearer ${usernameOrToken}`);
     return this;
   }
 
@@ -254,7 +285,24 @@ export class Sage {
       } satisfies SageHttpResponse);
     } catch (e) {
       throw new SageException(
-        `Failed to make a request to the underlying server, please take a look at the upstream error for more details: `,
+        `
+    Failed;
+    to;
+    make;
+    a;
+    request;
+    to;
+    the;
+    underlying;
+    server, please;
+    take;
+    a;
+    look;
+    at;
+    the;
+    upstream;
+    error;
+    for more details: `,
         e
       );
     } finally {

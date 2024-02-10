@@ -372,6 +372,70 @@ describe('request', () => {
         });
       });
     });
+    describe('header', () => {
+      it('should set and pass a single header', async () => {
+        const res = await request(expressApp)
+          .post('/ping-pong')
+          .set('x-custom-header', 'custom-value');
+
+        expect(res).toMatchObject({
+          body: {
+            reqHeaders: {
+              'x-custom-header': 'custom-value'
+            }
+          }
+        } as SageHttpResponse);
+      });
+
+      it('should set and pass 2 values in a single header', async () => {
+        const res = await request(expressApp)
+          .post('/ping-pong')
+          .set('x-custom-header', 'custom-value1')
+          .set('x-custom-header', 'custom-value2');
+
+        expect(res).toMatchObject({
+          body: {
+            reqHeaders: {
+              'x-custom-header': 'custom-value1, custom-value2'
+            }
+          }
+        } as SageHttpResponse);
+      });
+
+      it('should set and pass 3 values in a single header', async () => {
+        const res = await request(expressApp)
+          .post('/ping-pong')
+          .set('x-custom-header', 'custom-value1')
+          .set('x-custom-header', 'custom-value2')
+          .set('x-custom-header', 'custom-value3');
+
+        expect(res).toMatchObject({
+          body: {
+            reqHeaders: {
+              'x-custom-header': 'custom-value1, custom-value2, custom-value3'
+            }
+          }
+        } as SageHttpResponse);
+      });
+
+      it('should accept arrays', async () => {
+        const res = await request(expressApp)
+          .post('/ping-pong')
+          .set('x-custom-header', [
+            'custom-value1',
+            'custom-value2',
+            'custom-value3'
+          ]);
+
+        expect(res).toMatchObject({
+          body: {
+            reqHeaders: {
+              'x-custom-header': 'custom-value1, custom-value2, custom-value3'
+            }
+          }
+        } as SageHttpResponse);
+      });
+    });
   });
 
   describe('fastify', () => {
@@ -601,6 +665,85 @@ describe('request', () => {
           statusCode: 301,
           text: '',
           ok: false
+        } as SageHttpResponse);
+      });
+    });
+
+    describe('header', () => {
+      it('should set and pass a single header', async () => {
+        const res = await request(fastifyApp.server)
+          .post('/ping-pong')
+          .set('x-custom-header', 'custom-value');
+
+        expect(res).toMatchObject({
+          body: {
+            reqHeaders: {
+              'x-custom-header': 'custom-value'
+            }
+          }
+        } as SageHttpResponse);
+      });
+
+      it('should set and pass 2 values in a single header', async () => {
+        const res = await request(fastifyApp.server)
+          .post('/ping-pong')
+          .set('x-custom-header', 'custom-value1')
+          .set('x-custom-header', 'custom-value2');
+
+        expect(res).toMatchObject({
+          body: {
+            reqHeaders: {
+              'x-custom-header': 'custom-value1, custom-value2'
+            }
+          }
+        } as SageHttpResponse);
+      });
+
+      it('should set and pass 3 values in a single header', async () => {
+        const res = await request(fastifyApp.server)
+          .post('/ping-pong')
+          .set('x-custom-header', 'custom-value1')
+          .set('x-custom-header', 'custom-value2')
+          .set('x-custom-header', 'custom-value3');
+
+        expect(res).toMatchObject({
+          body: {
+            reqHeaders: {
+              'x-custom-header': 'custom-value1, custom-value2, custom-value3'
+            }
+          }
+        } as SageHttpResponse);
+      });
+
+      it('should accept array with multiple values', async () => {
+        const res = await request(fastifyApp.server)
+          .post('/ping-pong')
+          .set('x-custom-header', [
+            'custom-value1',
+            'custom-value2',
+            'custom-value3'
+          ]);
+
+        expect(res).toMatchObject({
+          body: {
+            reqHeaders: {
+              'x-custom-header': 'custom-value1, custom-value2, custom-value3'
+            }
+          }
+        } as SageHttpResponse);
+      });
+
+      it('should accept arrays with a single value', async () => {
+        const res = await request(fastifyApp.server)
+          .post('/ping-pong')
+          .set('x-custom-header', ['custom-value1']);
+
+        expect(res).toMatchObject({
+          body: {
+            reqHeaders: {
+              'x-custom-header': 'custom-value1'
+            }
+          }
         } as SageHttpResponse);
       });
     });
