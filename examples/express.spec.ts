@@ -14,16 +14,24 @@ app.get('/', (req, res) => {
   res.cookie('sweet-cookie', 'choco', {
     httpOnly: true
   });
-  res.json(payload);
+  res.json({
+    ...payload,
+    requestHeaders: req.headers
+  });
 });
 
 describe('Express Test Suite', () => {
   it('should respond', async () => {
-    const response = await request(app).get('/');
+    const response = await request(app).get('/').auth('user', 'pass');
 
     expect(response).toEqual({
       body: {
-        message: 'I love my mom!'
+        message: 'I love my mom!',
+        requestHeaders: {
+          authorization: 'Basic dXNlcjpwYXNz',
+          connection: 'close',
+          host: expect.stringContaining('localhost')
+        }
       },
       cookies: {
         'sweet-cookie': {
@@ -35,7 +43,7 @@ describe('Express Test Suite', () => {
       error: false,
       headers: {
         connection: 'close',
-        'content-length': '28',
+        'content-length': '130',
         'content-type': 'application/json; charset=utf-8',
         date: expect.any(String),
         etag: expect.any(String),
@@ -48,7 +56,7 @@ describe('Express Test Suite', () => {
       status: 200,
       statusCode: 200,
       statusText: 'OK',
-      text: JSON.stringify(payload)
+      text: expect.any(String) // Stringified body
     });
   });
 });

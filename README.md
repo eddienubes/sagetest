@@ -38,7 +38,8 @@ pnpm add -D sagetest
 
 ## 🎬 Sagetest in action
 
-> There are several other methods which you can find in the [API documentation](http://google.com).
+> There are several other methods which you can find in the [API documentation](http://google.com). 
+> In general, the usage experience should resemble that of supertest.
 
 #### Express Endpoint Testing
 
@@ -59,16 +60,24 @@ app.get('/', (req, res) => {
   res.cookie('sweet-cookie', 'choco', {
     httpOnly: true
   });
-  res.json(payload);
+  res.json({
+    ...payload,
+    requestHeaders: req.headers
+  });
 });
 
 describe('Express Test Suite', () => {
   it('should respond', async () => {
-    const response = await request(app).get('/');
+    const response = await request(app).get('/').auth('user', 'pass');
 
     expect(response).toEqual({
       body: {
-        message: 'I love my mom!'
+        message: 'I love my mom!',
+        requestHeaders: {
+          authorization: 'Basic dXNlcjpwYXNz',
+          connection: 'close',
+          host: expect.stringContaining('localhost')
+        }
       },
       cookies: {
         'sweet-cookie': {
@@ -80,7 +89,7 @@ describe('Express Test Suite', () => {
       error: false,
       headers: {
         connection: 'close',
-        'content-length': '28',
+        'content-length': '130',
         'content-type': 'application/json; charset=utf-8',
         date: expect.any(String),
         etag: expect.any(String),
@@ -93,7 +102,7 @@ describe('Express Test Suite', () => {
       status: 200,
       statusCode: 200,
       statusText: 'OK',
-      text: JSON.stringify(payload)
+      text: expect.any(String) // Stringified body
     });
   });
 });
@@ -118,7 +127,10 @@ fastifyApp.get('/', (request, reply) => {
   reply.setCookie('sweet-cookie', 'choco', {
     httpOnly: true
   });
-  reply.send(payload);
+  reply.send({
+    ...payload,
+    requestHeaders: request.headers
+  });
 });
 
 describe('Fastify Test Suite', () => {
@@ -133,11 +145,16 @@ describe('Fastify Test Suite', () => {
     /**
      * Don't forget to use .server instead of plain fastify instance.
      */
-    const response = await request(fastifyApp.server).get('/');
+    const response = await request(fastifyApp.server).get('/').auth('jwtToken');
 
     expect(response).toEqual({
       body: {
-        message: 'I love my mom!'
+        message: 'I love my mom!',
+        requestHeaders: {
+          authorization: 'Bearer jwtToken',
+          connection: 'close',
+          host: expect.any(String)
+        }
       },
       cookies: {
         'sweet-cookie': {
@@ -149,7 +166,7 @@ describe('Fastify Test Suite', () => {
       error: false,
       headers: {
         connection: 'close',
-        'content-length': '28',
+        'content-length': '127',
         'content-type': 'application/json; charset=utf-8',
         date: expect.any(String),
         'set-cookie': 'sweet-cookie=choco; HttpOnly'
@@ -160,7 +177,7 @@ describe('Fastify Test Suite', () => {
       status: 200,
       statusCode: 200,
       statusText: 'OK',
-      text: JSON.stringify(payload)
+      text: expect.any(String) // Stringified body
     });
   });
 });
