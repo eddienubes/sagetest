@@ -19,6 +19,7 @@
   "scripts": {
     "test:all": "pnpm vitest run",
     "test:watch": "pnpm vitest watch",
+    "test:ci": "pnpm vitest run --coverage",
     "build:dev": "tsc -p tsconfig.json",
     "build:prod": "tsc -p tsconfig.cjs.json && tsc -p tsconfig.esm.json",
     "lint:check": "eslint --max-warnings=50 .",
