@@ -53,7 +53,10 @@ jobs:
           registry-url: 'https://registry.npmjs.org/'
 
       - name: Install Dependencies
-        run: pnpm install
+        run: |
+          pnpm install
+          cd ..
+          pnpm install
 
       - name: Build
         run: pnpm run build
