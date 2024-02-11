@@ -31,8 +31,7 @@ jobs:
       - run: pnpm run build:prod
         name: Build Production
 
-      - run: pnpm publish
-        name: Publish to NPM
-        env:
-          NPM_AUTH_TOKEN: ${{ secrets.NPM_AUTH_TOKEN }}k
+      - uses: JS-DevTools/npm-publish@v3
+        with:
+          token: ${{ secrets.NPM_AUTH_TOKEN }}
 
