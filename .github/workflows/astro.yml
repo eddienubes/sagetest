@@ -65,7 +65,7 @@ jobs:
         uses: actions/upload-pages-artifact@v3
         with:
           name: Astro Artifact
-          dist: ./dist
+          path: ./dist
 
       - name: Commit and Push
         run: |
