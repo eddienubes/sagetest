@@ -15,9 +15,9 @@
 
 - Yes! This is a reference to my favourite Valorant character, Sage.
 - **TypeScript friendly**, exposes both ESM and CJS modules.
-- Built-in on top of [undici](https://github.com/nodejs/undici) for **maximum performance**.
+- Built on top of [undici](https://github.com/nodejs/undici) for **maximum performance**.
 - Provides **easy-to-use**, supertest-like API.
-- Support for a **dedicated test server** to reduce the number of instances spawned during testing.
+- Supports a **dedicated test server** to reduce the number of instances spawned during testing.
 - Supports **Node.js 16.5 and above**.
 - **No unnecessary** third-party dependencies.
 - Automatically handles **cookie parsing**.
