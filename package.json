@@ -2,6 +2,13 @@
   "name": "sagetest",
   "version": "0.0.1",
   "description": "A simple, fast, and easy to use HTTP server testing library",
+  "repository": "https://github.com/eddienubes/sagetest",
+  "homepage": "https://github.com/eddienubes/sagetest#readme",
+  "author": "Eddie Nubes <cool.gegeg@gmail.com>",
+  "bugs": {
+    "url": "https://github.com/eddienubes/sagetest/issues"
+  },
+  "license": "MIT",
   "type": "module",
   "engines": {
     "node": ">=16.5.0"
@@ -25,9 +32,24 @@
     "lint:check": "eslint --max-warnings=50 .",
     "lint:fix": "eslint --max-warnings=50 --fix ."
   },
-  "keywords": [],
-  "author": "eddienubes",
-  "license": "ISC",
+  "keywords": [
+    "http",
+    "testing",
+    "express",
+    "fastify",
+    "https",
+    "server",
+    "supertest",
+    "superagent",
+    "axios",
+    "undici",
+    "multipart",
+    "test",
+    "jest",
+    "vitest",
+    "mocha",
+    "sagetest"
+  ],
   "devDependencies": {
     "@fastify/cookie": "^9.3.1",
     "@fastify/multipart": "^8.1.0",
