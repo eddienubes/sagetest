@@ -38,11 +38,13 @@ pnpm add -D sagetest
 
 ## 🎬 Sagetest in action
 
-> There are several other methods which you can find in the [API documentation](http://google.com). 
+> There are several other methods which you can find in the [API documentation](http://google.com).
 > In general, the usage experience should resemble that of supertest.
 
 #### Express Endpoint Testing
+
 Example usage of **auth** method to set Basic Auth header based on username and password.
+
 ```ts
 import express from 'express';
 // import from sagetest in your own project
@@ -109,8 +111,10 @@ describe('Express Test Suite', () => {
 ```
 
 #### Fastify Endpoint Testing
+
 Example usage of **auth** method to set the Authorization header based on the provided token.
 Also, in response, you're able to validate cookies sent by the server.
+
 ```ts
 import { fastify } from 'fastify';
 import { fastifyCookie } from '@fastify/cookie';
@@ -184,6 +188,22 @@ describe('Fastify Test Suite', () => {
 });
 ```
 
+## 📚 API Documentation
+
+The API documentation is available [here](http://google.com).
+If you need more examples or have some questions, just open an issue or submit a pull request.
+I'll be happy to help you out.
+
+## ❤️ Contributing
+
+If you wish to contribute to the evolution of this package,
+please feel free to submit your issues or open pull requests.
+You are always welcome.
+🥰
+
+## License
+
+MIT (c) Eddie Nubes
 
 
 
