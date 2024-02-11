@@ -85,9 +85,6 @@ devDependencies:
   tsx:
     specifier: ^4.7.0
     version: 4.7.1
-  typedoc:
-    specifier: ^0.25.8
-    version: 0.25.8(typescript@5.3.3)
   typedoc-plugin-markdown:
     specifier: ^3.17.1
     version: 3.17.1(typedoc@0.25.8)

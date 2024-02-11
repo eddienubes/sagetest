@@ -1,36 +1,51 @@
 ---
-title: Welcome to Starlight
-description: Get started building your docs site with Starlight.
+title: Sagetest
+description: Get started testing your own HTTP node.js servers with Sage.
 template: splash
 hero:
-  tagline: Congrats on setting up a new Starlight project!
+  tagline: 🧪 Neat and streamlined library for testing node.js HTTP servers.
   image:
-    file: ../../assets/houston.webp
+    file: ../../assets/shard-big.png
+    alt: Healing orb from the game Valorant
   actions:
-    - text: Example Guide
-      link: /guides/example/
+    - text: Get Started
+      link: /getting-started/installation
       icon: right-arrow
       variant: primary
-    - text: Read the Starlight docs
-      link: https://starlight.astro.build
+    - text: GitHub Repository
+      link: https://github.com/eddienubes/sagetest
       icon: external
 ---
 
-import { Card, CardGrid } from '@astrojs/starlight/components';
+import { CardGrid, Card } from '@astrojs/starlight/components';
 
-## Next steps
-
+## Features
 <CardGrid stagger>
-	<Card title="Update content" icon="pencil">
-		Edit `src/content/docs/index.mdx` to see this page change.
+	<Card title="TypeScript friendly" icon="pencil">
+    TypeScript friendly, exposes both ESM and CJS modules.
 	</Card>
-	<Card title="Add new content" icon="add-document">
-		Add Markdown or MDX files to `src/content/docs` to create new pages.
+	<Card title="Maximum performance &nbsp;🚀" icon="add-document">
+    Built on top of undici for maximum performance.
 	</Card>
-	<Card title="Configure your site" icon="setting">
-		Edit your `sidebar` and other config in `astro.config.mjs`.
+	<Card title="Convinient API" icon="setting">
+    Easy-to-use, supertest-like chainable API.
 	</Card>
-	<Card title="Read the docs" icon="open-book">
-		Learn more in [the Starlight Docs](https://starlight.astro.build/).
+	<Card title="Supports a dedicated test server" icon="open-book">
+	  Supports a dedicated test server to reduce the number of instances spawned during testing.
 	</Card>
+  <Card title="Works with node.js v16+ out of the box" icon="open-book">
+    Supports Node.js 16.5 and above.
+  </Card>
+  <Card title="Stripped of all unnecessary third-party dependencies" icon="setting">
+    No unnecessary third-party dependencies.
+  </Card>
+  <Card title="Cookies parsing" icon="sun">
+    Automatically handles cookie parsing.
+  </Card>
 </CardGrid>
+
+<p align="center">
+  <a href="https://www.npmjs.com/package/sagetest"><img src="https://img.shields.io/npm/v/sagetest?color=729B1B&label=npm"/></a>
+  <a href="https://github.com/eddienubes/sagetest/actions/workflows/ci.yml"><img src="https://github.com/eddienubes/sagetest/actions/workflows/ci.yml/badge.svg?branch=main"/></a>
+  <a href="https://codecov.io/gh/eddienubes/sagetest" ><img src="https://codecov.io/gh/eddienubes/sagetest/graph/badge.svg?token=UFSWU4BEEB"/></a>
+</p>

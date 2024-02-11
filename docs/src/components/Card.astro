@@ -1,0 +1,13 @@
+---
+import { Card } from '@astrojs/starlight/components';
+---
+
+<Card {...Astro.props} class:list="change">
+  <slot/>
+</Card>
+
+<style>
+    .change {
+        display: none;
+    }
+</style>
