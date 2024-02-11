@@ -33,7 +33,7 @@ Not meant to be called directly.
 
 #### Source
 
-[src/Sage.ts:45](https://github.com/eddienubes/sagetest/blob/d308ef3/src/Sage.ts#L45)
+[src/Sage.ts:45](https://github.com/eddienubes/sagetest/blob/7d90467/src/Sage.ts#L45)
 
 ## Methods
 
@@ -65,7 +65,7 @@ SageException if body is already set
 
 #### Source
 
-[src/Sage.ts:179](https://github.com/eddienubes/sagetest/blob/d308ef3/src/Sage.ts#L179)
+[src/Sage.ts:179](https://github.com/eddienubes/sagetest/blob/7d90467/src/Sage.ts#L179)
 
 ***
 
@@ -89,7 +89,7 @@ Automatically adds Basic or Bearer prefix to the token.
 
 #### Source
 
-[src/Sage.ts:152](https://github.com/eddienubes/sagetest/blob/d308ef3/src/Sage.ts#L152)
+[src/Sage.ts:152](https://github.com/eddienubes/sagetest/blob/7d90467/src/Sage.ts#L152)
 
 ***
 
@@ -109,7 +109,7 @@ Automatically adds Basic or Bearer prefix to the token.
 
 #### Source
 
-[src/Sage.ts:165](https://github.com/eddienubes/sagetest/blob/d308ef3/src/Sage.ts#L165)
+[src/Sage.ts:165](https://github.com/eddienubes/sagetest/blob/7d90467/src/Sage.ts#L165)
 
 ***
 
@@ -129,7 +129,7 @@ Automatically adds Basic or Bearer prefix to the token.
 
 #### Source
 
-[src/Sage.ts:240](https://github.com/eddienubes/sagetest/blob/d308ef3/src/Sage.ts#L240)
+[src/Sage.ts:240](https://github.com/eddienubes/sagetest/blob/7d90467/src/Sage.ts#L240)
 
 ***
 
@@ -149,7 +149,7 @@ Sets query parameters for the request.
 
 #### Source
 
-[src/Sage.ts:79](https://github.com/eddienubes/sagetest/blob/d308ef3/src/Sage.ts#L79)
+[src/Sage.ts:79](https://github.com/eddienubes/sagetest/blob/7d90467/src/Sage.ts#L79)
 
 ***
 
@@ -177,7 +177,7 @@ SageException if formData is already set
 
 #### Source
 
-[src/Sage.ts:93](https://github.com/eddienubes/sagetest/blob/d308ef3/src/Sage.ts#L93)
+[src/Sage.ts:93](https://github.com/eddienubes/sagetest/blob/7d90467/src/Sage.ts#L93)
 
 ***
 
@@ -200,7 +200,7 @@ Consider using this at the end of the chain if you want to override any of the d
 
 #### Source
 
-[src/Sage.ts:114](https://github.com/eddienubes/sagetest/blob/d308ef3/src/Sage.ts#L114)
+[src/Sage.ts:114](https://github.com/eddienubes/sagetest/blob/7d90467/src/Sage.ts#L114)
 
 ***
 
@@ -218,7 +218,7 @@ Consider using this at the end of the chain if you want to override any of the d
 
 #### Source
 
-[src/Sage.ts:257](https://github.com/eddienubes/sagetest/blob/d308ef3/src/Sage.ts#L257)
+[src/Sage.ts:257](https://github.com/eddienubes/sagetest/blob/7d90467/src/Sage.ts#L257)
 
 ***
 
@@ -245,4 +245,4 @@ https://www.w3.org/Protocols/rfc2616/rfc2616-sec5.html
 
 #### Source
 
-[src/Sage.ts:322](https://github.com/eddienubes/sagetest/blob/d308ef3/src/Sage.ts#L322)
+[src/Sage.ts:322](https://github.com/eddienubes/sagetest/blob/7d90467/src/Sage.ts#L322)

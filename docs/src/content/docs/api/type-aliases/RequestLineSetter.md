@@ -21,4 +21,4 @@ title: "RequestLineSetter"
 
 ## Source
 
-[src/types.ts:18](https://github.com/eddienubes/sagetest/blob/d308ef3/src/types.ts#L18)
+[src/types.ts:18](https://github.com/eddienubes/sagetest/blob/7d90467/src/types.ts#L18)

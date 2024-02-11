@@ -25,7 +25,7 @@ false
 
 #### Source
 
-[src/SageConfig.ts:10](https://github.com/eddienubes/sagetest/blob/d308ef3/src/SageConfig.ts#L10)
+[src/SageConfig.ts:10](https://github.com/eddienubes/sagetest/blob/7d90467/src/SageConfig.ts#L10)
 
 ***
 
@@ -44,4 +44,4 @@ No idea why would anyone want to use this. It's better to use ephemeral ports to
 
 #### Source
 
-[src/SageConfig.ts:17](https://github.com/eddienubes/sagetest/blob/d308ef3/src/SageConfig.ts#L17)
+[src/SageConfig.ts:17](https://github.com/eddienubes/sagetest/blob/7d90467/src/SageConfig.ts#L17)

@@ -17,4 +17,4 @@ title: "serializeToString"
 
 ## Source
 
-[src/utils.ts:12](https://github.com/eddienubes/sagetest/blob/d308ef3/src/utils.ts#L12)
+[src/utils.ts:12](https://github.com/eddienubes/sagetest/blob/7d90467/src/utils.ts#L12)
