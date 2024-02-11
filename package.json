@@ -1,6 +1,6 @@
 {
   "name": "sagetest",
-  "version": "0.0.1",
+  "version": "0.0.2",
   "description": "A simple, fast, and easy to use HTTP server testing library",
   "repository": "https://github.com/eddienubes/sagetest",
   "homepage": "https://github.com/eddienubes/sagetest#readme",
