@@ -84,3 +84,5 @@ export * from './types.js';
 export * from './FormDataOptions.js';
 export * from './SageException.js';
 export * from './utils.js';
+export * from './Sage.js';
+export * from './SageConfig.js';

@@ -25,7 +25,8 @@ import { AddressInfo } from 'node:net';
 import { SageConfig } from './SageConfig.js';
 
 /**
- * Greetings, I'm Sage - a chainable HTTP Testing Assistant
+ * Greetings, I'm Sage - a chainable HTTP Testing Assistant.
+ * Not meant to be used directly.
  */
 export class Sage {
   private sageServer: SageServer;
