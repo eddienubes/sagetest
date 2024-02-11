@@ -6,7 +6,7 @@ settings:
 
 dependencies:
   undici:
-    specifier: ^6.6.0
+    specifier: ^6.0.0
     version: 6.6.0
 
 devDependencies:
