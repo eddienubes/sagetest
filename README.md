@@ -11,7 +11,7 @@
   <a href="https://codecov.io/gh/eddienubes/sagetest" ><img src="https://codecov.io/gh/eddienubes/sagetest/graph/badge.svg?token=UFSWU4BEEB"/></a>
 <p>
 
-## Features
+## 🌟 Features
 
 - Yes! This is a reference to my favourite Valorant character, Sage.
 - TypeScript friendly, exposes both ESM and CJS modules.
@@ -22,21 +22,150 @@
 - No unnecessary third-party dependencies.
 - Automatically handles cookie parsing.
 
-## Getting Started
+## 🚀 Getting Started
 
 ```sh
 npm install -D sagetest
 yarn add -D sagetest
 pnpm add -D sagetest
 ```
+
 > Sagetest supports Node.js v16.5 and above out of the box.
 > Even though **undici**'s support starts from Node.js v18.
-This is possible due to one-liner [polyfills](https://github.com/eddienubes/sagetest/blob/main/src/polyfill.ts) for WebAPI Readable/WritableStreams and Blob,
+> This is possible due to one-liner [polyfills](https://github.com/eddienubes/sagetest/blob/main/src/polyfill.ts) for
+> WebAPI Readable/WritableStreams and Blob,
 > which were not available at that time globally (globalThis).
 
-## Sagetest in action
-> There're several other methods which 
-### POST endpoint testing
+## 🎬 Sagetest in action
+
+> There are several other methods which you can find in the [API documentation](http://google.com).
+
+#### Express Endpoint Testing
+
+```ts
+import express from 'express';
+// import from sagetest in your own project
+import { request } from '../src/index.js';
+
+const payload = {
+  message: 'I love my mom!'
+};
+
+/**
+ * Not need to spin up a server manually, sagetest does it for you.
+ */
+const app = express();
+app.get('/', (req, res) => {
+  res.cookie('sweet-cookie', 'choco', {
+    httpOnly: true
+  });
+  res.json(payload);
+});
+
+describe('Express Test Suite', () => {
+  it('should respond', async () => {
+    const response = await request(app).get('/');
+
+    expect(response).toEqual({
+      body: {
+        message: 'I love my mom!'
+      },
+      cookies: {
+        'sweet-cookie': {
+          httpOnly: true,
+          path: '/',
+          value: 'choco'
+        }
+      },
+      error: false,
+      headers: {
+        connection: 'close',
+        'content-length': '28',
+        'content-type': 'application/json; charset=utf-8',
+        date: expect.any(String),
+        etag: expect.any(String),
+        'set-cookie': 'sweet-cookie=choco; Path=/; HttpOnly',
+        'x-powered-by': 'Express'
+      },
+      location: undefined,
+      ok: true,
+      redirect: false,
+      status: 200,
+      statusCode: 200,
+      statusText: 'OK',
+      text: JSON.stringify(payload)
+    });
+  });
+});
+```
+
+#### Fastify Endpoint Testing
+
+```ts
+import { fastify } from 'fastify';
+import { fastifyCookie } from '@fastify/cookie';
+// import from sagetest in your own project
+import { request } from '../src/index.js';
+
+const payload = {
+  message: 'I love my mom!'
+};
+
+const fastifyApp = fastify();
+fastifyApp.register(fastifyCookie);
+
+fastifyApp.get('/', (request, reply) => {
+  reply.setCookie('sweet-cookie', 'choco', {
+    httpOnly: true
+  });
+  reply.send(payload);
+});
+
+describe('Fastify Test Suite', () => {
+  beforeAll(async () => {
+    /**
+     * Don't forget to wait until all plugins are registered.
+     */
+    await fastifyApp.ready();
+  });
+
+  it('should respond', async () => {
+    /**
+     * Don't forget to use .server instead of plain fastify instance.
+     */
+    const response = await request(fastifyApp.server).get('/');
+
+    expect(response).toEqual({
+      body: {
+        message: 'I love my mom!'
+      },
+      cookies: {
+        'sweet-cookie': {
+          httpOnly: true,
+          path: '/',
+          value: 'choco'
+        }
+      },
+      error: false,
+      headers: {
+        connection: 'close',
+        'content-length': '28',
+        'content-type': 'application/json; charset=utf-8',
+        date: expect.any(String),
+        'set-cookie': 'sweet-cookie=choco; HttpOnly'
+      },
+      location: undefined,
+      ok: true,
+      redirect: false,
+      status: 200,
+      statusCode: 200,
+      statusText: 'OK',
+      text: JSON.stringify(payload)
+    });
+  });
+});
+```
+
 
 
 
