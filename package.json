@@ -2,7 +2,10 @@
   "name": "sagetest",
   "version": "0.0.3",
   "description": "A simple, fast, and easy to use HTTP server testing library",
-  "repository": "https://github.com/eddienubes/sagetest",
+  "repository": {
+    "type": "git",
+    "url": "git+https://github.com/eddienubes/sagetest.git"
+  },
   "homepage": "https://github.com/eddienubes/sagetest#readme",
   "author": "Eddie Nubes <cool.gegeg@gmail.com>",
   "bugs": {
