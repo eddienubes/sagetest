@@ -1,4 +1,5 @@
 import { ReadableStream, WritableStream } from 'node:stream/web';
+import { Blob } from 'node:buffer';
 
 // For NodeJS 16 support
 // Unfortunatelly, NodeJS 16 does not support ReadableStream and WritableStream in global scope
@@ -6,3 +7,4 @@ import { ReadableStream, WritableStream } from 'node:stream/web';
 globalThis.ReadableStream = ReadableStream;
 // @ts-expect-error
 globalThis.WritableStream = WritableStream;
+globalThis.Blob = Blob;
