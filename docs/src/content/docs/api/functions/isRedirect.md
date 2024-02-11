@@ -17,4 +17,4 @@ title: "isRedirect"
 
 ## Source
 
-[src/utils.ts:25](https://github.com/eddienubes/sagetest/blob/7d90467/src/utils.ts#L25)
+[src/utils.ts:25](https://github.com/eddienubes/sagetest/blob/c1a99be/src/utils.ts#L25)

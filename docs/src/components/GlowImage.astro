@@ -1,6 +1,6 @@
 ---
 import { getImage, type LocalImageProps, type RemoteImageProps } from 'astro:assets';
-import { HTMLAttributes } from "astro/types";
+import type { HTMLAttributes } from "astro/types";
 
 // The TypeScript diagnostic for JSX props uses the last member of the union to suggest props, so it would be better for
 // LocalImageProps to be last. Unfortunately, when we do this the error messages that remote images get are complete nonsense

@@ -7,6 +7,7 @@ import tailwind from '@astrojs/tailwind';
 export default defineConfig({
   integrations: [starlight({
     title: 'Sagetest',
+    favicon: 'shard-small.png',
     logo: {
       src: './src/assets/logo-text-big.png',
       replacesTitle: true
