@@ -31,7 +31,10 @@ jobs:
       - run: pnpm run build:prod
         name: Build Production
 
-      - uses: JS-DevTools/npm-publish@v3
-        with:
-          token: ${{ secrets.NPM_AUTH_TOKEN }}
+      - run: pnpm version patch
+        name: Bump Patch Version
+        env:
+          NPM_AUTH_TOKEN: ${{ secrets.NPM_AUTH_TOKEN }}
+
+
 
