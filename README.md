@@ -13,10 +13,12 @@
 
 ## Features
 
+- Yes! This is a reference to my favourite Valorant character, Sage.
 - TypeScript friendly, exposes both ESM and CJS modules.
 - Built-in on top of [undici](https://github.com/nodejs/undici) for maximum performance.
 - Provides easy to use, supertest-like API.
 - Support for a dedicated test server to reduce the number of instances spawned during testing.
+- Supports Node.js 16.5 and above.
 
 ## Getting Started
 
@@ -25,5 +27,7 @@ npm install -D sagetest
 yarn add -D sagetest
 pnpm add -D sagetest
 ```
+
+
 
 
