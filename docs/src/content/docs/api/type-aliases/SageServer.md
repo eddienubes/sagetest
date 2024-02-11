@@ -27,4 +27,4 @@ Returns a promise that resolves when server is ready to accept connections
 
 ## Source
 
-[src/types.ts:9](https://github.com/eddienubes/sagetest/blob/c1a99be/src/types.ts#L9)
+[src/types.ts:9](https://github.com/eddienubes/sagetest/blob/ce2c7f4/src/types.ts#L9)

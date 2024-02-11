@@ -9,4 +9,4 @@ title: "CookieSameSiteProperty"
 
 ## Source
 
-[src/types.ts:67](https://github.com/eddienubes/sagetest/blob/c1a99be/src/types.ts#L67)
+[src/types.ts:67](https://github.com/eddienubes/sagetest/blob/ce2c7f4/src/types.ts#L67)

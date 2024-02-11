@@ -9,4 +9,4 @@ title: "HttpStatusText"
 
 ## Source
 
-[src/constants.ts:76](https://github.com/eddienubes/sagetest/blob/c1a99be/src/constants.ts#L76)
+[src/constants.ts:76](https://github.com/eddienubes/sagetest/blob/ce2c7f4/src/constants.ts#L76)

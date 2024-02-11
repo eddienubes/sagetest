@@ -17,4 +17,4 @@ title: "isOkay"
 
 ## Source
 
-[src/utils.ts:22](https://github.com/eddienubes/sagetest/blob/c1a99be/src/utils.ts#L22)
+[src/utils.ts:22](https://github.com/eddienubes/sagetest/blob/ce2c7f4/src/utils.ts#L22)
