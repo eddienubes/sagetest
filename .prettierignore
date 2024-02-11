@@ -1,3 +1,4 @@
 coverage
 .run
 node_modules
+docs
