@@ -6,6 +6,6 @@ export default defineConfig({
     reporters: ['verbose'],
     disableConsoleIntercept: true,
     setupFiles: ['test/setup.ts'],
-    include: ['test/**/*.spec.ts', 'examples/**/*.spec.ts'],
+    include: ['test/**/*.spec.ts', 'examples/**/*.spec.ts']
   }
 });
