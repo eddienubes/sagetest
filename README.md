@@ -20,6 +20,7 @@
 - Support for a dedicated test server to reduce the number of instances spawned during testing.
 - Supports Node.js 16.5 and above.
 - No unnecessary third-party dependencies.
+- Automatically handles cookie parsing.
 
 ## Getting Started
 
@@ -32,6 +33,12 @@ pnpm add -D sagetest
 > Even though **undici**'s support starts from Node.js v18.
 This is possible due to one-liner [polyfills](https://github.com/eddienubes/sagetest/blob/main/src/polyfill.ts) for WebAPI Readable/WritableStreams and Blob,
 > which were not available at that time globally (globalThis).
+
+## Sagetest in action
+> There're several other methods which 
+### POST endpoint testing
+
+
 
 
 
