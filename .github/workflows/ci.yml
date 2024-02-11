@@ -36,9 +36,12 @@ jobs:
       - name: Upload coverage reports to Codecov
         if: ${{ matrix.node-version == '20.x' }}
         uses: codecov/codecov-action@v4.0.1
-        env:
-          token: ${{ secrets.CODECOV_TOKEN }}
-          slug: eddienubes/sagetest
+        with:
+          verbose: true
+          env:
+            CODECOV_TOKEN: ${{ secrets.CODECOV_TOKEN }}
+            token: ${{ secrets.CODECOV_TOKEN }}
+            slug: eddienubes/sagetest
 
 
 
