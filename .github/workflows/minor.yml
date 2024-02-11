@@ -1,4 +1,4 @@
-name: NPM Publish Patch
+name: NPM Publish Minor
 on:
   workflow_dispatch:
     branches:
@@ -39,9 +39,9 @@ jobs:
       - run: pnpm run build:prod
         name: Build Production
 
-      - name: Bump Patch Version
+      - name: Bump Minor Version
         run: |
-          pnpm version patch -m "v%s"
+          pnpm version minor -m "v%s"
 
       - run: npm publish
         name: Publish to NPM
