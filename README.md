@@ -42,7 +42,7 @@ pnpm add -D sagetest
 > In general, the usage experience should resemble that of supertest.
 
 #### Express Endpoint Testing
-
+Here you can see the use of **auth** method to set Basic Auth header based on username and password.
 ```ts
 import express from 'express';
 // import from sagetest in your own project
@@ -109,7 +109,8 @@ describe('Express Test Suite', () => {
 ```
 
 #### Fastify Endpoint Testing
-
+Here you can see the use of **auth** method to set the Authorization header based on the provided token.
+Also, in response, you're able to validate cookies sent by the server.
 ```ts
 import { fastify } from 'fastify';
 import { fastifyCookie } from '@fastify/cookie';
