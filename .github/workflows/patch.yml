@@ -38,15 +38,18 @@ jobs:
       - run: pnpm run build:prod
         name: Build Production
 
-      - run: |
+      - name: Bump Patch Version
+        run: |
           version=$(pnpm version patch)
-          git push
-        name: Bump Patch Version
 
       - run: pnpm publish
         name: Publish to NPM
         env:
-          NODE_AUTH_TOKEN: ${{secrets.NPM_TOKEN}}
+          NPM_AUTH_TOKEN: ${{secrets.NPM_AUTH_TOKEN}}
+
+      - name: Push Bumped Version
+        run: |
+          git push
 
 
 
