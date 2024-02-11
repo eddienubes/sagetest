@@ -42,7 +42,7 @@ jobs:
         run: |
           version=$(pnpm version patch)
 
-      - run: pnpm publish
+      - run: npm publish
         name: Publish to NPM
         env:
           NODE_AUTH_TOKEN: ${{secrets.NPM_AUTH_TOKEN}}
