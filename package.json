@@ -13,6 +13,10 @@
   "engines": {
     "node": ">=16.5.0"
   },
+  "files": [
+    "build"
+  ],
+  "main": "build/cjs/index.js",
   "exports": {
     ".": {
       "import": "./build/esm/index.js",
