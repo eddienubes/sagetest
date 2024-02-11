@@ -23,7 +23,19 @@ export default defineConfig({
         items: [
           {
             label: 'Introduction',
-            link: '/getting-started/installation'
+            link: '/getting-started/introduction'
+          },
+          {
+            label: 'Authentication',
+            link: '/getting-started/authentication'
+          },
+          {
+            label: 'Cookies',
+            link: '/getting-started/cookies'
+          },
+          {
+            label: 'Dedicated Mode',
+            link: '/getting-started/dedicated-mode'
           }
         ]
       },

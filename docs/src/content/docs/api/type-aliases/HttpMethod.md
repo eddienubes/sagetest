@@ -9,4 +9,4 @@ title: "HttpMethod"
 
 ## Source
 
-[src/types.ts:22](https://github.com/eddienubes/sagetest/blob/02c3b82/src/types.ts#L22)
+[src/types.ts:22](https://github.com/eddienubes/sagetest/blob/d308ef3/src/types.ts#L22)

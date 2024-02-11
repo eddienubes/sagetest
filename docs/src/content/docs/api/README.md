@@ -43,6 +43,7 @@ title: "sagetest"
 ## Functions
 
 - [copyObject](functions/copyObject.md)
+- [dedicated](functions/dedicated.md)
 - [getFilenameFromReadable](functions/getFilenameFromReadable.md)
 - [isBinary](functions/isBinary.md)
 - [isError](functions/isError.md)

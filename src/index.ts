@@ -78,6 +78,22 @@ export const request = (
   return factory as HttpCallable<Sage>;
 };
 
+/**
+ * Generates Sage Assistant for a given HTTP server.
+ * Just an alias for request() with dedicated: true
+ * @param serverSource
+ * @param config
+ */
+export const dedicated = (
+  serverSource: ServerSource,
+  config: Omit<DeepPartial<SageConfig>, 'dedicated'>
+): HttpCallable<Sage> => {
+  return request(serverSource, {
+    ...config,
+    dedicated: true
+  });
+};
+
 export * from './SageHttpResponse.js';
 export * from './constants.js';
 export * from './types.js';
