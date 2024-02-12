@@ -79,7 +79,8 @@ export type HttpStatusText =
 
 export const SAGE_DEFAULT_CONFIG: SageConfig = {
   dedicated: false,
-  port: 0
+  port: 0,
+  keepAlive: true
 };
 
 export const MIME_TYPES = {

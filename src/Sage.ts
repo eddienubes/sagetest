@@ -270,7 +270,7 @@ export class Sage {
         // If FormData is defined, undici will provide headers with the correct Content-Type
         body: this.request.body || this.request.formData,
         query: this.request.query,
-        reset: true
+        reset: !this.config.keepAlive
       });
 
       const text = await res.body.text();

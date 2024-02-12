@@ -15,4 +15,10 @@ export interface SageConfig {
    * @default 0, which means an ephemeral port
    */
   port: number;
+
+  /**
+   * Whether to establish a keep-alive connection to the server.
+   * @default true
+   */
+  keepAlive: boolean;
 }
