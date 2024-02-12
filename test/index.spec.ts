@@ -13,11 +13,11 @@ const expectedExpressResponse: SageHttpResponse = {
     'content-length': expect.any(String),
     etag: expect.any(String),
     date: expect.any(String),
-    connection: 'close'
+    connection: 'keep-alive'
   },
   body: {
     reqHeaders: {
-      connection: 'close',
+      connection: 'keep-alive',
       'content-type': expect.any(String),
       host: expect.stringContaining('localhost'),
       'transfer-encoding': 'chunked'
@@ -43,11 +43,11 @@ const expectedFastifyResponse: SageHttpResponse = {
     'content-type': 'application/json; charset=utf-8',
     'content-length': expect.any(String),
     date: expect.any(String),
-    connection: 'close'
+    connection: 'keep-alive'
   },
   body: {
     reqHeaders: {
-      connection: 'close',
+      connection: 'keep-alive',
       'content-type': expect.any(String),
       host: expect.stringContaining('localhost'),
       'transfer-encoding': 'chunked'
@@ -157,7 +157,7 @@ describe('request', () => {
           body: {
             ...expectedExpressResponse.body,
             reqHeaders: {
-              connection: 'close',
+              connection: 'keep-alive',
               'content-length': '4877572',
               'content-type': expect.any(String),
               host: expect.stringContaining('localhost')
@@ -194,7 +194,7 @@ describe('request', () => {
           body: {
             ...expectedExpressResponse.body,
             reqHeaders: {
-              connection: 'close',
+              connection: 'keep-alive',
               'content-length': expect.any(String),
               host: expect.stringContaining('localhost'),
               'content-type': expect.any(String)
@@ -228,7 +228,7 @@ describe('request', () => {
           body: {
             ...expectedExpressResponse.body,
             reqHeaders: {
-              connection: 'close',
+              connection: 'keep-alive',
               'content-length': expect.any(String),
               host: expect.stringContaining('localhost'),
               'content-type': expect.any(String)
@@ -274,7 +274,7 @@ describe('request', () => {
               key: 'value'
             },
             reqHeaders: {
-              connection: 'close',
+              connection: 'keep-alive',
               'content-length': expect.any(String),
               host: expect.stringContaining('localhost'),
               'content-type': expect.any(String)
@@ -321,11 +321,11 @@ describe('request', () => {
             'content-length': expect.any(String),
             etag: expect.any(String),
             date: expect.any(String),
-            connection: 'close'
+            connection: 'keep-alive'
           },
           body: {
             reqHeaders: {
-              connection: 'close',
+              connection: 'keep-alive',
               'content-length': expect.any(String),
               'content-type': 'application/json',
               host: expect.stringContaining('localhost')
@@ -356,7 +356,7 @@ describe('request', () => {
         expect(res).toMatchObject({
           body: null,
           headers: {
-            connection: 'close',
+            connection: 'keep-alive',
             date: expect.any(String),
             'content-length': expect.any(String),
             'content-type': 'text/plain; charset=utf-8',
@@ -562,7 +562,7 @@ describe('request', () => {
           body: {
             ...expectedFastifyResponse.body,
             reqHeaders: {
-              connection: 'close',
+              connection: 'keep-alive',
               'content-type': expect.any(String),
               'content-length': expect.any(String),
               host: expect.stringContaining('localhost')
@@ -595,7 +595,7 @@ describe('request', () => {
           body: {
             ...expectedFastifyResponse.body,
             reqHeaders: {
-              connection: 'close',
+              connection: 'keep-alive',
               'content-type': expect.any(String),
               'content-length': expect.any(String),
               host: expect.stringContaining('localhost')
@@ -625,7 +625,7 @@ describe('request', () => {
           body: {
             ...expectedFastifyResponse.body,
             reqHeaders: {
-              connection: 'close',
+              connection: 'keep-alive',
               'content-type': expect.any(String),
               'content-length': expect.any(String),
               host: expect.stringContaining('localhost')
@@ -661,7 +661,7 @@ describe('request', () => {
           body: {
             ...expectedFastifyResponse.body,
             reqHeaders: {
-              connection: 'close',
+              connection: 'keep-alive',
               'content-type': expect.any(String),
               'content-length': expect.any(String),
               host: expect.stringContaining('localhost')
@@ -699,7 +699,7 @@ describe('request', () => {
           ...expectedFastifyResponse,
           body: {
             reqHeaders: {
-              connection: 'close',
+              connection: 'keep-alive',
               'content-type': 'application/json',
               'content-length': expect.any(String),
               host: expect.stringContaining('localhost')
@@ -727,7 +727,7 @@ describe('request', () => {
           ...expectedFastifyResponse,
           body: null,
           headers: {
-            connection: 'close',
+            connection: 'keep-alive',
             location: 'https://www.google.com'
           },
           location: 'https://www.google.com',

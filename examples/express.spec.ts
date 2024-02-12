@@ -29,7 +29,7 @@ describe('Express Test Suite', () => {
         message: 'I love my mom!',
         requestHeaders: {
           authorization: 'Basic dXNlcjpwYXNz',
-          connection: 'close',
+          connection: 'keep-alive',
           host: expect.stringContaining('localhost')
         }
       },
@@ -42,8 +42,9 @@ describe('Express Test Suite', () => {
       },
       error: false,
       headers: {
-        connection: 'close',
-        'content-length': '130',
+        connection: 'keep-alive',
+        'keep-alive': 'timeout=5',
+        'content-length': '135',
         'content-type': 'application/json; charset=utf-8',
         date: expect.any(String),
         etag: expect.any(String),

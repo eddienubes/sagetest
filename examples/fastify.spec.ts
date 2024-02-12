@@ -39,7 +39,7 @@ describe('Fastify Test Suite', () => {
         message: 'I love my mom!',
         requestHeaders: {
           authorization: 'Bearer jwtToken',
-          connection: 'close',
+          connection: 'keep-alive',
           host: expect.any(String)
         }
       },
@@ -52,10 +52,11 @@ describe('Fastify Test Suite', () => {
       },
       error: false,
       headers: {
-        connection: 'close',
-        'content-length': '127',
+        connection: 'keep-alive',
+        'content-length': '132',
         'content-type': 'application/json; charset=utf-8',
         date: expect.any(String),
+        'keep-alive': 'timeout=72',
         'set-cookie': 'sweet-cookie=choco; HttpOnly'
       },
       location: undefined,
