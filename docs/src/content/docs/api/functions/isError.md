@@ -17,4 +17,4 @@ title: "isError"
 
 ## Source
 
-[src/utils.ts:29](https://github.com/eddienubes/sagetest/blob/221f70c/src/utils.ts#L29)
+[src/utils.ts:29](https://github.com/eddienubes/sagetest/blob/c7f8532/src/utils.ts#L29)

@@ -13,4 +13,4 @@ title: "DeepPartial"
 
 ## Source
 
-[src/types.ts:32](https://github.com/eddienubes/sagetest/blob/221f70c/src/types.ts#L32)
+[src/types.ts:32](https://github.com/eddienubes/sagetest/blob/c7f8532/src/types.ts#L32)

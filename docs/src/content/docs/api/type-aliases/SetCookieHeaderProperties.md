@@ -9,4 +9,4 @@ title: "SetCookieHeaderProperties"
 
 ## Source
 
-[src/types.ts:69](https://github.com/eddienubes/sagetest/blob/221f70c/src/types.ts#L69)
+[src/types.ts:69](https://github.com/eddienubes/sagetest/blob/c7f8532/src/types.ts#L69)
