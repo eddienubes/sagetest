@@ -38,13 +38,14 @@ title: "sagetest"
 
 - [HTTP\_METHODS](variables/HTTP_METHODS.md)
 - [HTTP\_STATUS\_TO\_MESSAGE](variables/HTTP_STATUS_TO_MESSAGE.md)
+- [MIME\_TYPES](variables/MIME_TYPES.md)
 - [SAGE\_DEFAULT\_CONFIG](variables/SAGE_DEFAULT_CONFIG.md)
 
 ## Functions
 
 - [copyObject](functions/copyObject.md)
 - [dedicated](functions/dedicated.md)
-- [getFilenameFromReadable](functions/getFilenameFromReadable.md)
+- [getFileDescriptorFromReadable](functions/getFileDescriptorFromReadable.md)
 - [isBinary](functions/isBinary.md)
 - [isError](functions/isError.md)
 - [isObject](functions/isObject.md)

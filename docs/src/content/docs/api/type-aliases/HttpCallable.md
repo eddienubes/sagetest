@@ -13,4 +13,4 @@ title: "HttpCallable"
 
 ## Source
 
-[src/types.ts:19](https://github.com/eddienubes/sagetest/blob/a9c79c9/src/types.ts#L19)
+[src/types.ts:19](https://github.com/eddienubes/sagetest/blob/6cbc2b7/src/types.ts#L19)

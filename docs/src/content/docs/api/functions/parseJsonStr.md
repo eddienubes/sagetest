@@ -17,4 +17,4 @@ title: "parseJsonStr"
 
 ## Source
 
-[src/utils.ts:38](https://github.com/eddienubes/sagetest/blob/a9c79c9/src/utils.ts#L38)
+[src/utils.ts:42](https://github.com/eddienubes/sagetest/blob/6cbc2b7/src/utils.ts#L42)
