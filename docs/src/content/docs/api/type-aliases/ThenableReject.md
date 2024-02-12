@@ -17,4 +17,4 @@ title: "ThenableReject"
 
 ## Source
 
-[src/types.ts:31](https://github.com/eddienubes/sagetest/blob/bd07613/src/types.ts#L31)
+[src/types.ts:31](https://github.com/eddienubes/sagetest/blob/1965370/src/types.ts#L31)
