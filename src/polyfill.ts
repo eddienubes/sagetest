@@ -8,6 +8,6 @@ for (const fill of fills) {
   const typedFill = fill.name as keyof typeof globalThis;
   if (!globalThis[typedFill]) {
     // @ts-expect-error
-    globalThis[typedFill] = require('web-streams-polyfill');
+    globalThis[typedFill] = fill;
   }
 }
