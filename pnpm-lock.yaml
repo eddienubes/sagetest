@@ -73,6 +73,9 @@ devDependencies:
   form-data:
     specifier: ^4.0.0
     version: 4.0.0
+  mime-db:
+    specifier: ^1.52.0
+    version: 1.52.0
   multer:
     specifier: 1.4.5-lts.1
     version: 1.4.5-lts.1

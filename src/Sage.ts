@@ -9,7 +9,7 @@ import {
   isOkay,
   serializeToString,
   isBinary,
-  getFilenameFromReadable,
+  getFileDescriptorFromReadable,
   statusCodeToMessage,
   parseJsonStr,
   isRedirect,
@@ -23,6 +23,7 @@ import { FormDataOptions } from './FormDataOptions.js';
 import { createReadStream } from 'node:fs';
 import { AddressInfo } from 'node:net';
 import { SageConfig } from './SageConfig.js';
+import { MIME_TYPES } from './constants.js';
 
 /**
  * Greetings, I'm Sage - a chainable HTTP Testing Assistant.
@@ -194,15 +195,16 @@ export class Sage {
     }
 
     if (file instanceof Readable) {
-      const filename = getFilenameFromReadable(file);
+      const descriptor = getFileDescriptorFromReadable(file);
+      // script.js -> js
       // Hacky way to handle streaming in multipart undici
       // https://github.com/nodejs/undici/issues/2202#issuecomment-1664134203
       // To pass isBlobLike check: https://github.com/nodejs/undici/blob/e48df9620edf1428bd457f481d47fa2c77f75322/lib/fetch/formdata.js#L40
       // Filename is also required due to: https://github.com/nodejs/undici/blob/e48df9620edf1428bd457f481d47fa2c77f75322/lib/fetch/formdata.js#L239
       this.request.formData.append(field, {
         [Symbol.toStringTag]: 'File',
-        name: options?.filename || filename,
-        type: options?.type,
+        name: options?.filename || descriptor?.filename,
+        type: options?.type || descriptor?.mimetype,
         stream: () => file
       });
 
@@ -213,6 +215,7 @@ export class Sage {
     if (typeof file === 'string') {
       const filePath = path.join(process.cwd(), file);
       const fileStream = createReadStream(filePath);
+      const descriptor = getFileDescriptorFromReadable(fileStream);
 
       // Hacky way to handle multipart streaming in undici
       // https://github.com/nodejs/undici/issues/2202#issuecomment-1664134203
@@ -220,8 +223,8 @@ export class Sage {
       // Filename is also required due to: https://github.com/nodejs/undici/blob/e48df9620edf1428bd457f481d47fa2c77f75322/lib/fetch/formdata.js#L239
       this.request.formData.append(field, {
         [Symbol.toStringTag]: 'File',
-        name: options?.filename || file,
-        type: options?.type,
+        name: options?.filename || descriptor?.filename,
+        type: options?.type || descriptor?.mimetype,
         stream: () => fileStream
       });
       return this;

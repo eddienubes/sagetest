@@ -61,7 +61,7 @@ const expectedFastifyResponse: SageHttpResponse = {
         fieldname: 'picture',
         fieldsCount: 1,
         filename: 'cat.jpg',
-        mimetype: 'application/octet-stream',
+        mimetype: 'image/jpeg',
         size: 4877386
       }
     ]
@@ -107,7 +107,7 @@ describe('request', () => {
                   encoding: '7bit',
                   fieldname: 'picture',
                   filename: expect.any(String),
-                  mimetype: 'application/octet-stream',
+                  mimetype: 'image/jpeg',
                   originalname: 'cat.jpg',
                   path: expect.stringContaining('test/fixtures/temp/'),
                   size: 4877386
@@ -135,7 +135,7 @@ describe('request', () => {
                   encoding: '7bit',
                   fieldname: 'picture',
                   filename: expect.any(String),
-                  mimetype: 'application/octet-stream',
+                  mimetype: 'image/jpeg',
                   originalname: 'cat.jpg',
                   path: expect.stringContaining('test/fixtures/temp/'),
                   size: 4877386
@@ -527,7 +527,8 @@ describe('request', () => {
           body: {
             ...expectedFastifyResponse.body,
             reqHeaders: {
-              ...expectedFastifyResponse.body.reqHeaders
+              ...expectedFastifyResponse.body.reqHeaders,
+              'content-type': expect.stringContaining('multipart/form-data')
             }
           }
         });

@@ -1,4 +1,8 @@
-import { HTTP_STATUS_TO_MESSAGE, HttpStatusText } from './constants.js';
+import {
+  HTTP_STATUS_TO_MESSAGE,
+  HttpStatusText,
+  MIME_TYPES
+} from './constants.js';
 import { Readable } from 'node:stream';
 import path from 'node:path';
 import { ReadStream } from 'node:fs';
@@ -53,7 +57,13 @@ export const isBinary = (value: unknown): boolean => {
   );
 };
 
-export const getFilenameFromReadable = (readable: Readable): string | null => {
+/**
+ * @returns [filename, path]
+ * @param readable
+ */
+export const getFileDescriptorFromReadable = (
+  readable: Readable
+): { filename: string; path: string; mimetype: string } | null => {
   // Let's assume that it's a ReadStream first
   let filePath = (readable as ReadStream).path;
 
@@ -65,7 +75,16 @@ export const getFilenameFromReadable = (readable: Readable): string | null => {
     filePath = filePath.toString();
   }
 
-  return path.basename(filePath);
+  const filename = path.basename(filePath);
+
+  const extension = path.extname(filePath).slice(1);
+  const mimetype = MIME_TYPES[extension as keyof typeof MIME_TYPES];
+
+  return {
+    filename,
+    path: filePath,
+    mimetype
+  };
 };
 
 export const isObject = (candidate: unknown): candidate is object => {
