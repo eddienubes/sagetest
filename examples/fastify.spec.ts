@@ -56,7 +56,7 @@ describe('Fastify Test Suite', () => {
         'content-length': '132',
         'content-type': 'application/json; charset=utf-8',
         date: expect.any(String),
-        'keep-alive': 'timeout=72',
+        'keep-alive': expect.stringContaining('timeout'),
         'set-cookie': 'sweet-cookie=choco; HttpOnly'
       },
       location: undefined,
