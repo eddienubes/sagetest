@@ -19,7 +19,7 @@ export interface SageHttpResponse {
    * The mapping of status codes to status messages as defined in the HTTP/1.1 specification
    */
   statusText: HttpStatusText;
-  headers: Record<string, string | string[] | undefined>;
+  headers: SageResponseHeaders;
 
   /**
    * True if the status code falls in the range 200-299
@@ -46,3 +46,5 @@ export interface SageHttpResponse {
    */
   cookies: Record<string, CookieOptions>;
 }
+
+export type SageResponseHeaders = Record<string, string | string[]>;
