@@ -6,6 +6,9 @@
     Neat and streamlined testing library for node.js HTTP servers powered by <a href="https://github.com/nodejs/undici"><strong>undici</strong></a>.
 <p>
 <p align="center">
+ <a href="https://eddienubes.github.io/sagetest/">Documentation</a> | <a href="https://eddienubes.github.io/sagetest/getting-started/introduction/">Getting Started</a>
+</p>
+<p align="center">
   <a href="https://www.npmjs.com/package/sagetest"><img src="https://img.shields.io/npm/v/sagetest?color=729B1B&label=npm"/></a>
   <a href="https://github.com/eddienubes/sagetest/actions/workflows/ci.yml"><img src="https://github.com/eddienubes/sagetest/actions/workflows/ci.yml/badge.svg?branch=main"/></a>
   <a href="https://codecov.io/gh/eddienubes/sagetest" ><img src="https://codecov.io/gh/eddienubes/sagetest/graph/badge.svg?token=UFSWU4BEEB"/></a>
@@ -38,7 +41,7 @@ pnpm add -D sagetest
 
 ## 🎬 Sagetest in action
 
-> There are several other methods which you can find in the [API documentation](http://google.com).
+> There are several other methods which you can find in the [API documentation](https://eddienubes.github.io/sagetest/).
 > In general, the usage experience should resemble that of supertest.
 
 #### Express Endpoint Testing
@@ -190,7 +193,7 @@ describe('Fastify Test Suite', () => {
 
 ## 📚 API Documentation
 
-The API documentation is available [here](http://google.com).
+The API documentation is available [here](https://eddienubes.github.io/sagetest/).
 If you need more examples or have some questions, just open an issue or submit a pull request.
 I'll be happy to help you out.
 
