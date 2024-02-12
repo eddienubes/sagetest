@@ -75,4 +75,4 @@ The underlying value of the cookie.
 
 ## Source
 
-[src/types.ts:39](https://github.com/eddienubes/sagetest/blob/99f6f92/src/types.ts#L39)
+[src/types.ts:39](https://github.com/eddienubes/sagetest/blob/a9c79c9/src/types.ts#L39)

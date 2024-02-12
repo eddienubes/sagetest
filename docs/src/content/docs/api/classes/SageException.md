@@ -31,7 +31,7 @@ title: "SageException"
 
 #### Source
 
-[src/SageException.ts:4](https://github.com/eddienubes/sagetest/blob/99f6f92/src/SageException.ts#L4)
+[src/SageException.ts:4](https://github.com/eddienubes/sagetest/blob/a9c79c9/src/SageException.ts#L4)
 
 ## Properties
 
@@ -83,7 +83,7 @@ docs/node\_modules/.pnpm/typescript@5.3.3/node\_modules/typescript/lib/lib.es5.d
 
 #### Source
 
-[src/SageException.ts:6](https://github.com/eddienubes/sagetest/blob/99f6f92/src/SageException.ts#L6)
+[src/SageException.ts:6](https://github.com/eddienubes/sagetest/blob/a9c79c9/src/SageException.ts#L6)
 
 ***
 

@@ -9,4 +9,4 @@ title: "SAGE_DEFAULT_CONFIG"
 
 ## Source
 
-[src/constants.ts:80](https://github.com/eddienubes/sagetest/blob/99f6f92/src/constants.ts#L80)
+[src/constants.ts:80](https://github.com/eddienubes/sagetest/blob/a9c79c9/src/constants.ts#L80)

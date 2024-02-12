@@ -9,4 +9,4 @@ title: "CookiePriorityProperty"
 
 ## Source
 
-[src/types.ts:68](https://github.com/eddienubes/sagetest/blob/99f6f92/src/types.ts#L68)
+[src/types.ts:68](https://github.com/eddienubes/sagetest/blob/a9c79c9/src/types.ts#L68)

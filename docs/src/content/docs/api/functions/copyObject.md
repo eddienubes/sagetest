@@ -23,4 +23,4 @@ Doesn't preserver functions and other non-serializable values
 
 ## Source
 
-[src/utils.ts:83](https://github.com/eddienubes/sagetest/blob/99f6f92/src/utils.ts#L83)
+[src/utils.ts:83](https://github.com/eddienubes/sagetest/blob/a9c79c9/src/utils.ts#L83)

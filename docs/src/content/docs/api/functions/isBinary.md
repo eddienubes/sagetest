@@ -17,4 +17,4 @@ title: "isBinary"
 
 ## Source
 
-[src/utils.ts:48](https://github.com/eddienubes/sagetest/blob/99f6f92/src/utils.ts#L48)
+[src/utils.ts:48](https://github.com/eddienubes/sagetest/blob/a9c79c9/src/utils.ts#L48)
