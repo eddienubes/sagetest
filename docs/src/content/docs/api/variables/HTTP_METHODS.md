@@ -9,4 +9,4 @@ title: "HTTP_METHODS"
 
 ## Source
 
-[src/constants.ts:4](https://github.com/eddienubes/sagetest/blob/c7f8532/src/constants.ts#L4)
+[src/constants.ts:4](https://github.com/eddienubes/sagetest/blob/99f6f92/src/constants.ts#L4)
