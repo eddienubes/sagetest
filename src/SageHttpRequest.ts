@@ -5,7 +5,7 @@ import { IncomingHttpHeaders } from 'undici/types/header.js';
 export interface SageHttpRequest {
   method?: HttpMethod;
   path?: string;
-  query?: Record<string | number, string>;
+  query?: Record<string | number, string | number>;
 
   // Should always be a string since Undici doesn't support other types
   body?: string;

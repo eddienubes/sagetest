@@ -3,8 +3,11 @@ import { Blob } from 'node:buffer';
 
 // For NodeJS 16 support
 // Unfortunatelly, NodeJS 16 does not support ReadableStream and WritableStream in global scope
-// @ts-expect-error
-globalThis.ReadableStream = ReadableStream;
-// @ts-expect-error
-globalThis.WritableStream = WritableStream;
-globalThis.Blob = Blob;
+const fills = [ReadableStream, WritableStream, Blob];
+for (const fill of fills) {
+  const typedFill = fill.name as keyof typeof globalThis;
+  if (!globalThis[typedFill]) {
+    // @ts-expect-error
+    globalThis[typedFill] = require('web-streams-polyfill');
+  }
+}
