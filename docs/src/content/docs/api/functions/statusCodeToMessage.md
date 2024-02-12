@@ -17,4 +17,4 @@ title: "statusCodeToMessage"
 
 ## Source
 
-[src/utils.ts:31](https://github.com/eddienubes/sagetest/blob/1965370/src/utils.ts#L31)
+[src/utils.ts:31](https://github.com/eddienubes/sagetest/blob/6b2dec0/src/utils.ts#L31)

@@ -21,4 +21,4 @@ title: "ThenableResolve"
 
 ## Source
 
-[src/types.ts:30](https://github.com/eddienubes/sagetest/blob/1965370/src/types.ts#L30)
+[src/types.ts:30](https://github.com/eddienubes/sagetest/blob/6b2dec0/src/types.ts#L30)
