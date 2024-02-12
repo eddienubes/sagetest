@@ -19,4 +19,4 @@ title: "getFileDescriptorFromReadable"
 
 ## Source
 
-[src/utils.ts:64](https://github.com/eddienubes/sagetest/blob/6cbc2b7/src/utils.ts#L64)
+[src/utils.ts:64](https://github.com/eddienubes/sagetest/blob/e842b4f/src/utils.ts#L64)

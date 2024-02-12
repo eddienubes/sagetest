@@ -17,4 +17,4 @@ title: "isObject"
 
 ## Source
 
-[src/utils.ts:90](https://github.com/eddienubes/sagetest/blob/6cbc2b7/src/utils.ts#L90)
+[src/utils.ts:90](https://github.com/eddienubes/sagetest/blob/e842b4f/src/utils.ts#L90)
