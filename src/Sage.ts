@@ -17,7 +17,7 @@ import {
   wrapArray,
   parseSetCookieHeader
 } from './utils.js';
-import { SageHttpResponse } from './SageHttpResponse.js';
+import { SageHttpResponse, SageResponseHeaders } from './SageHttpResponse.js';
 import path from 'node:path';
 import { FormDataOptions } from './FormDataOptions.js';
 import { createReadStream } from 'node:fs';
@@ -279,7 +279,7 @@ export class Sage {
         statusCode: res.statusCode,
         status: res.statusCode,
         statusText: statusCodeToMessage(res.statusCode),
-        headers: res.headers,
+        headers: res.headers as SageResponseHeaders,
         body: json,
         text: text,
         ok: isOkay(res.statusCode),
