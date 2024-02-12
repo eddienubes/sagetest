@@ -23,7 +23,6 @@ import { FormDataOptions } from './FormDataOptions.js';
 import { createReadStream } from 'node:fs';
 import { AddressInfo } from 'node:net';
 import { SageConfig } from './SageConfig.js';
-import { MIME_TYPES } from './constants.js';
 
 /**
  * Greetings, I'm Sage - a chainable HTTP Testing Assistant.
@@ -77,7 +76,7 @@ export class Sage {
    * Sets query parameters for the request.
    * @param query
    */
-  query(query: Record<string | number, string>): this {
+  query(query: Record<string | number, string | number>): this {
     this.request.query = query;
     return this;
   }
@@ -91,12 +90,12 @@ export class Sage {
    * @throws SageException if formData is already set
    * @param body
    */
-  send(body: string | object): this {
+  send(body?: string | object): this {
     if (this.request.formData) {
       throw new SageException('Cannot set both body and formData');
     }
 
-    if (typeof body != 'string') {
+    if (typeof body === 'object') {
       this.set('Content-Type', 'application/json');
       this.request.body = serializeToString(body);
       return this;
