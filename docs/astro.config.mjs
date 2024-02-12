@@ -6,7 +6,7 @@ import tailwind from '@astrojs/tailwind';
 // https://astro.build/config
 export default defineConfig({
   site: 'https://eddienubes.github.io',
-  base: '/sagetest',
+  base: '/sagetest/',
   integrations: [starlight({
     title: 'Sagetest',
     favicon: 'shard-small.png',
