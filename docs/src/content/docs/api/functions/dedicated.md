@@ -22,4 +22,4 @@ Just an alias for request() with dedicated: true
 
 ## Source
 
-[src/index.ts:87](https://github.com/eddienubes/sagetest/blob/6b2dec0/src/index.ts#L87)
+[src/index.ts:87](https://github.com/eddienubes/sagetest/blob/221f70c/src/index.ts#L87)

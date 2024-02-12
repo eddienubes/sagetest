@@ -17,4 +17,4 @@ title: "getFilenameFromReadable"
 
 ## Source
 
-[src/utils.ts:56](https://github.com/eddienubes/sagetest/blob/6b2dec0/src/utils.ts#L56)
+[src/utils.ts:56](https://github.com/eddienubes/sagetest/blob/221f70c/src/utils.ts#L56)
