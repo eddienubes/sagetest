@@ -47,16 +47,24 @@ jobs:
 
       - name: Bump Patch Version
         run: |
-          pnpm version patch -m "v%s"
+          version=$(pnpm version patch -m "v%s")
+          echo "VERSION=$version" >> $GITHUB_ENV 
 
-      - run: npm publish
-        name: Publish to NPM
+      - name: Create Draft Release
+        uses: release-drafter/release-drafter@v5
         env:
-          NODE_AUTH_TOKEN: ${{ secrets.NPM_AUTH_TOKEN }}
+          GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
+        with:
+          tag: ${{ env.VERSION }}
 
-      - name: Push Bumped Version
-        run: |
-          git push
+#      - run: npm publish
+#        name: Publish to NPM
+#        env:
+#          NODE_AUTH_TOKEN: ${{ secrets.NPM_AUTH_TOKEN }}
+#
+#      - name: Push Bumped Version
+#        run: |
+#          git push
 
 
 
