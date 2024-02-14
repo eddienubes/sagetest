@@ -5,7 +5,7 @@ import {
 } from './constants.js';
 import { Readable } from 'node:stream';
 import path from 'node:path';
-import { ReadStream } from 'node:fs';
+import { ReadStream, createReadStream } from 'node:fs';
 import {
   CookieOptions,
   CookieSameSiteProperty,
@@ -109,6 +109,29 @@ export const wrapArray = <T>(value: T | T[]): T[] => {
   }
 
   return [value];
+};
+
+/**
+ * Converts a stream to a buffer. Loads a file if string is passed.
+ * @param stream
+ */
+export const streamToBuffer = async (
+  stream: Readable | string
+): Promise<Buffer> => {
+  if (typeof stream === 'string') {
+    stream = createReadStream(stream);
+  }
+
+  const chunks: Uint8Array[] = [];
+  for await (const chunk of stream) {
+    chunks.push(chunk);
+  }
+
+  return Buffer.concat(chunks);
+};
+
+export const isStreamable = (value: unknown): boolean => {
+  return value instanceof Readable || typeof value === 'string';
 };
 
 export const parseSetCookieHeader = (

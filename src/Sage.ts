@@ -15,7 +15,9 @@ import {
   isRedirect,
   isError,
   wrapArray,
-  parseSetCookieHeader
+  parseSetCookieHeader,
+  streamToBuffer,
+  isStreamable
 } from './utils.js';
 import { SageHttpResponse, SageResponseHeaders } from './SageHttpResponse.js';
 import path from 'node:path';
@@ -33,6 +35,8 @@ export class Sage {
   private config: SageConfig;
   private request: SageHttpRequest = {};
   private client: Client;
+  // Promises await of which is deferred until .then() is called
+  private deferredPromises: Promise<unknown>[] = [];
 
   /**
    * Sets the HTTP method and path for the request.
@@ -57,6 +61,8 @@ export class Sage {
       keepAliveTimeout: 1,
       keepAliveMaxTimeout: 1
     };
+
+    this.deferredPromises.push(this.sageServer.listenResolver());
 
     // If the server is already launched, the port should be available
     if (this.sageServer.launched) {
@@ -173,7 +179,7 @@ export class Sage {
    * If file is a string, it will be treated as a path to a file starting from the working directory (process.cwd()).
    * @throws SageException if body is already set
    * @param field
-   * @param file
+   * @param file a Blob, Buffer, Readable stream or a file path (staring from the working directory)
    * @param options you can pass either object with type and filename or just a string with filename
    */
   attach(
@@ -189,8 +195,16 @@ export class Sage {
       this.request.formData = new FormData();
     }
 
+    if (typeof file === 'string') {
+      file = createReadStream(path.join(process.cwd(), file));
+    }
+
     if (typeof options === 'string') {
       options = { filename: options };
+    }
+
+    if (options?.buffer && file instanceof Readable) {
+      file = streamToBuffer(file);
     }
 
     if (file instanceof Readable) {
@@ -207,25 +221,6 @@ export class Sage {
         stream: () => file
       });
 
-      return this;
-    }
-
-    // Read file as a filename here
-    if (typeof file === 'string') {
-      const filePath = path.join(process.cwd(), file);
-      const fileStream = createReadStream(filePath);
-      const descriptor = getFileDescriptorFromReadable(fileStream);
-
-      // Hacky way to handle multipart streaming in undici
-      // https://github.com/nodejs/undici/issues/2202#issuecomment-1664134203
-      // To pass isBlobLike check: https://github.com/nodejs/undici/blob/e48df9620edf1428bd457f481d47fa2c77f75322/lib/fetch/formdata.js#L40
-      // Filename is also required due to: https://github.com/nodejs/undici/blob/e48df9620edf1428bd457f481d47fa2c77f75322/lib/fetch/formdata.js#L239
-      this.request.formData.append(field, {
-        [Symbol.toStringTag]: 'File',
-        name: options?.filename || descriptor?.filename,
-        type: options?.type || descriptor?.mimetype,
-        stream: () => fileStream
-      });
       return this;
     }
 
@@ -257,8 +252,8 @@ export class Sage {
   }
 
   async then(resolve: ThenableResolve<SageHttpResponse>): Promise<void> {
-    // Make sure the server is listening before making a request
-    await this.sageServer.listenResolver();
+    // Wait for all deferred promises to resolve
+    await Promise.all(this.deferredPromises);
 
     try {
       const res = await this.client.request({
