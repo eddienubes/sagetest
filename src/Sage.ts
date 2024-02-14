@@ -17,7 +17,7 @@ import {
   wrapArray,
   parseSetCookieHeader,
   streamToBuffer,
-  isStreamable
+  wrapInPromise
 } from './utils.js';
 import { SageHttpResponse, SageResponseHeaders } from './SageHttpResponse.js';
 import path from 'node:path';
@@ -191,47 +191,62 @@ export class Sage {
       throw new SageException('Cannot set both body and formData');
     }
 
-    if (!this.request.formData) {
-      this.request.formData = new FormData();
-    }
+    const promise = wrapInPromise(async () => {
+      if (!this.request.formData) {
+        this.request.formData = new FormData();
+      }
 
-    if (typeof file === 'string') {
-      file = createReadStream(path.join(process.cwd(), file));
-    }
+      // If a string always treat it as a file path
+      if (typeof file === 'string') {
+        file = createReadStream(path.join(process.cwd(), file));
+      }
 
-    if (typeof options === 'string') {
-      options = { filename: options };
-    }
+      if (typeof options === 'string') {
+        options = { filename: options };
+      }
 
-    if (options?.buffer && file instanceof Readable) {
-      file = streamToBuffer(file);
-    }
+      // Buffer streams in memory if a buffer flag is true
+      if (options?.buffer && file instanceof Readable) {
+        // When converting to buffer, preserve the filename and type
+        const descriptor = getFileDescriptorFromReadable(file);
+        options = {
+          ...options,
+          filename: options.filename || descriptor?.filename,
+          type: options.type || descriptor?.mimetype
+        };
+        file = await streamToBuffer(file);
+      }
 
-    if (file instanceof Readable) {
-      const descriptor = getFileDescriptorFromReadable(file);
-      // script.js -> js
-      // Hacky way to handle streaming in multipart undici
-      // https://github.com/nodejs/undici/issues/2202#issuecomment-1664134203
-      // To pass isBlobLike check: https://github.com/nodejs/undici/blob/e48df9620edf1428bd457f481d47fa2c77f75322/lib/fetch/formdata.js#L40
-      // Filename is also required due to: https://github.com/nodejs/undici/blob/e48df9620edf1428bd457f481d47fa2c77f75322/lib/fetch/formdata.js#L239
-      this.request.formData.append(field, {
-        [Symbol.toStringTag]: 'File',
-        name: options?.filename || descriptor?.filename,
-        type: options?.type || descriptor?.mimetype,
-        stream: () => file
-      });
+      if (file instanceof Readable) {
+        const descriptor = getFileDescriptorFromReadable(file);
+        // script.js -> js
+        // Hacky way to handle streaming in multipart undici
+        // https://github.com/nodejs/undici/issues/2202#issuecomment-1664134203
+        // To pass isBlobLike check: https://github.com/nodejs/undici/blob/e48df9620edf1428bd457f481d47fa2c77f75322/lib/fetch/formdata.js#L40
+        // Filename is also required due to: https://github.com/nodejs/undici/blob/e48df9620edf1428bd457f481d47fa2c77f75322/lib/fetch/formdata.js#L239
+        this.request.formData.append(field, {
+          [Symbol.toStringTag]: 'File',
+          name: options?.filename || descriptor?.filename,
+          type: options?.type || descriptor?.mimetype,
+          stream: () => file
+        });
 
-      return this;
-    }
+        return;
+      }
 
-    if (isBinary(file)) {
-      // Handle Buffer to blob conversion for now
-      const blob = new Blob([file], { type: options?.type });
-      this.request.formData.append(field, blob, options?.filename);
-      return this;
-    }
+      if (isBinary(file)) {
+        // Handle Buffer to blob conversion for now
+        const blob = new Blob([file], { type: options?.type });
+        this.request.formData.append(field, blob, options?.filename);
+        return;
+      }
 
-    throw new SageException('Cannot attach a non-binary file');
+      throw new SageException('Cannot attach a non-binary file');
+    });
+
+    this.deferredPromises.push(promise);
+
+    return this;
   }
 
   field(field: string, value: string | string[]): this {

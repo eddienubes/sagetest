@@ -296,6 +296,37 @@ describe('request', () => {
           }
         });
       });
+
+      it('should work with buffered streams', async () => {
+        const stream = fs.createReadStream('test/fixtures/cat.jpg');
+        const res = await request(expressApp)
+          .post('/upload')
+          .attach('picture', stream, { buffer: true });
+
+        expect(res).toMatchObject({
+          ...expectedExpressResponse,
+          body: {
+            ...expectedExpressResponse.body,
+            reqHeaders: {
+              'content-length': '4877556'
+            },
+            files: {
+              picture: [
+                {
+                  destination: 'test/fixtures/temp',
+                  encoding: '7bit',
+                  fieldname: 'picture',
+                  filename: expect.any(String),
+                  mimetype: 'image/jpeg',
+                  originalname: 'cat.jpg',
+                  path: expect.stringContaining('test/fixtures/temp/'),
+                  size: 4877386
+                }
+              ]
+            }
+          }
+        } as SageHttpResponse);
+      });
     });
     describe('application/json', () => {
       it('should properly call sage assistant and respond in expected format', async () => {
@@ -678,6 +709,37 @@ describe('request', () => {
             ]
           }
         });
+      });
+
+      it('should work with buffered streams', async () => {
+        const stream = fs.createReadStream('test/fixtures/cat.jpg');
+        const res = await request(expressApp)
+          .post('/upload')
+          .attach('picture', stream, { buffer: true });
+
+        expect(res).toMatchObject({
+          ...expectedExpressResponse,
+          body: {
+            ...expectedExpressResponse.body,
+            reqHeaders: {
+              'content-length': '4877556'
+            },
+            files: {
+              picture: [
+                {
+                  destination: 'test/fixtures/temp',
+                  encoding: '7bit',
+                  fieldname: 'picture',
+                  filename: expect.any(String),
+                  mimetype: 'image/jpeg',
+                  originalname: 'cat.jpg',
+                  path: expect.stringContaining('test/fixtures/temp/'),
+                  size: 4877386
+                }
+              ]
+            }
+          }
+        } as SageHttpResponse);
       });
     });
 

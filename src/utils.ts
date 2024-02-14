@@ -130,10 +130,6 @@ export const streamToBuffer = async (
   return Buffer.concat(chunks);
 };
 
-export const isStreamable = (value: unknown): boolean => {
-  return value instanceof Readable || typeof value === 'string';
-};
-
 export const parseSetCookieHeader = (
   setCookieHeader?: string[] | string
 ): Record<string, CookieOptions> => {
@@ -193,4 +189,12 @@ export const parseSetCookieHeader = (
   }
 
   return cookies;
+};
+
+/**
+ * Just a more verbose syntactic sugar for create an async function and immediately calling it.
+ * @param value
+ */
+export const wrapInPromise = (value: () => Promise<void>): Promise<void> => {
+  return value();
 };
