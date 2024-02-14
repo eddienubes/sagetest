@@ -80,9 +80,10 @@ export class Sage {
 
   /**
    * Sets query parameters for the request.
-   * @param query
+   * @param query Supposed to be just a record of strings and numbers.
+   * Other values/types will be ignored.
    */
-  query(query: Record<string | number, string | number>): this {
+  query(query: object): this {
     this.request.query = query;
     return this;
   }
