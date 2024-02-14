@@ -56,15 +56,17 @@ jobs:
           GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
         with:
           tag: ${{ env.VERSION }}
+          name: ${{ env.VERSION }}
+          version: ${{ env.VERSION }}
 
-#      - run: npm publish
-#        name: Publish to NPM
-#        env:
-#          NODE_AUTH_TOKEN: ${{ secrets.NPM_AUTH_TOKEN }}
-#
-#      - name: Push Bumped Version
-#        run: |
-#          git push
+      - run: npm publish
+        name: Publish to NPM
+        env:
+          NODE_AUTH_TOKEN: ${{ secrets.NPM_AUTH_TOKEN }}
+
+      - name: Push Bumped Version
+        run: |
+          git push
 
 
 
