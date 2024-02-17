@@ -102,5 +102,3 @@ export * from './SageException.js';
 export * from './utils.js';
 export * from './Sage.js';
 export * from './SageConfig.js';
-
-export default request;

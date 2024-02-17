@@ -12,8 +12,4 @@ And then import it like so:
 ```ts
 import { request } from 'sagetest';
 ```
-
-or 
-```ts
-import request from 'sagetest';
-```
+> Note: default export is not supported, it's a bad practice to have both default and named exports in the same module.

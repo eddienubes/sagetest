@@ -19,15 +19,15 @@
   "files": [
     "build"
   ],
-  "main": "build/cjs/index.js",
+  "main": "build/index.js",
   "exports": {
     ".": {
-      "import": "./build/esm/index.js",
-      "require": "./build/cjs/index.js"
+      "import": "./build/index.mjs",
+      "require": "./build/index.js"
     },
     "./*": {
-      "import": "./build/esm/*.js",
-      "require": "./build/cjs/*.js"
+      "import": "./build/*.mjs",
+      "require": "./build/*.js"
     }
   },
   "scripts": {
@@ -35,7 +35,7 @@
     "test:watch": "pnpm vitest watch",
     "test:ci": "pnpm vitest run --coverage",
     "build:dev": "tsc -p tsconfig.json",
-    "build:prod": "rm -rf build && tsc -p tsconfig.cjs.json && tsc -p tsconfig.esm.json && misc/package.sh",
+    "build:prod": "rm -rf ./build && pnpm rollup -c && tsc -p tsconfig.build.json && pnpm tsc-alias -p tsconfig.build.json",
     "lint:check": "eslint --max-warnings=50 .",
     "lint:fix": "eslint --max-warnings=50 --fix ."
   },
@@ -82,7 +82,11 @@
     "mime-db": "^1.52.0",
     "multer": "1.4.5-lts.1",
     "prettier": "^3.2.4",
+    "rollup": "^4.12.0",
+    "rollup-plugin-esbuild": "^6.1.1",
+    "rollup-plugin-tsconfig-paths": "^1.5.2",
     "supertest": "^6.3.4",
+    "tsc-alias": "^1.8.8",
     "tsx": "^4.7.0",
     "typedoc-plugin-markdown": "^3.17.1",
     "typescript": "^5.3.3",
