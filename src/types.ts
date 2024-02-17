@@ -27,7 +27,7 @@ export type ServerShutdownCapable = {
   shutdown: () => Promise<void>;
 };
 
-export type ThenableResolve<T> = (value: T | PromiseLike<T>) => void;
+export type ThenableResolve<T> = (value: T) => void;
 export type ThenableReject = (reason?: unknown) => void;
 export type DeepPartial<T> = T extends object
   ? {
