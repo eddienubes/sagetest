@@ -49,67 +49,44 @@ pnpm add -D sagetest
 Example usage of **auth** method to set Basic Auth header based on username and password.
 
 ```ts
-import express from 'express';
-// import from sagetest in your own project
 import { request } from '../src/index.js';
 
-const payload = {
-  message: 'I love my mom!'
-};
+// Just a plain express app
+const response = await request(app).get('/').auth('user', 'pass');
 
-/**
- * Not need to spin up a server manually, sagetest does it for you.
- */
-const app = express();
-app.get('/', (req, res) => {
-  res.cookie('sweet-cookie', 'choco', {
-    httpOnly: true
-  });
-  res.json({
-    ...payload,
-    requestHeaders: req.headers
-  });
-});
-
-describe('Express Test Suite', () => {
-  it('should respond', async () => {
-    const response = await request(app).get('/').auth('user', 'pass');
-
-    expect(response).toEqual({
-      body: {
-        message: 'I love my mom!',
-        requestHeaders: {
-          authorization: 'Basic dXNlcjpwYXNz',
-          connection: 'close',
-          host: expect.stringContaining('localhost')
-        }
-      },
-      cookies: {
-        'sweet-cookie': {
-          httpOnly: true,
-          path: '/',
-          value: 'choco'
-        }
-      },
-      error: false,
-      headers: {
-        connection: 'close',
-        'content-length': '130',
-        'content-type': 'application/json; charset=utf-8',
-        date: expect.any(String),
-        etag: expect.any(String),
-        'set-cookie': 'sweet-cookie=choco; Path=/; HttpOnly',
-        'x-powered-by': 'Express'
-      },
-      location: undefined,
-      ok: true,
-      redirect: false,
-      status: 200,
-      statusCode: 200,
-      statusText: 'OK',
-      text: expect.any(String) // Stringified body
-    });
-  });
+expect(response).toEqual({
+  body: {
+    message: 'I love my mom!',
+    requestHeaders: {
+      authorization: 'Basic dXNlcjpwYXNz',
+      connection: 'close',
+      host: expect.stringContaining('localhost')
+    }
+  },
+  cookies: {
+    'sweet-cookie': {
+      httpOnly: true,
+      path: '/',
+      value: 'choco'
+    }
+  },
+  error: false,
+  headers: {
+    connection: 'close',
+    'content-length': '130',
+    'content-type': 'application/json; charset=utf-8',
+    date: expect.any(String),
+    etag: expect.any(String),
+    'set-cookie': 'sweet-cookie=choco; Path=/; HttpOnly',
+    'x-powered-by': 'Express'
+  },
+  location: undefined,
+  ok: true,
+  redirect: false,
+  status: 200,
+  statusCode: 200,
+  statusText: 'OK',
+  text: expect.any(String) // Stringified body
 });
 ```
 
@@ -119,75 +96,45 @@ Example usage of **auth** method to set the Authorization header based on the pr
 Also, in response, you're able to validate cookies sent by the server.
 
 ```ts
-import { fastify } from 'fastify';
-import { fastifyCookie } from '@fastify/cookie';
-// import from sagetest in your own project
 import { request } from '../src/index.js';
 
-const payload = {
-  message: 'I love my mom!'
-};
+// Don't forget to wait until all plugins are registered.
+await fastifyApp.ready();
 
-const fastifyApp = fastify();
-fastifyApp.register(fastifyCookie);
+// Don't forget to use .server instead of plain fastify instance.
+const response = await request(fastifyApp.server).get('/').auth('jwtToken');
 
-fastifyApp.get('/', (request, reply) => {
-  reply.setCookie('sweet-cookie', 'choco', {
-    httpOnly: true
-  });
-  reply.send({
-    ...payload,
-    requestHeaders: request.headers
-  });
-});
-
-describe('Fastify Test Suite', () => {
-  beforeAll(async () => {
-    /**
-     * Don't forget to wait until all plugins are registered.
-     */
-    await fastifyApp.ready();
-  });
-
-  it('should respond', async () => {
-    /**
-     * Don't forget to use .server instead of plain fastify instance.
-     */
-    const response = await request(fastifyApp.server).get('/').auth('jwtToken');
-
-    expect(response).toEqual({
-      body: {
-        message: 'I love my mom!',
-        requestHeaders: {
-          authorization: 'Bearer jwtToken',
-          connection: 'close',
-          host: expect.any(String)
-        }
-      },
-      cookies: {
-        'sweet-cookie': {
-          httpOnly: true,
-          path: '/',
-          value: 'choco'
-        }
-      },
-      error: false,
-      headers: {
-        connection: 'close',
-        'content-length': '127',
-        'content-type': 'application/json; charset=utf-8',
-        date: expect.any(String),
-        'set-cookie': 'sweet-cookie=choco; HttpOnly'
-      },
-      location: undefined,
-      ok: true,
-      redirect: false,
-      status: 200,
-      statusCode: 200,
-      statusText: 'OK',
-      text: expect.any(String) // Stringified body
-    });
-  });
+expect(response).toEqual({
+  body: {
+    message: 'I love my mom!',
+    requestHeaders: {
+      authorization: 'Bearer jwtToken',
+      connection: 'close',
+      host: expect.any(String)
+    }
+  },
+  cookies: {
+    'sweet-cookie': {
+      httpOnly: true,
+      path: '/',
+      value: 'choco'
+    }
+  },
+  error: false,
+  headers: {
+    connection: 'close',
+    'content-length': '127',
+    'content-type': 'application/json; charset=utf-8',
+    date: expect.any(String),
+    'set-cookie': 'sweet-cookie=choco; HttpOnly'
+  },
+  location: undefined,
+  ok: true,
+  redirect: false,
+  status: 200,
+  statusCode: 200,
+  statusText: 'OK',
+  text: expect.any(String) // Stringified body
 });
 ```
 
