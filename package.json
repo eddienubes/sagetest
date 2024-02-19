@@ -23,11 +23,8 @@
   "exports": {
     ".": {
       "import": "./build/index.mjs",
-      "require": "./build/index.js"
-    },
-    "./*": {
-      "import": "./build/*.mjs",
-      "require": "./build/*.js"
+      "require": "./build/index.js",
+      "types": "./build/index.d.ts"
     }
   },
   "scripts": {
