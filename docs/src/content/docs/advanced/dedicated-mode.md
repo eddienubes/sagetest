@@ -2,12 +2,8 @@
 title: Dedicated Mode
 ---
 
-### Standard behavior
-
-The way this library works by default is it spins up a server for each request, as well as handles its graceful
+> The way this library works by default is it spins up a server for each request, as well as handles its graceful
 shutdown.
-
-### Dedicated mode
 
 To speed up your tests and reduce the number of instances spawned in huge code bases, you can make use of
 the `dedicated` false.
