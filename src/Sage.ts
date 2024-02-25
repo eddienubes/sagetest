@@ -80,6 +80,8 @@ export class Sage {
 
   /**
    * Sets query parameters for the request.
+   * Also, the URI spec is quite vague about query params, and their handling is different from environment to environment.
+   * I'd advise encoding complex query params into base64 and passing them as a single string.
    * @param query Supposed to be just a record of strings and numbers.
    * Other values/types will be ignored.
    */
