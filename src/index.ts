@@ -86,7 +86,7 @@ export const request = (
  */
 export const dedicated = (
   serverSource: ServerSource,
-  config: Omit<DeepPartial<SageConfig>, 'dedicated'>
+  config?: Omit<DeepPartial<SageConfig>, 'dedicated'>
 ): HttpCallable<Sage> => {
   return request(serverSource, {
     ...config,

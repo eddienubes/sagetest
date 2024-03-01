@@ -80,7 +80,8 @@ export type HttpStatusText =
 export const SAGE_DEFAULT_CONFIG: SageConfig = {
   dedicated: false,
   port: 0,
-  keepAlive: true
+  keepAlive: true,
+  baseUrl: null
 };
 
 export const MIME_TYPES = {

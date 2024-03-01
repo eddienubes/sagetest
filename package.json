@@ -35,7 +35,8 @@
     "build:dev": "tsc -p tsconfig.json",
     "build:prod": "rm -rf ./build && pnpm rollup -c && tsc -p tsconfig.build.json && pnpm tsc-alias -p tsconfig.build.json",
     "lint:check": "eslint --max-warnings=50 .",
-    "lint:fix": "eslint --max-warnings=50 --fix ."
+    "lint:fix": "eslint --max-warnings=50 --fix .",
+    "valid": "pnpm lint:fix && pnpm build:dev"
   },
   "keywords": [
     "http",

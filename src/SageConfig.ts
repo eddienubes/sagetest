@@ -21,4 +21,14 @@ export interface SageConfig {
    * @default true
    */
   keepAlive: boolean;
+
+  /**
+   * Base URL for the server.
+   * Prefix for all requests.
+   * Useful for common API paths like /api/v1.
+   * Please also remember that all HTTP paths have to start with a slash.
+   * E.g. your request URL may be /users/:userId and the base URL is /api/v1, so the final URL will be /api/v1/users/:userId.
+   * @default null
+   */
+  baseUrl: string | null;
 }

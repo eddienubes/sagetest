@@ -273,6 +273,10 @@ export class Sage {
     // Wait for all deferred promises to resolve
     await Promise.all(this.deferredPromises);
 
+    if (this.config.baseUrl) {
+      this.request.path = `${this.config.baseUrl}${this.request.path}`;
+    }
+
     try {
       const res = await this.client.request({
         method: this.request.method as HttpMethod,
