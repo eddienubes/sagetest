@@ -88,7 +88,7 @@
     "tsc-alias": "^1.8.8",
     "tsx": "^4.7.0",
     "typedoc-plugin-markdown": "^3.17.1",
-    "typescript": "^5.4.3",
+    "typescript": "^5.4.4",
     "vitest": "^1.4.0"
   },
   "dependencies": {
