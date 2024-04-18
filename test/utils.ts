@@ -12,6 +12,7 @@ import Fastify, {
 import multer from 'multer';
 import { fastifyMultipart } from '@fastify/multipart';
 import fastifyCookie from '@fastify/cookie';
+import fs from 'node:fs';
 
 export const getExpressApp = (): Express => {
   const app = express();
@@ -142,6 +143,12 @@ export const getFastifyApp = (): FastifyInstance => {
       files: request.files,
       reqHeaders: request.headers
     });
+  });
+
+  fastify.get('/download', async (request, reply) => {
+    const stream = fs.createReadStream('test/fixtures/cat.jpg');
+    reply.header('Content-Type', 'image/jpeg');
+    reply.send(stream);
   });
 
   fastify.get('/error', () => {

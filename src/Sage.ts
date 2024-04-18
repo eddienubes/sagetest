@@ -292,6 +292,8 @@ export class Sage {
       const text = await res.body.text();
       const json = parseJsonStr(text);
 
+      // TODO: add stream for piping files
+      // TODO: add buffer for binary files
       resolve({
         statusCode: res.statusCode,
         status: res.statusCode,

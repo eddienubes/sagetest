@@ -547,6 +547,24 @@ describe('request', () => {
       await fastifyApp.ready();
     });
 
+    describe('downloads', () => {
+      it('should download file if sent by the server', async () => {
+        const res = await request(fastifyApp.server).get('/download');
+
+        expect(res).toMatchObject({
+          ...expectedFastifyResponse,
+          body: {
+            ...expectedFastifyResponse.body,
+            reqHeaders: {
+              connection: 'keep-alive',
+              'content-type': 'image/jpeg',
+              host: expect.stringContaining('localhost')
+            }
+          }
+        });
+      });
+    });
+
     describe('multipart/form-data', () => {
       it('should work with filename', async () => {
         const res = await request(fastifyApp.server)

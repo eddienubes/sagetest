@@ -3,7 +3,7 @@ import { CookieOptions } from './types.js';
 
 export interface SageHttpResponse {
   /**
-   * Beware that body could be null if server has redirected etc.
+   * Beware that body could be null if the server has redirected or sent a file, etc.
    */
   body: any;
   /**
