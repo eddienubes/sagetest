@@ -86,7 +86,7 @@
     "rollup-plugin-tsconfig-paths": "^1.5.2",
     "supertest": "^6.3.4",
     "tsc-alias": "^1.8.8",
-    "tsx": "^4.7.3",
+    "tsx": "^4.10.1",
     "typedoc-plugin-markdown": "^3.17.1",
     "typescript": "^5.4.5",
     "vitest": "^1.6.0"
