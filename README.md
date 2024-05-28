@@ -6,6 +6,9 @@
     Neat and streamlined testing library for node.js HTTP servers powered by <a href="https://github.com/nodejs/undici"><strong>undici</strong></a>.
 <p>
 <p align="center">
+    It's currently in alpha. Everything could be a breaking change until the first major version.
+<p>
+<p align="center">
  <a href="https://eddienubes.github.io/sagetest/">Documentation</a> | <a href="https://eddienubes.github.io/sagetest/getting-started/introduction/">Getting Started</a>
 </p>
 <p align="center">
