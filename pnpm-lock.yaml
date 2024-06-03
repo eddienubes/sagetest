@@ -101,8 +101,8 @@ devDependencies:
     specifier: ^4.11.2
     version: 4.11.2
   typedoc-plugin-markdown:
-    specifier: ^4.0.2
-    version: 4.0.2(typedoc@0.25.8)
+    specifier: ^4.0.3
+    version: 4.0.3(typedoc@0.25.8)
   typescript:
     specifier: ^5.4.5
     version: 5.4.5
@@ -4048,8 +4048,8 @@ packages:
     resolution: {integrity: sha512-/aCDEGatGvZ2BIk+HmLf4ifCJFwvKFNb9/JeZPMulfgFracn9QFcAf5GO8B/mweUjSoblS5In0cWhqpfs/5PQA==}
     dev: true
 
-  /typedoc-plugin-markdown@4.0.2(typedoc@0.25.8):
-    resolution: {integrity: sha512-4MV3M+0lsmIaXuDBzeqLYemZqwTQDWQow+o8zdT9hC7KFu06GaFo2uUEbkjE6pgZA9hnkOTtzRVd0R9YJWcH8A==}
+  /typedoc-plugin-markdown@4.0.3(typedoc@0.25.8):
+    resolution: {integrity: sha512-0tZbeVGGCd4+lpoIX+yHWgUfyaLZCQCgJOpuVdTtOtD3+jKaedJ4sl/tkNaYBPeWVKiyDkSHfGuHkq53jlzIFg==}
     peerDependencies:
       typedoc: 0.25.x
     dependencies:
