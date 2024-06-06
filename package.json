@@ -87,7 +87,7 @@
     "supertest": "^7.0.0",
     "tsc-alias": "^1.8.10",
     "tsx": "^4.11.2",
-    "typedoc-plugin-markdown": "^4.0.2",
+    "typedoc-plugin-markdown": "^4.0.3",
     "typescript": "^5.4.5",
     "vitest": "^1.6.0"
   },
