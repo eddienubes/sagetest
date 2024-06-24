@@ -98,8 +98,8 @@ devDependencies:
     specifier: ^1.8.10
     version: 1.8.10
   tsx:
-    specifier: ^4.15.1
-    version: 4.15.1
+    specifier: ^4.15.7
+    version: 4.15.7
   typedoc-plugin-markdown:
     specifier: ^4.0.3
     version: 4.0.3(typedoc@0.25.8)
@@ -4314,8 +4314,8 @@ packages:
     resolution: {integrity: sha512-AEYxH93jGFPn/a2iVAwW87VuUIkR1FVUKB77NwMF7nBTDkDrrT/Hpt/IrCJ0QXhW27jTBDcf5ZY7w6RiqTMw2Q==}
     dev: true
 
-  /tsx@4.15.1:
-    resolution: {integrity: sha512-k/6h17jA1KfUR7SpcteOa880zGmF56s8gMIcSqUR5avyNFi9nlCEKpMiHLrzrqyARGr52A/JablmGey1DEWbCA==}
+  /tsx@4.15.7:
+    resolution: {integrity: sha512-u3H0iSFDZM3za+VxkZ1kywdCeHCn+8/qHQS1MNoO2sONDgD95HlWtt8aB23OzeTmFP9IU4/8bZUdg58Uu5J4cg==}
     engines: {node: '>=18.0.0'}
     hasBin: true
     dependencies:
