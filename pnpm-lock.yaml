@@ -34,8 +34,8 @@ importers:
         specifier: ^1.4.11
         version: 1.4.11
       '@types/node':
-        specifier: ^20.14.8
-        version: 20.14.8
+        specifier: ^22.1.0
+        version: 22.1.0
       '@types/supertest':
         specifier: ^6.0.2
         version: 6.0.2
@@ -47,7 +47,7 @@ importers:
         version: 6.21.0(eslint@8.57.0)(typescript@5.5.4)
       '@vitest/coverage-v8':
         specifier: ^1.6.0
-        version: 1.6.0(vitest@1.6.0(@types/node@20.14.8))
+        version: 1.6.0(vitest@1.6.0(@types/node@22.1.0))
       compare-versions:
         specifier: ^6.1.1
         version: 6.1.1
@@ -110,7 +110,7 @@ importers:
         version: 5.5.4
       vitest:
         specifier: ^1.6.0
-        version: 1.6.0(@types/node@20.14.8)
+        version: 1.6.0(@types/node@22.1.0)
 
 packages:
 
@@ -688,6 +688,9 @@ packages:
 
   '@types/node@20.14.8':
     resolution: {integrity: sha512-DO+2/jZinXfROG7j7WKFn/3C6nFwxy2lLpgLjEXJz+0XKphZlTLJ14mo8Vfg8X5BWN6XjyESXq+LcYdT7tR3bA==}
+
+  '@types/node@22.1.0':
+    resolution: {integrity: sha512-AOmuRF0R2/5j1knA3c6G3HOk523Ga+l+ZXltX8SF1+5oqcXijjfTd8fY3XRZqSihEu9XhtQnKYLmkFaoxgsJHw==}
 
   '@types/qs@6.9.11':
     resolution: {integrity: sha512-oGk0gmhnEJK4Yyk+oI7EfXsLayXatCWPHary1MtcmbAifkobT9cM9yutG/hZKIseOU0MqbIwQ/u2nn/Gb+ltuQ==}
@@ -2467,6 +2470,9 @@ packages:
   undici-types@5.26.5:
     resolution: {integrity: sha512-JlCMO+ehdEIKqlFxk6IfVoAUVmgz7cU7zD/h9XZ0qzeosSHmUJVOzSQvvYSYWXkFXC+IfLKSIffhv0sVZup6pA==}
 
+  undici-types@6.13.0:
+    resolution: {integrity: sha512-xtFJHudx8S2DSoujjMd1WeWvn7KKWFRESZTMeL1RptAYERu29D6jphMjjY+vn96jvN3kVPDNxU/E13VTaXj6jg==}
+
   undici@6.19.3:
     resolution: {integrity: sha512-xWvTmUYvfiKATSKntAVRpPO5bfRcrG9FpiHI916j8dK8nUMjeM0uE8dx7ftKoPUQ2RtRi0KMDL10/03orVgTMA==}
     engines: {node: '>=18.17'}
@@ -3013,6 +3019,10 @@ snapshots:
     dependencies:
       undici-types: 5.26.5
 
+  '@types/node@22.1.0':
+    dependencies:
+      undici-types: 6.13.0
+
   '@types/qs@6.9.11': {}
 
   '@types/range-parser@1.2.7': {}
@@ -3158,7 +3168,7 @@ snapshots:
 
   '@ungap/structured-clone@1.2.0': {}
 
-  '@vitest/coverage-v8@1.6.0(vitest@1.6.0(@types/node@20.14.8))':
+  '@vitest/coverage-v8@1.6.0(vitest@1.6.0(@types/node@22.1.0))':
     dependencies:
       '@ampproject/remapping': 2.2.1
       '@bcoe/v8-coverage': 0.2.3
@@ -3173,7 +3183,7 @@ snapshots:
       std-env: 3.7.0
       strip-literal: 2.0.0
       test-exclude: 6.0.0
-      vitest: 1.6.0(@types/node@20.14.8)
+      vitest: 1.6.0(@types/node@22.1.0)
     transitivePeerDependencies:
       - supports-color
 
@@ -5100,6 +5110,8 @@ snapshots:
 
   undici-types@5.26.5: {}
 
+  undici-types@6.13.0: {}
+
   undici@6.19.3: {}
 
   unpipe@1.0.0: {}
@@ -5114,13 +5126,13 @@ snapshots:
 
   vary@1.1.2: {}
 
-  vite-node@1.6.0(@types/node@20.14.8):
+  vite-node@1.6.0(@types/node@22.1.0):
     dependencies:
       cac: 6.7.14
       debug: 4.3.4
       pathe: 1.1.2
       picocolors: 1.0.0
-      vite: 5.2.8(@types/node@20.14.8)
+      vite: 5.2.8(@types/node@22.1.0)
     transitivePeerDependencies:
       - '@types/node'
       - less
@@ -5131,16 +5143,16 @@ snapshots:
       - supports-color
       - terser
 
-  vite@5.2.8(@types/node@20.14.8):
+  vite@5.2.8(@types/node@22.1.0):
     dependencies:
       esbuild: 0.20.2
       postcss: 8.4.38
       rollup: 4.18.0
     optionalDependencies:
-      '@types/node': 20.14.8
+      '@types/node': 22.1.0
       fsevents: 2.3.3
 
-  vitest@1.6.0(@types/node@20.14.8):
+  vitest@1.6.0(@types/node@22.1.0):
     dependencies:
       '@vitest/expect': 1.6.0
       '@vitest/runner': 1.6.0
@@ -5159,11 +5171,11 @@ snapshots:
       strip-literal: 2.0.0
       tinybench: 2.6.0
       tinypool: 0.8.4
-      vite: 5.2.8(@types/node@20.14.8)
-      vite-node: 1.6.0(@types/node@20.14.8)
+      vite: 5.2.8(@types/node@22.1.0)
+      vite-node: 1.6.0(@types/node@22.1.0)
       why-is-node-running: 2.2.2
     optionalDependencies:
-      '@types/node': 20.14.8
+      '@types/node': 22.1.0
     transitivePeerDependencies:
       - less
       - lightningcss
