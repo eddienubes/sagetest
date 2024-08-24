@@ -3,6 +3,7 @@ import { Sage } from '../src/Sage.js';
 import { getExpressApp, getFastifyApp } from './utils.js';
 import { ConfigStore } from '../src/ConfigStore.js';
 import { SAGE_DEFAULT_CONFIG } from '../src/index.js';
+import { SageServer } from '../src/SageServer.js';
 
 describe('Sage', () => {
   it('should initialize sage assistant', async () => {
@@ -12,43 +13,13 @@ describe('Sage', () => {
     const store = new ConfigStore(SAGE_DEFAULT_CONFIG);
     const config = store.getConfig();
 
-    const sage1 = new Sage(
-      {
-        server: expressServer,
-        listenResolver: (): Promise<void> =>
-          new Promise((resolve) =>
-            expressServer.on('listening', () => resolve())
-          ),
-        launched: false
-      },
-      'GET',
-      '/test',
-      config
-    );
-    const sage2 = new Sage(
-      {
-        server: fastifyServer.server,
-        listenResolver: (): Promise<void> =>
-          new Promise((resolve) =>
-            fastifyServer.server.on('listening', () => resolve())
-          ),
-        launched: false
-      },
-      'GET',
-      '/test',
-      config
-    );
-    const sage3 = new Sage(
-      {
-        server,
-        listenResolver: (): Promise<void> =>
-          new Promise((resolve) => server.on('listening', () => resolve())),
-        launched: false
-      },
-      'GET',
-      '/test',
-      config
-    );
+    const expressSageServer = new SageServer(expressServer);
+    const fastifySageServer = new SageServer(fastifyServer.server);
+    const httpSageServer = new SageServer(server);
+
+    const sage1 = new Sage(expressSageServer, 'GET', '/test', config);
+    const sage2 = new Sage(fastifySageServer, 'GET', '/test', config);
+    const sage3 = new Sage(httpSageServer, 'GET', '/test', config);
     expect(sage1).toBeTruthy();
     expect(sage2).toBeTruthy();
     expect(sage3).toBeTruthy();

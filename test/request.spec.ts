@@ -553,7 +553,7 @@ describe('request', () => {
     });
 
     describe('downloads', () => {
-      it('should download file if sent by the server', async () => {
+      it('should download and buffer file if sent by the server', async () => {
         const res = await request(fastifyApp.server).get('/download');
 
         // long string comparison breaks the test
@@ -561,8 +561,17 @@ describe('request', () => {
 
         expect(res).toMatchObject({
           ...expectedFastifyResponse,
-          body: expect.any(Buffer)
+          body: expect.any(Buffer),
+          headers: {
+            connection: 'keep-alive',
+            'content-type': 'image/jpeg',
+            date: expect.any(String)
+          }
         });
+      });
+
+      it('should stream file when readable interface is leveraged', async () => {
+        const res = request(fastifyApp.server).get('/download');
       });
     });
 
