@@ -29,7 +29,7 @@ import { SageServer } from './SageServer.js';
  * Greetings, I'm Sage - a chainable HTTP Testing Assistant.
  * Not meant to be used directly.
  */
-export class Sage extends Readable {
+export class Sage {
   private sageServer: SageServer;
   private config: SageConfig;
   private request: SageHttpRequest = {};
@@ -51,8 +51,6 @@ export class Sage extends Readable {
     path: string,
     config: SageConfig
   ) {
-    super();
-
     this.sageServer = sageServer;
     this.config = config;
     this.request.method = method;
