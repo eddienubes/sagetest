@@ -51,6 +51,7 @@ describe('Express Test Suite', () => {
         'set-cookie': 'sweet-cookie=choco; Path=/; HttpOnly',
         'x-powered-by': 'Express'
       },
+      buffer: expect.any(Buffer),
       location: undefined,
       ok: true,
       redirect: false,

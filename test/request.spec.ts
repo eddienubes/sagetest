@@ -75,7 +75,7 @@ const expectedFastifyResponse = {
   location: undefined,
   error: false,
   cookies: {}
-};
+} as Partial<SageHttpResponse>;
 
 describe('request', () => {
   afterAll(async () => {
