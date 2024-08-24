@@ -1,7 +1,12 @@
-import { HttpMethod, ThenableReject, ThenableResolve } from './types.js';
+import {
+  HttpMethod,
+  SageAssert,
+  ThenableReject,
+  ThenableResolve
+} from './types.js';
 import { SageHttpRequest } from './SageHttpRequest.js';
 import { Readable } from 'node:stream';
-import { Client, FormData } from 'undici';
+import { Client, Dispatcher, FormData } from 'undici';
 import { Blob } from 'node:buffer';
 import { SageException } from './SageException.js';
 import {
@@ -24,7 +29,7 @@ import { FormDataOptions } from './FormDataOptions.js';
 import { createReadStream } from 'node:fs';
 import { SageConfig } from './SageConfig.js';
 import { SageServer } from './SageServer.js';
-import fs from 'node:fs/promises';
+import { SageAssertException } from './SageAssertException.js';
 
 /**
  * Greetings, I'm Sage - a chainable HTTP Testing Assistant.
@@ -37,6 +42,7 @@ export class Sage {
   private client: Client;
   // Promises await of which is deferred until .then() is called
   private deferredPromises: Promise<unknown>[] = [];
+  private asserts: SageAssert[] = [];
 
   /**
    * Sets the HTTP method and path for the request.
@@ -198,8 +204,9 @@ export class Sage {
         this.request.formData = new FormData();
       }
 
-      // If a string always treat it as a file path
+      // If string, always treat it as a file path
       if (typeof file === 'string') {
+        // Leave absolute paths as is
         file = path.isAbsolute(file) ? file : path.join(process.cwd(), file);
 
         file = createReadStream(file);
@@ -270,6 +277,82 @@ export class Sage {
     return this;
   }
 
+  expect(header: string, expectedHeader: string | RegExp): this;
+  expect(statuses: number[]): this;
+  expect(status: number): this;
+  expect(
+    statusOrStatuses: number | number[] | string,
+    expectedHeader?: string | RegExp
+  ): this {
+    const expectedStack = new Error().stack?.split('\n')[2] as string;
+
+    if (typeof statusOrStatuses === 'number') {
+      this.asserts.push({
+        type: 'status-code',
+        expected: statusOrStatuses,
+        fn: (actual) => {
+          if (actual !== statusOrStatuses) {
+            throw new SageAssertException(
+              `Expected status code ${statusOrStatuses}, but got ${actual}`,
+              expectedStack
+            );
+          }
+        }
+      });
+    }
+
+    if (Array.isArray(statusOrStatuses)) {
+      this.asserts.push({
+        type: 'status-code-arr',
+        expected: statusOrStatuses,
+        fn: (actual) => {
+          if (!statusOrStatuses.some((s) => s === actual)) {
+            throw new SageAssertException(
+              `Expected status codes ${statusOrStatuses.join(', ')}, but got ${actual}`,
+              expectedStack
+            );
+          }
+        }
+      });
+    }
+
+    if (typeof statusOrStatuses === 'string' && expectedHeader !== undefined) {
+      this.asserts.push({
+        type: 'header',
+        header: statusOrStatuses,
+        expected: expectedHeader,
+        fn: (actual) => {
+          if (actual === null || actual === undefined) {
+            throw new SageAssertException(
+              `Header ${statusOrStatuses} is not present`,
+              expectedStack
+            );
+          }
+
+          if (typeof expectedHeader === 'string') {
+            if (actual !== expectedHeader) {
+              throw new SageAssertException(
+                `Expected header ${statusOrStatuses} to be ${expectedHeader}, but got ${actual}`,
+                expectedStack
+              );
+            }
+          }
+
+          if (expectedHeader instanceof RegExp) {
+            if (!expectedHeader.test(actual)) {
+              throw new SageAssertException(
+                `Expected header ${statusOrStatuses} to match ${expectedHeader}, but got ${actual}`,
+                expectedStack
+              );
+            }
+          }
+        }
+      });
+    }
+
+    return this;
+  }
+
   async then(
     resolve: ThenableResolve<SageHttpResponse>,
     reject: ThenableReject
@@ -293,11 +376,12 @@ export class Sage {
         reset: !this.config.keepAlive
       });
 
+      this.assert(res);
+
       const buffer = Buffer.from(await res.body.arrayBuffer());
       const text = buffer.toString('utf-8');
       const json = parseJsonStr(text);
 
-      // TODO: add stream for piping files
       resolve({
         statusCode: res.statusCode,
         status: res.statusCode,
@@ -313,9 +397,14 @@ export class Sage {
         cookies: parseSetCookieHeader(res.headers['set-cookie'])
       } satisfies SageHttpResponse);
     } catch (e) {
+      if (e instanceof SageAssertException) {
+        reject(e);
+        return;
+      }
+
       reject(
         new SageException(
-          `Failed to make a request to the underlying server, please take a look at the upstream error for more details: `,
+          `Failed to make a request to the underlying error, please take a look at the upstream for more details: `,
           e
         )
       );
@@ -342,5 +431,22 @@ export class Sage {
     config: SageConfig
   ): Sage {
     return new Sage(sageServer, method, path, config);
+  }
+
+  private assert(response: Dispatcher.ResponseData): void {
+    for (const assert of this.asserts) {
+      if (assert.type === 'status-code') {
+        assert.fn(response.statusCode);
+      }
+
+      if (assert.type === 'status-code-arr') {
+        assert.fn(response.statusCode);
+      }
+
+      if (assert.type === 'header') {
+        const header = response.headers[assert.header];
+        assert.fn(header as string);
+      }
+    }
   }
 }

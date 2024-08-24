@@ -4,6 +4,7 @@ import fs from 'node:fs';
 import { readdir, unlink } from 'node:fs/promises';
 import { Buffer } from 'node:buffer';
 import { describe } from 'vitest';
+import { SageAssertException } from '../src/SageAssertException.js';
 
 const expectedExpressResponse: SageHttpResponse = {
   statusCode: 200,
@@ -92,6 +93,48 @@ describe('request', () => {
 
   const expressApp = getExpressApp();
   const fastifyApp = getFastifyApp();
+
+  describe('assert', () => {
+    it('should assert status code', async () => {
+      try {
+        await request(expressApp).get('/download').expect(401);
+        expect(true).toBe(false);
+      } catch (err) {
+        expect(err).toBeInstanceOf(SageAssertException);
+      }
+    });
+
+    it('should assert multiple status codes', async () => {
+      try {
+        await request(expressApp).get('/download').expect([401, 401]);
+        expect(true).toBe(false);
+      } catch (err) {
+        expect(err).toBeInstanceOf(SageAssertException);
+      }
+    });
+
+    it('should assert header by string', async () => {
+      try {
+        await request(expressApp)
+          .get('/download')
+          .expect('content-type', 'image/png');
+        expect(true).toBe(false);
+      } catch (err) {
+        expect(err).toBeInstanceOf(SageAssertException);
+      }
+    });
+
+    it('should assert header by regexp', async () => {
+      try {
+        await request(expressApp)
+          .get('/download')
+          .expect('content-type', /png/);
+        expect(true).toBe(false);
+      } catch (err) {
+        expect(err).toBeInstanceOf(SageAssertException);
+      }
+    });
+  });
 
   describe('close', () => {
     it('should close the server in dedicated mode', async () => {

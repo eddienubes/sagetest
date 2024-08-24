@@ -55,3 +55,24 @@ export type SetCookieHeaderProperties =
   | 'Path'
   | 'SameSite'
   | 'Secure';
+
+export type SageAssert = StatusCodeAssert | StatusCodeArrAssert | HeaderAssert;
+
+export type StatusCodeAssert = {
+  type: 'status-code';
+  expected: number;
+  fn: (actual?: number) => void;
+};
+
+export type StatusCodeArrAssert = {
+  type: 'status-code-arr';
+  expected: number[];
+  fn: (actual?: number) => void;
+};
+
+export type HeaderAssert = {
+  type: 'header';
+  header: string;
+  expected: string | RegExp;
+  fn: (actual?: string | null) => void;
+};
