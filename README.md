@@ -6,6 +6,9 @@
     Neat and streamlined testing library for node.js HTTP servers powered by <a href="https://github.com/nodejs/undici"><strong>undici</strong></a>.
 <p>
 <p align="center">
+    It's currently in alpha. Everything could be a breaking change until the first major version.
+<p>
+<p align="center">
  <a href="https://eddienubes.github.io/sagetest/">Documentation</a> | <a href="https://eddienubes.github.io/sagetest/getting-started/introduction/">Getting Started</a>
 </p>
 <p align="center">
@@ -21,7 +24,7 @@
 - Built on top of [undici](https://github.com/nodejs/undici) for **maximum performance**.
 - Provides **easy-to-use**, supertest-like API.
 - Supports a **dedicated test server** to reduce the number of instances spawned during testing.
-- Supports **Node.js v16.5 and above**.
+- Supports **Node.js v18.0 and above**.
 - **No unnecessary** third-party dependencies.
 - Automatically handles **cookie parsing**.
 
@@ -33,7 +36,7 @@ yarn add -D sagetest
 pnpm add -D sagetest
 ```
 
-> Sagetest supports Node.js v16.5 and above out of the box.
+> Sagetest supports Node.js v18.0 and above out of the box.
 > Even though **undici**'s support starts from Node.js v18.
 > This is possible due to one-liner [polyfills](https://github.com/eddienubes/sagetest/blob/main/src/polyfill.ts) for
 > WebAPI Readable/WritableStreams and Blob,
