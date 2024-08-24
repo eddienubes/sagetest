@@ -35,7 +35,7 @@ import { SageAssertException } from './SageAssertException.js';
  * Greetings, I'm Sage - a chainable HTTP Testing Assistant.
  * Not meant to be used directly.
  */
-export class Sage {
+export class Sage<T> {
   private sageServer: SageServer;
   private config: SageConfig;
   private request: SageHttpRequest = {};
@@ -354,7 +354,7 @@ export class Sage {
   }
 
   async then(
-    resolve: ThenableResolve<SageHttpResponse>,
+    resolve: ThenableResolve<SageHttpResponse<T>>,
     reject: ThenableReject
   ): Promise<void> {
     // Wait for all deferred promises to resolve
@@ -388,14 +388,14 @@ export class Sage {
         statusText: statusCodeToMessage(res.statusCode),
         headers: res.headers as SageResponseHeaders,
         buffer: buffer,
-        body: json || buffer,
+        body: (json as T) || (buffer as T),
         text: text,
         ok: isOkay(res.statusCode),
         redirect: isRedirect(res.statusCode),
         location: res.headers?.['location'] as string,
         error: isError(res.statusCode),
         cookies: parseSetCookieHeader(res.headers['set-cookie'])
-      } satisfies SageHttpResponse);
+      } satisfies SageHttpResponse<T>);
     } catch (e) {
       if (e instanceof SageAssertException) {
         reject(e);
@@ -424,12 +424,12 @@ export class Sage {
    * @param path
    * @param config
    */
-  static fromRequestLine(
+  static fromRequestLine<T>(
     sageServer: SageServer,
     method: HttpMethod,
     path: string,
     config: SageConfig
-  ): Sage {
+  ): Sage<T> {
     return new Sage(sageServer, method, path, config);
   }
 

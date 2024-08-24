@@ -1,14 +1,14 @@
 import { HttpStatusText } from './constants.js';
 import { CookieOptions } from './types.js';
 
-export interface SageHttpResponse {
+export interface SageHttpResponse<T = any> {
   /**
    * Beware that body will fall back to buffer if the response is a file or server has redirected the request.
    * If you want to stream the file, the response promise implements NodeJS Readable, just don't await it.
    * The type includes "any" to ease the migration from supertest.
    * If you stand against it, please open an issue here https://github.com/eddienubes/sagetest
    */
-  body: any;
+  body: T;
 
   /**
    * Text representation of the body.
