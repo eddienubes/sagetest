@@ -42,7 +42,7 @@ export class SageServer {
       });
     });
 
-    return this.listeningPromise;
+    return await this.listeningPromise;
   }
 
   async close(): Promise<void> {

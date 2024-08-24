@@ -3,6 +3,7 @@ import { request, SageHttpResponse } from '../src/index.js';
 import fs from 'node:fs';
 import { readdir, unlink } from 'node:fs/promises';
 import { Buffer } from 'node:buffer';
+import { describe } from 'vitest';
 
 const expectedExpressResponse: SageHttpResponse = {
   statusCode: 200,
@@ -91,6 +92,18 @@ describe('request', () => {
 
   const expressApp = getExpressApp();
   const fastifyApp = getFastifyApp();
+
+  describe('close', () => {
+    it('should close the server in dedicated mode', async () => {
+      const test = request(expressApp, { dedicated: true });
+      await test.close();
+    });
+
+    it('should throw an error if mode is not set to dedicated', async () => {
+      const test = request(expressApp);
+      await expect(test.close()).rejects.toThrowError();
+    });
+  });
 
   describe('express', () => {
     describe('downloads', () => {
