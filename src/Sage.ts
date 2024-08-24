@@ -1,4 +1,4 @@
-import { HttpMethod, ThenableResolve } from './types.js';
+import { HttpMethod, ThenableReject, ThenableResolve } from './types.js';
 import { SageHttpRequest } from './SageHttpRequest.js';
 import { Readable } from 'node:stream';
 import { Client, FormData } from 'undici';
@@ -267,7 +267,10 @@ export class Sage {
     return this;
   }
 
-  async then(resolve: ThenableResolve<SageHttpResponse>): Promise<void> {
+  async then(
+    resolve: ThenableResolve<SageHttpResponse>,
+    reject: ThenableReject
+  ): Promise<void> {
     // Wait for all deferred promises to resolve
     await Promise.all(this.deferredPromises);
 
@@ -307,9 +310,11 @@ export class Sage {
         cookies: parseSetCookieHeader(res.headers['set-cookie'])
       } satisfies SageHttpResponse);
     } catch (e) {
-      throw new SageException(
-        `Failed to make a request to the underlying server, please take a look at the upstream error for more details: `,
-        e
+      reject(
+        new SageException(
+          `Failed to make a request to the underlying server, please take a look at the upstream error for more details: `,
+          e
+        )
       );
     } finally {
       // If there is a dedicated server, skip its shutdown. User is responsible for it.
