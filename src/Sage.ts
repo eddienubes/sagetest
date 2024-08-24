@@ -24,6 +24,7 @@ import { FormDataOptions } from './FormDataOptions.js';
 import { createReadStream } from 'node:fs';
 import { SageConfig } from './SageConfig.js';
 import { SageServer } from './SageServer.js';
+import fs from 'node:fs/promises';
 
 /**
  * Greetings, I'm Sage - a chainable HTTP Testing Assistant.
@@ -180,7 +181,7 @@ export class Sage {
    * If file is a string, it will be treated as a path to a file starting from the working directory (process.cwd()).
    * @throws SageException if body is already set
    * @param field
-   * @param file a Blob, Buffer, Readable stream or a file path (staring from the working directory)
+   * @param file a Blob, Buffer, Readable stream or a file path either staring from the working directory, or an absolute path
    * @param options you can pass either object with type and filename or just a string with filename
    */
   attach(
@@ -199,7 +200,9 @@ export class Sage {
 
       // If a string always treat it as a file path
       if (typeof file === 'string') {
-        file = createReadStream(path.join(process.cwd(), file));
+        file = path.isAbsolute(file) ? file : path.join(process.cwd(), file);
+
+        file = createReadStream(file);
       }
 
       if (typeof options === 'string') {
