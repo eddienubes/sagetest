@@ -36,12 +36,6 @@ yarn add -D sagetest
 pnpm add -D sagetest
 ```
 
-> Sagetest supports Node.js v18.0 and above out of the box.
-> Even though **undici**'s support starts from Node.js v18.
-> This is possible due to one-liner [polyfills](https://github.com/eddienubes/sagetest/blob/main/src/polyfill.ts) for
-> WebAPI Readable/WritableStreams and Blob,
-> which were not available at that time globally (globalThis).
-
 ## 🎬 Sagetest in action
 
 > There are several other methods which you can find in the [API documentation](https://eddienubes.github.io/sagetest/).
