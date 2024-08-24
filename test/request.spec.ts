@@ -2,6 +2,8 @@ import { getExpressApp, getFastifyApp } from './utils.js';
 import { request, SageHttpResponse } from '../src/index.js';
 import fs from 'node:fs';
 import { readdir, unlink } from 'node:fs/promises';
+import { Buffer } from 'node:buffer';
+import { describe } from 'vitest';
 
 const expectedExpressResponse: SageHttpResponse = {
   statusCode: 200,
@@ -27,6 +29,7 @@ const expectedExpressResponse: SageHttpResponse = {
     query: {},
     files: {}
   },
+  buffer: expect.any(Buffer),
   text: expect.any(String),
   ok: true,
   redirect: false,
@@ -35,7 +38,7 @@ const expectedExpressResponse: SageHttpResponse = {
   cookies: {}
 };
 
-const expectedFastifyResponse: SageHttpResponse = {
+const expectedFastifyResponse = {
   statusCode: 200,
   status: 200,
   statusText: 'OK',
@@ -66,13 +69,14 @@ const expectedFastifyResponse: SageHttpResponse = {
       }
     ]
   },
+  buffer: expect.any(Buffer),
   text: expect.any(String),
   ok: true,
   redirect: false,
   location: undefined,
   error: false,
   cookies: {}
-};
+} as Partial<SageHttpResponse>;
 
 describe('request', () => {
   afterAll(async () => {
@@ -89,7 +93,38 @@ describe('request', () => {
   const expressApp = getExpressApp();
   const fastifyApp = getFastifyApp();
 
+  describe('close', () => {
+    it('should close the server in dedicated mode', async () => {
+      const test = request(expressApp, { dedicated: true });
+      await test.close();
+    });
+
+    it('should throw an error if mode is not set to dedicated', async () => {
+      const test = request(expressApp);
+      await expect(test.close()).rejects.toThrowError();
+    });
+  });
+
   describe('express', () => {
+    describe('downloads', () => {
+      it('should download and buffer file if sent by the server', async () => {
+        const res = await request(expressApp).get('/download');
+
+        // long string comparison breaks the test
+        delete expectedFastifyResponse.text;
+
+        expect(res).toMatchObject({
+          ...expectedFastifyResponse,
+          body: expect.any(Buffer),
+          headers: {
+            connection: 'keep-alive',
+            'content-type': 'image/jpeg',
+            date: expect.any(String)
+          }
+        });
+      });
+    });
+
     describe('multipart/form-data', () => {
       it('should work with filename', async () => {
         const res = await request(expressApp)
@@ -384,8 +419,10 @@ describe('request', () => {
       it('should properly operate with redirects', async () => {
         const res = await request(expressApp).get('/redirect');
 
+        console.log(res.body.toString('utf-8'));
+
         expect(res).toMatchObject({
-          body: null,
+          body: expect.any(Buffer),
           headers: {
             connection: 'keep-alive',
             date: expect.any(String),
@@ -545,6 +582,25 @@ describe('request', () => {
   describe('fastify', () => {
     beforeAll(async () => {
       await fastifyApp.ready();
+    });
+
+    describe('downloads', () => {
+      it('should download and buffer file if sent by the server', async () => {
+        const res = await request(fastifyApp.server).get('/download');
+
+        // long string comparison breaks the test
+        delete expectedFastifyResponse.text;
+
+        expect(res).toMatchObject({
+          ...expectedFastifyResponse,
+          body: expect.any(Buffer),
+          headers: {
+            connection: 'keep-alive',
+            'content-type': 'image/jpeg',
+            date: expect.any(String)
+          }
+        });
+      });
     });
 
     describe('multipart/form-data', () => {
@@ -787,7 +843,7 @@ describe('request', () => {
 
         expect(res).toMatchObject({
           ...expectedFastifyResponse,
-          body: null,
+          body: expect.any(Buffer),
           headers: {
             connection: 'keep-alive',
             location: 'https://www.google.com'

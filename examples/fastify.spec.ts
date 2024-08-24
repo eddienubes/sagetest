@@ -50,6 +50,7 @@ describe('Fastify Test Suite', () => {
           value: 'choco'
         }
       },
+      buffer: expect.any(Buffer),
       error: false,
       headers: {
         connection: 'keep-alive',

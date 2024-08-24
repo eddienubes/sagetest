@@ -3,13 +3,23 @@ import { CookieOptions } from './types.js';
 
 export interface SageHttpResponse {
   /**
-   * Beware that body could be null if server has redirected etc.
+   * Beware that body will fall back to buffer if the response is a file or server has redirected the request.
+   * If you want to stream the file, the response promise implements NodeJS Readable, just don't await it.
+   * The type includes "any" to ease the migration from supertest.
+   * If you stand against it, please open an issue here https://github.com/eddienubes/sagetest
    */
   body: any;
+
   /**
-   * Text representation of the body
+   * Text representation of the body.
+   * Be careful, sometimes buffer-string to string comparison is slow or unreliable in tests (jest/vitest)
    */
   text: string;
+  /**
+   * Buffer representation of the body. Useful for file downloads.
+   */
+  buffer: Buffer;
+
   statusCode: number;
   /**
    * Alias of statusCode

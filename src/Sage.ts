@@ -1,5 +1,4 @@
-import { Server } from 'node:http';
-import { HttpMethod, SageServer, ThenableResolve } from './types.js';
+import { HttpMethod, ThenableResolve } from './types.js';
 import { SageHttpRequest } from './SageHttpRequest.js';
 import { Readable } from 'node:stream';
 import { Client, FormData } from 'undici';
@@ -23,14 +22,14 @@ import { SageHttpResponse, SageResponseHeaders } from './SageHttpResponse.js';
 import path from 'node:path';
 import { FormDataOptions } from './FormDataOptions.js';
 import { createReadStream } from 'node:fs';
-import { AddressInfo } from 'node:net';
 import { SageConfig } from './SageConfig.js';
+import { SageServer } from './SageServer.js';
 
 /**
  * Greetings, I'm Sage - a chainable HTTP Testing Assistant.
  * Not meant to be used directly.
  */
-export class Sage {
+export class Sage extends Readable {
   private sageServer: SageServer;
   private config: SageConfig;
   private request: SageHttpRequest = {};
@@ -52,6 +51,8 @@ export class Sage {
     path: string,
     config: SageConfig
   ) {
+    super();
+
     this.sageServer = sageServer;
     this.config = config;
     this.request.method = method;
@@ -62,20 +63,19 @@ export class Sage {
       keepAliveMaxTimeout: 1
     };
 
-    this.deferredPromises.push(this.sageServer.listenResolver());
+    this.deferredPromises.push(this.sageServer.waitForListening());
 
     // If the server is already launched, the port should be available
     if (this.sageServer.launched) {
-      const port = this.getServerPort(this.sageServer.server);
+      const port = sageServer.getPort();
 
       this.client = new Client(`http://localhost:${port}`, httpClientOptions);
-      return;
+    } else {
+      void this.sageServer.listen(0);
+      const port = sageServer.getPort();
+
+      this.client = new Client(`http://localhost:${port}`, httpClientOptions);
     }
-
-    this.sageServer.server.listen(0);
-    const port = this.getServerPort(this.sageServer.server);
-
-    this.client = new Client(`http://localhost:${port}`, httpClientOptions);
   }
 
   /**
@@ -289,15 +289,18 @@ export class Sage {
         reset: !this.config.keepAlive
       });
 
-      const text = await res.body.text();
+      const buffer = Buffer.from(await res.body.arrayBuffer());
+      const text = buffer.toString('utf-8');
       const json = parseJsonStr(text);
 
+      // TODO: add stream for piping files
       resolve({
         statusCode: res.statusCode,
         status: res.statusCode,
         statusText: statusCodeToMessage(res.statusCode),
         headers: res.headers as SageResponseHeaders,
-        body: json,
+        buffer: buffer,
+        body: json || buffer,
         text: text,
         ok: isOkay(res.statusCode),
         redirect: isRedirect(res.statusCode),
@@ -313,21 +316,9 @@ export class Sage {
     } finally {
       // If there is a dedicated server, skip its shutdown. User is responsible for it.
       if (!this.config.dedicated) {
-        this.sageServer.server.close();
+        await this.sageServer.close();
       }
     }
-  }
-
-  private getServerPort(server: Server): number {
-    const address = server.address() as AddressInfo | null;
-
-    if (!address?.port) {
-      throw new SageException(
-        'Server is not listening, please report this error if encountered'
-      );
-    }
-
-    return address.port;
   }
 
   /**
