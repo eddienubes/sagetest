@@ -95,44 +95,70 @@ describe('request', () => {
   const fastifyApp = getFastifyApp();
 
   describe('assert', () => {
-    it('should assert status code', async () => {
-      try {
-        await request(expressApp).get('/download').expect(401);
-        expect(true).toBe(false);
-      } catch (err) {
-        expect(err).toBeInstanceOf(SageAssertException);
-      }
+    describe('successful assertions', () => {
+      it('should assert multiple conditions successfully', async () => {
+        try {
+          await request(expressApp)
+            .get('/download')
+            .expect(200)
+            .expect('content-type', 'image/jpeg');
+        } catch (err) {
+          expect(true).toBe(false);
+        }
+      });
     });
 
-    it('should assert multiple status codes', async () => {
-      try {
-        await request(expressApp).get('/download').expect([401, 401]);
-        expect(true).toBe(false);
-      } catch (err) {
-        expect(err).toBeInstanceOf(SageAssertException);
-      }
-    });
+    describe('failing assertions', () => {
+      it('should assert status code', async () => {
+        try {
+          await request(expressApp).get('/download').expect(401);
+          expect(true).toBe(false);
+        } catch (err) {
+          expect(err).toBeInstanceOf(SageAssertException);
+        }
+      });
 
-    it('should assert header by string', async () => {
-      try {
-        await request(expressApp)
-          .get('/download')
-          .expect('content-type', 'image/png');
-        expect(true).toBe(false);
-      } catch (err) {
-        expect(err).toBeInstanceOf(SageAssertException);
-      }
-    });
+      it('should assert multiple status codes', async () => {
+        try {
+          await request(expressApp).get('/download').expect([401, 401]);
+          expect(true).toBe(false);
+        } catch (err) {
+          expect(err).toBeInstanceOf(SageAssertException);
+        }
+      });
 
-    it('should assert header by regexp', async () => {
-      try {
-        await request(expressApp)
-          .get('/download')
-          .expect('content-type', /png/);
-        expect(true).toBe(false);
-      } catch (err) {
-        expect(err).toBeInstanceOf(SageAssertException);
-      }
+      it('should assert header by string', async () => {
+        try {
+          await request(expressApp)
+            .get('/download')
+            .expect('content-type', 'image/png');
+          expect(true).toBe(false);
+        } catch (err) {
+          expect(err).toBeInstanceOf(SageAssertException);
+        }
+      });
+
+      it('should assert header by regexp', async () => {
+        try {
+          await request(expressApp)
+            .get('/download')
+            .expect('content-type', /png/);
+          expect(true).toBe(false);
+        } catch (err) {
+          expect(err).toBeInstanceOf(SageAssertException);
+        }
+      });
+
+      it('should assert header by array', async () => {
+        try {
+          await request(expressApp)
+            .get('/download')
+            .expect('content-type', ['whatever', 'image/png']);
+          expect(true).toBe(false);
+        } catch (err) {
+          expect(err).toBeInstanceOf(SageAssertException);
+        }
+      });
     });
   });
 

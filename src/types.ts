@@ -73,6 +73,6 @@ export type StatusCodeArrAssert = {
 export type HeaderAssert = {
   type: 'header';
   header: string;
-  expected: string | RegExp;
-  fn: (actual?: string | null) => void;
+  expected: string | string[] | RegExp;
+  fn: (actual?: string | string[] | null) => void;
 };

@@ -277,77 +277,25 @@ export class Sage<T> {
     return this;
   }
 
-  expect(header: string, expectedHeader: string | RegExp): this;
+  expect(header: string, expectedHeader: string | string[] | RegExp): this;
   expect(statuses: number[]): this;
   expect(status: number): this;
   expect(
     statusOrStatuses: number | number[] | string,
-    expectedHeader?: string | RegExp
+    expectedHeader?: string | string[] | RegExp
   ): this {
     const expectedStack = new Error().stack?.split('\n')[2] as string;
 
-    if (typeof statusOrStatuses === 'number') {
-      this.asserts.push({
-        type: 'status-code',
-        expected: statusOrStatuses,
-        fn: (actual) => {
-          if (actual !== statusOrStatuses) {
-            throw new SageAssertException(
-              `Expected status code ${statusOrStatuses}, but got ${actual}`,
-              expectedStack
-            );
-          }
-        }
-      });
+    if (typeof statusOrStatuses === 'string' && expectedHeader) {
+      this.expectHeaders(statusOrStatuses, expectedHeader, expectedStack);
+      return this;
     }
 
-    if (Array.isArray(statusOrStatuses)) {
-      this.asserts.push({
-        type: 'status-code-arr',
-        expected: statusOrStatuses,
-        fn: (actual) => {
-          if (!statusOrStatuses.some((s) => s === actual)) {
-            throw new SageAssertException(
-              `Expected status codes ${statusOrStatuses.join(', ')}, but got ${actual}`,
-              expectedStack
-            );
-          }
-        }
-      });
-    }
-
-    if (typeof statusOrStatuses === 'string' && expectedHeader !== undefined) {
-      this.asserts.push({
-        type: 'header',
-        header: statusOrStatuses,
-        expected: expectedHeader,
-        fn: (actual) => {
-          if (actual === null || actual === undefined) {
-            throw new SageAssertException(
-              `Header ${statusOrStatuses} is not present`,
-              expectedStack
-            );
-          }
-
-          if (typeof expectedHeader === 'string') {
-            if (actual !== expectedHeader) {
-              throw new SageAssertException(
-                `Expected header ${statusOrStatuses} to be ${expectedHeader}, but got ${actual}`,
-                expectedStack
-              );
-            }
-          }
-
-          if (expectedHeader instanceof RegExp) {
-            if (!expectedHeader.test(actual)) {
-              throw new SageAssertException(
-                `Expected header ${statusOrStatuses} to match ${expectedHeader}, but got ${actual}`,
-                expectedStack
-              );
-            }
-          }
-        }
-      });
+    if (
+      typeof statusOrStatuses === 'number' ||
+      Array.isArray(statusOrStatuses)
+    ) {
+      this.expectStatuses(statusOrStatuses, expectedStack);
     }
 
     return this;
@@ -433,6 +381,155 @@ export class Sage<T> {
     return new Sage(sageServer, method, path, config);
   }
 
+  private expectStatuses(
+    statuses: number | number[],
+    expectStackTrace: string
+  ): void {
+    if (typeof statuses === 'number') {
+      this.asserts.push({
+        type: 'status-code',
+        expected: statuses,
+        fn: (actual) => {
+          if (actual !== statuses) {
+            throw new SageAssertException(
+              `Expected status code to be ${statuses}, but got ${actual}`,
+              expectStackTrace
+            );
+          }
+        }
+      });
+    }
+
+    if (Array.isArray(statuses)) {
+      this.asserts.push({
+        type: 'status-code-arr',
+        expected: statuses,
+        fn: (actual) => {
+          if (!statuses.some((status) => status === actual)) {
+            throw new SageAssertException(
+              `Expected status code to be one of ${statuses.join(', ')}, but got ${actual}`,
+              expectStackTrace
+            );
+          }
+        }
+      });
+    }
+  }
+
+  private expectHeaders(
+    header: string,
+    expected: string | string[] | RegExp,
+    expectStackTrace: string
+  ): void {
+    if (typeof expected === 'string') {
+      this.asserts.push({
+        type: 'header',
+        header: header,
+        expected,
+        fn: (actual) => {
+          if (actual !== expected) {
+            throw new SageAssertException(
+              `Expected header ${header} to be ${expected}, but got ${actual}`,
+              expectStackTrace
+            );
+          }
+        }
+      });
+    }
+
+    if (Array.isArray(expected)) {
+      this.asserts.push({
+        type: 'header',
+        header: header,
+        expected,
+        fn: (actual) => {
+          if (actual === null || actual === undefined) {
+            throw new SageAssertException(
+              `Header ${header} is not present`,
+              expectStackTrace
+            );
+          }
+
+          if (!Array.isArray(actual)) {
+            throw new SageAssertException(
+              `Expected header ${header} to be an array ${expected.join(', ')}, but got ${typeof actual}: ${actual}`,
+              expectStackTrace
+            );
+          }
+
+          if (!expected.every((header) => actual.includes(header))) {
+            throw new SageAssertException(
+              `Expected header ${header} to include ${expected.join(', ')}, but got ${actual.join(', ')}`,
+              expectStackTrace
+            );
+          }
+        }
+      });
+    }
+
+    if (typeof expected === 'string') {
+      this.asserts.push({
+        type: 'header',
+        header: header,
+        expected,
+        fn: (actual) => {
+          if (actual === null || actual === undefined) {
+            throw new SageAssertException(
+              `Header ${header} is not present`,
+              expectStackTrace
+            );
+          }
+
+          if (typeof actual !== 'string') {
+            throw new SageAssertException(
+              `Expected header ${header} to be a string ${expected}, but got ${typeof actual}: ${actual}`,
+              expectStackTrace
+            );
+          }
+
+          if (actual !== expected) {
+            throw new SageAssertException(
+              `Expected header ${header} to be ${expected}, but got ${actual}`,
+              expectStackTrace
+            );
+          }
+        }
+      });
+    }
+
+    if (expected instanceof RegExp) {
+      this.asserts.push({
+        type: 'header',
+        header: header,
+        expected,
+        fn: (actual) => {
+          if (actual === null || actual === undefined) {
+            throw new SageAssertException(
+              `Header ${header} is not present`,
+              expectStackTrace
+            );
+          }
+
+          if (Array.isArray(actual)) {
+            if (!actual.some((header) => expected.test(header))) {
+              throw new SageAssertException(
+                `Expected header ${header} to match ${expected}, but got ${actual.join(', ')}`,
+                expectStackTrace
+              );
+            }
+          } else if (typeof actual === 'string') {
+            if (!expected.test(actual)) {
+              throw new SageAssertException(
+                `Expected header ${header} to match ${expected}, but got ${actual}`,
+                expectStackTrace
+              );
+            }
+          }
+        }
+      });
+    }
+  }
+
   private assert(response: Dispatcher.ResponseData): void {
     for (const assert of this.asserts) {
       if (assert.type === 'status-code') {
@@ -445,7 +542,7 @@ export class Sage<T> {
 
       if (assert.type === 'header') {
         const header = response.headers[assert.header];
-        assert.fn(header as string);
+        assert.fn(header);
       }
     }
   }
