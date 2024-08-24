@@ -274,7 +274,7 @@ export class Sage<T> {
     return this;
   }
 
-  field(field: string, value: string | string[]): this {
+  field(field: string, value: string | string[] | number | boolean): this {
     if (!this.request.formData) {
       this.request.formData = new FormData();
     }
