@@ -30,6 +30,7 @@ import { createReadStream } from 'node:fs';
 import { SageConfig } from './SageConfig.js';
 import { SageServer } from './SageServer.js';
 import { SageAssertException } from './SageAssertException.js';
+import { IncomingHttpHeaders } from 'undici/types/header.js';
 
 /**
  * Greetings, I'm Sage - a chainable HTTP Testing Assistant.
@@ -123,11 +124,24 @@ export class Sage<T> {
    * Sets a header for the request.
    * Consider using this at the end of the chain if you want to override any of the defaults.
    * @param key
-   * @param value
    */
-  set(key: string, value: string | string[]): this {
+  set(key: IncomingHttpHeaders): this;
+  set(key: string, value: string | string[]): this;
+  set(key: string, value: string): this;
+  set(key: string | IncomingHttpHeaders, value?: string | string[]): this {
     if (!this.request.headers) {
       this.request.headers = {};
+    }
+
+    if (typeof key === 'object' && value === undefined) {
+      this.request.headers = key;
+      return this;
+    }
+
+    if (value === undefined || typeof key === 'object') {
+      throw new SageException(
+        'When setting headers one by one, both key and value are required'
+      );
     }
 
     value = wrapArray(value);

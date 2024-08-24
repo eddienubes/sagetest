@@ -432,6 +432,7 @@ describe('request', () => {
         } as SageHttpResponse);
       });
     });
+
     describe('application/json', () => {
       it('should properly call sage assistant and respond in expected format', async () => {
         const res = await request(expressApp)
@@ -484,6 +485,7 @@ describe('request', () => {
         });
       });
     });
+
     describe('redirects', () => {
       it('should properly operate with redirects', async () => {
         const res = await request(expressApp).get('/redirect');
@@ -512,6 +514,7 @@ describe('request', () => {
         });
       });
     });
+
     describe('header', () => {
       it('should set and pass a single header', async () => {
         const res = await request(expressApp)
@@ -575,7 +578,24 @@ describe('request', () => {
           }
         } as SageHttpResponse);
       });
+
+      it('should accept objects', async () => {
+        const res = await request(expressApp).post('/ping-pong').set({
+          'x-custom-header': 'custom-value1',
+          'x-custom-header2': 'custom-value2'
+        });
+
+        expect(res).toMatchObject({
+          body: {
+            reqHeaders: {
+              'x-custom-header': 'custom-value1',
+              'x-custom-header2': 'custom-value2'
+            }
+          }
+        } as SageHttpResponse);
+      });
     });
+
     describe('cookies', () => {
       it('should parse cookies properly for response', async () => {
         const res = await request(expressApp).get('/cookie');
@@ -1001,6 +1021,22 @@ describe('request', () => {
           body: {
             reqHeaders: {
               'x-custom-header': 'custom-value1'
+            }
+          }
+        } as SageHttpResponse);
+      });
+
+      it('should accept objects', async () => {
+        const res = await request(expressApp).post('/ping-pong').set({
+          'x-custom-header': 'custom-value1',
+          'x-custom-header2': 'custom-value2'
+        });
+
+        expect(res).toMatchObject({
+          body: {
+            reqHeaders: {
+              'x-custom-header': 'custom-value1',
+              'x-custom-header2': 'custom-value2'
             }
           }
         } as SageHttpResponse);
