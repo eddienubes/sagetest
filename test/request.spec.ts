@@ -93,6 +93,25 @@ describe('request', () => {
   const fastifyApp = getFastifyApp();
 
   describe('express', () => {
+    describe('downloads', () => {
+      it('should download and buffer file if sent by the server', async () => {
+        const res = await request(expressApp).get('/download');
+
+        // long string comparison breaks the test
+        delete expectedFastifyResponse.text;
+
+        expect(res).toMatchObject({
+          ...expectedFastifyResponse,
+          body: expect.any(Buffer),
+          headers: {
+            connection: 'keep-alive',
+            'content-type': 'image/jpeg',
+            date: expect.any(String)
+          }
+        });
+      });
+    });
+
     describe('multipart/form-data', () => {
       it('should work with filename', async () => {
         const res = await request(expressApp)
@@ -569,10 +588,6 @@ describe('request', () => {
           }
         });
       });
-
-      it('should stream file when readable interface is leveraged', async () => {
-        const res = request(fastifyApp.server).get('/download');
-      });
     });
 
     describe('multipart/form-data', () => {
@@ -815,7 +830,7 @@ describe('request', () => {
 
         expect(res).toMatchObject({
           ...expectedFastifyResponse,
-          body: null,
+          body: expect.any(Buffer),
           headers: {
             connection: 'keep-alive',
             location: 'https://www.google.com'

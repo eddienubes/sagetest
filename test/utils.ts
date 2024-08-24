@@ -64,6 +64,12 @@ export const getExpressApp = (): Express => {
     });
   });
 
+  app.get('/download', async (req, res, next) => {
+    const stream = fs.createReadStream('test/fixtures/cat.jpg');
+    res.setHeader('Content-Type', 'image/jpeg');
+    stream.pipe(res);
+  });
+
   app.get('/error', (req, res, next) => {
     next(new Error('This is a test error'));
   });

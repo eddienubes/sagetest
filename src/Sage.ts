@@ -1,4 +1,3 @@
-import { Server } from 'node:http';
 import { HttpMethod, ThenableResolve } from './types.js';
 import { SageHttpRequest } from './SageHttpRequest.js';
 import { Readable } from 'node:stream';
@@ -23,7 +22,6 @@ import { SageHttpResponse, SageResponseHeaders } from './SageHttpResponse.js';
 import path from 'node:path';
 import { FormDataOptions } from './FormDataOptions.js';
 import { createReadStream } from 'node:fs';
-import { AddressInfo } from 'node:net';
 import { SageConfig } from './SageConfig.js';
 import { SageServer } from './SageServer.js';
 
