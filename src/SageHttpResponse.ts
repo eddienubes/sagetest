@@ -78,7 +78,8 @@ export class SageHttpResponse<T = any> {
   get(header: string): string | null;
   get(header: string | 'Set-Cookie'): string | string[] | null {
     header = header.toLowerCase();
-    const value = this.headers[header];
+    // Undefined isn't respect in SageHeaders, so we need to check it here
+    const value: string | string[] | undefined = this.headers[header];
 
     if (value === undefined) {
       return null;
@@ -96,4 +97,5 @@ export class SageHttpResponse<T = any> {
   }
 }
 
-export type SageResponseHeaders = Record<string, string | string[] | undefined>;
+// Potentially header could be undefined, however, this is too much to check when writing tests
+export type SageResponseHeaders = Record<string, string | string[]>;
