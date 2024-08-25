@@ -1,6 +1,9 @@
 import {
   HttpMethod,
+  RequestHeader,
+  ResponseHeader,
   SageAssert,
+  SageResponseHeaders,
   ThenableReject,
   ThenableResolve
 } from './types.js';
@@ -23,7 +26,7 @@ import {
   streamToBuffer,
   wrapInPromise
 } from './utils.js';
-import { SageHttpResponse, SageResponseHeaders } from './SageHttpResponse.js';
+import { SageHttpResponse } from './SageHttpResponse.js';
 import path from 'node:path';
 import { FormDataOptions } from './FormDataOptions.js';
 import { createReadStream } from 'node:fs';
@@ -31,7 +34,7 @@ import { SageConfig } from './SageConfig.js';
 import { SageServer } from './SageServer.js';
 import { SageAssertException } from './SageAssertException.js';
 import { IncomingHttpHeaders } from 'undici/types/header.js';
-import { HTTP_STATUS_TO_MESSAGE, HttpStatus } from './constants.js';
+import { HttpStatus } from './constants.js';
 
 /**
  * Greetings, I'm Sage - a chainable HTTP Testing Assistant.
@@ -124,12 +127,18 @@ export class Sage<T> {
   /**
    * Sets a header for the request.
    * Consider using this at the end of the chain if you want to override any of the defaults.
+   * Note: you can pass multiple values as an array for a request header.
+   * However, response headers are always concatenated into a string with a comma separator.
+   * It's done for the sake of testing simplicity.
    * @param key
    */
   set(key: IncomingHttpHeaders): this;
-  set(key: string, value: string | string[]): this;
-  set(key: string, value: string): this;
-  set(key: string | IncomingHttpHeaders, value?: string | string[]): this {
+  set(key: RequestHeader, value: string | string[]): this;
+  set(key: RequestHeader, value: string): this;
+  set(
+    key: RequestHeader | IncomingHttpHeaders,
+    value?: string | string[]
+  ): this {
     if (!this.request.headers) {
       this.request.headers = {};
     }
@@ -307,17 +316,20 @@ export class Sage<T> {
     return this;
   }
 
-  expect(header: string, expectedHeader: string | string[] | RegExp): this;
+  expect(
+    header: ResponseHeader,
+    expectedHeader: string | string[] | RegExp
+  ): this;
   expect(statuses: HttpStatus[]): this;
   expect(status: HttpStatus): this;
   expect(
-    statusOrStatuses: HttpStatus | HttpStatus[] | string,
-    expectedHeader?: string | string[] | RegExp
+    statusOrStatuses: HttpStatus | HttpStatus[] | ResponseHeader,
+    expectedHeaderValue?: string | string[] | RegExp
   ): this {
     const expectedStack = new Error().stack?.split('\n')[2] as string;
 
-    if (typeof statusOrStatuses === 'string' && expectedHeader) {
-      this.expectHeaders(statusOrStatuses, expectedHeader, expectedStack);
+    if (typeof statusOrStatuses === 'string' && expectedHeaderValue) {
+      this.expectHeaders(statusOrStatuses, expectedHeaderValue, expectedStack);
       return this;
     }
 

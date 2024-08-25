@@ -623,10 +623,8 @@ describe('request', () => {
 
         expect(res).toMatchObject({
           headers: {
-            'set-cookie': [
-              'name=express; Path=/',
-              'name=I%20love%20my%20mom!; Path=/; HttpOnly'
-            ]
+            'set-cookie':
+              'name=express; Path=/, name=I%20love%20my%20mom!; Path=/; HttpOnly'
           },
           cookies: {
             name: {
@@ -986,7 +984,7 @@ describe('request', () => {
           statusCode: 301,
           text: '',
           ok: false
-        } as SageHttpResponse);
+        } as Partial<SageHttpResponse>);
       });
     });
 
@@ -1091,7 +1089,7 @@ describe('request', () => {
 
         expect(res).toMatchObject({
           headers: {
-            'set-cookie': ['name=fastify', 'love=my%20mom!; HttpOnly']
+            'set-cookie': 'name=fastify, love=my%20mom!; HttpOnly'
           },
           cookies: {
             love: {

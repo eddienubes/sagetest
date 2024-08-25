@@ -1,5 +1,6 @@
 import { RequestListener, Server as HttpServer } from 'node:http';
 import { Dispatcher } from 'undici';
+import { REQUEST_HEADERS, RESPONSE_HEADERS } from './constants.js';
 
 /**
  * RequestListener and Server are both acceptable because Server implements ServerOptions interface
@@ -76,3 +77,14 @@ export type HeaderAssert = {
   expected: string | string[] | RegExp;
   fn: (actual?: string | string[] | null) => void;
 };
+
+export type RequestHeader =
+  | (typeof REQUEST_HEADERS)[number]
+  | Lowercase<(typeof REQUEST_HEADERS)[number]>
+  | string;
+export type ResponseHeader =
+  | (typeof RESPONSE_HEADERS)[number]
+  | Lowercase<(typeof RESPONSE_HEADERS)[number]>
+  | string;
+
+export type SageResponseHeaders = Record<ResponseHeader, string | undefined>;

@@ -1,6 +1,10 @@
+import { CookieOptions, ResponseHeader, SageResponseHeaders } from './types.js';
+import { IncomingHttpHeaders } from 'undici/types/header.js';
 import { HttpStatusText } from './constants.js';
-import { CookieOptions } from './types.js';
-import { wrapArray } from './utils.js';
+
+export interface SageHttpResponseProps {
+  headers: IncomingHttpHeaders;
+}
 
 export class SageHttpResponse<T = any> {
   /**
@@ -34,7 +38,8 @@ export class SageHttpResponse<T = any> {
   /**
    * Contains the response headers.
    * If the header is not present, it will be undefined.
-   * If the header is present multiple times (e.g. Set-Cookie is a popular case), the values are returned as an array.
+   * If header is present multiple times, the values are joined with a comma.
+   * It's done for the sake of testing simplicity.
    */
   headers: SageResponseHeaders;
 
@@ -63,30 +68,28 @@ export class SageHttpResponse<T = any> {
    */
   cookies: Record<string, CookieOptions>;
 
-  constructor(props: Omit<SageHttpResponse, 'get'>) {
-    Object.assign(this, props);
+  constructor(
+    props: Omit<SageHttpResponse, 'get' | 'headers' | 'wrapHeaders'> &
+      SageHttpResponseProps
+  ) {
+    Object.assign(this, {
+      ...props,
+      headers: this.wrapHeaders(props.headers)
+    });
   }
 
   /**
    * Get the value of the header field.
-   * If the header is not present, undefined is returned.
-   * If the header is present multiple times, the values are joined with a comma.
-   * To get raw headers, use this.headers map.
+   * Multiple headers are joined with a comma.
+   * If the header is not present, it will return null.
    * @param header
    */
-  get(header: 'Set-Cookie'): string[] | null;
-  get(header: string): string | null;
-  get(header: string | 'Set-Cookie'): string | string[] | null {
+  get(header: ResponseHeader): string | null {
     header = header.toLowerCase();
-    // Undefined isn't respect in SageHeaders, so we need to check it here
-    const value: string | string[] | undefined = this.headers[header];
+    const value = this.headers[header];
 
     if (value === undefined) {
       return null;
-    }
-
-    if (header === 'set-cookie') {
-      return wrapArray(value);
     }
 
     if (Array.isArray(value)) {
@@ -95,7 +98,19 @@ export class SageHttpResponse<T = any> {
 
     return value;
   }
-}
 
-// Potentially header could be undefined, however, this is too much to check when writing tests
-export type SageResponseHeaders = Record<string, string | string[]>;
+  private wrapHeaders(headers: IncomingHttpHeaders): SageResponseHeaders {
+    const wrapped: SageResponseHeaders = {};
+
+    for (const [key, value] of Object.entries(headers)) {
+      if (value === undefined) {
+        wrapped[key] = undefined;
+        continue;
+      }
+
+      wrapped[key] = Array.isArray(value) ? value.join(', ') : value;
+    }
+
+    return wrapped;
+  }
+}

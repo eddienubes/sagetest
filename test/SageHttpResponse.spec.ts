@@ -2,7 +2,7 @@ import { SageHttpResponse } from '../src/index.js';
 
 describe(SageHttpResponse.name, () => {
   describe('get', () => {
-    it('should returns headers joined by comma', async () => {
+    it('should return headers joined by comma', async () => {
       const response = new SageHttpResponse({
         headers: {
           'some-header': ['i', 'love', 'my mom!']
