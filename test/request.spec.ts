@@ -6,7 +6,7 @@ import { Buffer } from 'node:buffer';
 import { describe } from 'vitest';
 import { SageAssertException } from '../src/SageAssertException.js';
 
-const expectedExpressResponse: SageHttpResponse = {
+const expectedExpressResponse = new SageHttpResponse({
   statusCode: 200,
   status: 200,
   statusText: 'OK',
@@ -37,9 +37,9 @@ const expectedExpressResponse: SageHttpResponse = {
   location: undefined,
   error: false,
   cookies: {}
-};
+}) as Partial<SageHttpResponse>;
 
-const expectedFastifyResponse = {
+const expectedFastifyResponse = new SageHttpResponse({
   statusCode: 200,
   status: 200,
   statusText: 'OK',
@@ -77,7 +77,7 @@ const expectedFastifyResponse = {
   location: undefined,
   error: false,
   cookies: {}
-} as Partial<SageHttpResponse>;
+}) as Partial<SageHttpResponse>;
 
 describe('request', () => {
   afterAll(async () => {

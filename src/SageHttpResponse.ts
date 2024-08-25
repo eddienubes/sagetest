@@ -1,7 +1,8 @@
 import { HttpStatusText } from './constants.js';
 import { CookieOptions } from './types.js';
+import { wrapArray } from './utils.js';
 
-export interface SageHttpResponse<T = any> {
+export class SageHttpResponse<T = any> {
   /**
    * Beware that body will fall back to buffer if the response is a file or server has redirected the request.
    * If you want to stream the file, the response promise implements NodeJS Readable, just don't await it.
@@ -29,6 +30,12 @@ export interface SageHttpResponse<T = any> {
    * The mapping of status codes to status messages as defined in the HTTP/1.1 specification
    */
   statusText: HttpStatusText;
+
+  /**
+   * Contains the response headers.
+   * If the header is not present, it will be undefined.
+   * If the header is present multiple times (e.g. Set-Cookie is a popular case), the values are returned as an array.
+   */
   headers: SageResponseHeaders;
 
   /**
@@ -55,6 +62,38 @@ export interface SageHttpResponse<T = any> {
    * Cookies sent by the server. Also, accessible from headers['set-cookie']
    */
   cookies: Record<string, CookieOptions>;
+
+  constructor(props: Omit<SageHttpResponse, 'get'>) {
+    Object.assign(this, props);
+  }
+
+  /**
+   * Get the value of the header field.
+   * If the header is not present, undefined is returned.
+   * If the header is present multiple times, the values are joined with a comma.
+   * To get raw headers, use this.headers map.
+   * @param header
+   */
+  get(header: 'Set-Cookie'): string[] | null;
+  get(header: string): string | null;
+  get(header: string | 'Set-Cookie'): string | string[] | null {
+    header = header.toLowerCase();
+    const value = this.headers[header];
+
+    if (value === undefined) {
+      return null;
+    }
+
+    if (header === 'set-cookie') {
+      return wrapArray(value);
+    }
+
+    if (Array.isArray(value)) {
+      return value.join(', ');
+    }
+
+    return value;
+  }
 }
 
-export type SageResponseHeaders = Record<string, string | string[]>;
+export type SageResponseHeaders = Record<string, string | string[] | undefined>;

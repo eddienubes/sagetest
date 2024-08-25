@@ -31,6 +31,7 @@ import { SageConfig } from './SageConfig.js';
 import { SageServer } from './SageServer.js';
 import { SageAssertException } from './SageAssertException.js';
 import { IncomingHttpHeaders } from 'undici/types/header.js';
+import { HTTP_STATUS_TO_MESSAGE, HttpStatus } from './constants.js';
 
 /**
  * Greetings, I'm Sage - a chainable HTTP Testing Assistant.
@@ -307,10 +308,10 @@ export class Sage<T> {
   }
 
   expect(header: string, expectedHeader: string | string[] | RegExp): this;
-  expect(statuses: number[]): this;
-  expect(status: number): this;
+  expect(statuses: HttpStatus[]): this;
+  expect(status: HttpStatus): this;
   expect(
-    statusOrStatuses: number | number[] | string,
+    statusOrStatuses: HttpStatus | HttpStatus[] | string,
     expectedHeader?: string | string[] | RegExp
   ): this {
     const expectedStack = new Error().stack?.split('\n')[2] as string;
@@ -368,7 +369,7 @@ export class Sage<T> {
       const text = buffer.toString('utf-8');
       const json = parseJsonStr(text);
 
-      resolve({
+      const response = new SageHttpResponse<T>({
         statusCode: res.statusCode,
         status: res.statusCode,
         statusText: statusCodeToMessage(res.statusCode),
@@ -381,7 +382,9 @@ export class Sage<T> {
         location: res.headers?.['location'] as string,
         error: isError(res.statusCode),
         cookies: parseSetCookieHeader(res.headers['set-cookie'])
-      } satisfies SageHttpResponse<T>);
+      });
+
+      resolve(response);
     } catch (e) {
       if (e instanceof SageAssertException) {
         reject(e);

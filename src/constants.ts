@@ -77,6 +77,8 @@ export type HttpStatusText =
   | (typeof HTTP_STATUS_TO_MESSAGE)[keyof typeof HTTP_STATUS_TO_MESSAGE]
   | 'Unknown';
 
+export type HttpStatus = keyof typeof HTTP_STATUS_TO_MESSAGE;
+
 export const SAGE_DEFAULT_CONFIG: SageConfig = {
   dedicated: false,
   port: 0,
