@@ -134,7 +134,13 @@ export class Sage<T> {
     }
 
     if (typeof key === 'object' && value === undefined) {
-      this.request.headers = key;
+      for (const [k, v] of Object.entries(key)) {
+        if (v === undefined) {
+          continue;
+        }
+
+        this.set(k, v);
+      }
       return this;
     }
 
@@ -144,6 +150,7 @@ export class Sage<T> {
       );
     }
 
+    key = key.toLowerCase();
     value = wrapArray(value);
 
     // If already an array
