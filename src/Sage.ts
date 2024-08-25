@@ -474,6 +474,8 @@ export class Sage<T> {
     expected: string | string[] | RegExp,
     expectStackTrace: string
   ): void {
+    header = header.toLowerCase();
+
     if (typeof expected === 'string') {
       this.asserts.push({
         type: 'header',
