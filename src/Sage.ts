@@ -144,7 +144,7 @@ export class Sage<T> {
       return this;
     }
 
-    if (value === undefined || typeof key === 'object') {
+    if (typeof key === 'object' || value === undefined) {
       throw new SageException(
         'When setting headers one by one, both key and value are required'
       );
