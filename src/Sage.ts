@@ -205,7 +205,9 @@ export class Sage<T> {
   /**
    * Method is designed to work only with FormData requests.
    * Cannot be combined with .send().
-   * If file is a string, it will be treated as a path to a file starting from the working directory (process.cwd()).
+   * If file is a relative path, it will be treated starting from the working directory (process.cwd()).
+   * When using form-data requests, you can skip setting the Content-Type header.
+   * It will be set automatically.
    * @throws SageException if body is already set
    * @param field
    * @param file a Blob, Buffer, Readable stream or a file path either staring from the working directory, or an absolute path
@@ -281,6 +283,12 @@ export class Sage<T> {
     return this;
   }
 
+  /**
+   * When using form-data requests, you can skip setting the Content-Type header.
+   * It will be set automatically.
+   * @param field
+   * @param value
+   */
   field(field: string, value: string | string[] | number | boolean): this {
     if (!this.request.formData) {
       this.request.formData = new FormData();
@@ -331,6 +339,15 @@ export class Sage<T> {
 
     if (this.config.baseUrl) {
       this.request.path = `${this.config.baseUrl}${this.request.path}`;
+    }
+
+    // unidici will set the Content-Type header automatically for FormData
+    if (
+      this.request.formData &&
+      this.request.headers &&
+      'content-type' in this.request.headers
+    ) {
+      delete this.request.headers['content-type'];
     }
 
     try {

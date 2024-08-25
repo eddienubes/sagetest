@@ -195,6 +195,27 @@ describe('request', () => {
     });
 
     describe('multipart/form-data', () => {
+      it('should strip content-type header', async () => {
+        const res = await request(expressApp)
+          .post('/upload')
+          .attach('picture', 'test/fixtures/cat.jpg')
+          .set('content-type', 'multipart/form-data; boundary=fail-boundary');
+
+        expect(res).toMatchObject({
+          ...expectedExpressResponse,
+          body: {
+            ...expectedExpressResponse.body,
+            reqHeaders: {
+              ...expectedExpressResponse.body.reqHeaders,
+              'content-type': expect.stringContaining('multipart/form-data')
+            }
+          }
+        });
+        expect(res.body.reqHeaders['content-type']).not.toContain(
+          'fail-boundary'
+        );
+      });
+
       it('should work with filename', async () => {
         const res = await request(expressApp)
           .post('/upload')
@@ -693,6 +714,27 @@ describe('request', () => {
     });
 
     describe('multipart/form-data', () => {
+      it('should strip content-type header', async () => {
+        const res = await request(fastifyApp.server)
+          .post('/upload')
+          .attach('picture', 'test/fixtures/cat.jpg')
+          .set('content-type', 'multipart/form-data; boundary=fail-boundary');
+
+        expect(res).toMatchObject({
+          ...expectedFastifyResponse,
+          body: {
+            ...expectedFastifyResponse.body,
+            reqHeaders: {
+              ...expectedFastifyResponse.body.reqHeaders,
+              'content-type': expect.stringContaining('multipart/form-data')
+            }
+          }
+        });
+        expect(res.body.reqHeaders['content-type']).not.toContain(
+          'fail-boundary'
+        );
+      });
+
       it('should work with filename', async () => {
         const res = await request(fastifyApp.server)
           .post('/upload')
