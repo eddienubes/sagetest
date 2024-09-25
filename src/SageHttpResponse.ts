@@ -1,7 +1,12 @@
+import { CookieOptions, ResponseHeader, SageResponseHeaders } from './types.js';
+import { IncomingHttpHeaders } from 'undici/types/header.js';
 import { HttpStatusText } from './constants.js';
-import { CookieOptions } from './types.js';
 
-export interface SageHttpResponse<T = any> {
+export interface SageHttpResponseProps {
+  headers: IncomingHttpHeaders;
+}
+
+export class SageHttpResponse<T = any> {
   /**
    * Beware that body will fall back to buffer if the response is a file or server has redirected the request.
    * If you want to stream the file, the response promise implements NodeJS Readable, just don't await it.
@@ -29,6 +34,13 @@ export interface SageHttpResponse<T = any> {
    * The mapping of status codes to status messages as defined in the HTTP/1.1 specification
    */
   statusText: HttpStatusText;
+
+  /**
+   * Contains the response headers.
+   * If the header is not present, it will be undefined.
+   * If header is present multiple times, the values are joined with a comma.
+   * It's done for the sake of testing simplicity.
+   */
   headers: SageResponseHeaders;
 
   /**
@@ -55,6 +67,50 @@ export interface SageHttpResponse<T = any> {
    * Cookies sent by the server. Also, accessible from headers['set-cookie']
    */
   cookies: Record<string, CookieOptions>;
-}
 
-export type SageResponseHeaders = Record<string, string | string[]>;
+  constructor(
+    props: Omit<SageHttpResponse, 'get' | 'headers' | 'wrapHeaders'> &
+      SageHttpResponseProps
+  ) {
+    Object.assign(this, {
+      ...props,
+      headers: this.wrapHeaders(props.headers)
+    });
+  }
+
+  /**
+   * Get the value of the header field.
+   * Multiple headers are joined with a comma.
+   * If the header is not present, it will return null.
+   * @param header
+   */
+  get(header: ResponseHeader): string | null {
+    header = header.toLowerCase();
+    const value = this.headers[header];
+
+    if (value === undefined) {
+      return null;
+    }
+
+    if (Array.isArray(value)) {
+      return value.join(', ');
+    }
+
+    return value;
+  }
+
+  private wrapHeaders(headers: IncomingHttpHeaders): SageResponseHeaders {
+    const wrapped: SageResponseHeaders = {};
+
+    for (const [key, value] of Object.entries(headers)) {
+      if (value === undefined) {
+        wrapped[key] = undefined;
+        continue;
+      }
+
+      wrapped[key] = Array.isArray(value) ? value.join(', ') : value;
+    }
+
+    return wrapped;
+  }
+}

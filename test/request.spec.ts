@@ -6,7 +6,7 @@ import { Buffer } from 'node:buffer';
 import { describe } from 'vitest';
 import { SageAssertException } from '../src/SageAssertException.js';
 
-const expectedExpressResponse: SageHttpResponse = {
+const expectedExpressResponse = new SageHttpResponse({
   statusCode: 200,
   status: 200,
   statusText: 'OK',
@@ -37,9 +37,9 @@ const expectedExpressResponse: SageHttpResponse = {
   location: undefined,
   error: false,
   cookies: {}
-};
+}) as Partial<SageHttpResponse>;
 
-const expectedFastifyResponse = {
+const expectedFastifyResponse = new SageHttpResponse({
   statusCode: 200,
   status: 200,
   statusText: 'OK',
@@ -77,7 +77,7 @@ const expectedFastifyResponse = {
   location: undefined,
   error: false,
   cookies: {}
-} as Partial<SageHttpResponse>;
+}) as Partial<SageHttpResponse>;
 
 describe('request', () => {
   afterAll(async () => {
@@ -195,6 +195,27 @@ describe('request', () => {
     });
 
     describe('multipart/form-data', () => {
+      it('should strip content-type header', async () => {
+        const res = await request(expressApp)
+          .post('/upload')
+          .attach('picture', 'test/fixtures/cat.jpg')
+          .set('content-type', 'multipart/form-data; boundary=fail-boundary');
+
+        expect(res).toMatchObject({
+          ...expectedExpressResponse,
+          body: {
+            ...expectedExpressResponse.body,
+            reqHeaders: {
+              ...expectedExpressResponse.body.reqHeaders,
+              'content-type': expect.stringContaining('multipart/form-data')
+            }
+          }
+        });
+        expect(res.body.reqHeaders['content-type']).not.toContain(
+          'fail-boundary'
+        );
+      });
+
       it('should work with filename', async () => {
         const res = await request(expressApp)
           .post('/upload')
@@ -602,10 +623,8 @@ describe('request', () => {
 
         expect(res).toMatchObject({
           headers: {
-            'set-cookie': [
-              'name=express; Path=/',
-              'name=I%20love%20my%20mom!; Path=/; HttpOnly'
-            ]
+            'set-cookie':
+              'name=express; Path=/, name=I%20love%20my%20mom!; Path=/; HttpOnly'
           },
           cookies: {
             name: {
@@ -693,6 +712,27 @@ describe('request', () => {
     });
 
     describe('multipart/form-data', () => {
+      it('should strip content-type header', async () => {
+        const res = await request(fastifyApp.server)
+          .post('/upload')
+          .attach('picture', 'test/fixtures/cat.jpg')
+          .set('content-type', 'multipart/form-data; boundary=fail-boundary');
+
+        expect(res).toMatchObject({
+          ...expectedFastifyResponse,
+          body: {
+            ...expectedFastifyResponse.body,
+            reqHeaders: {
+              ...expectedFastifyResponse.body.reqHeaders,
+              'content-type': expect.stringContaining('multipart/form-data')
+            }
+          }
+        });
+        expect(res.body.reqHeaders['content-type']).not.toContain(
+          'fail-boundary'
+        );
+      });
+
       it('should work with filename', async () => {
         const res = await request(fastifyApp.server)
           .post('/upload')
@@ -944,7 +984,7 @@ describe('request', () => {
           statusCode: 301,
           text: '',
           ok: false
-        } as SageHttpResponse);
+        } as Partial<SageHttpResponse>);
       });
     });
 
@@ -1049,7 +1089,7 @@ describe('request', () => {
 
         expect(res).toMatchObject({
           headers: {
-            'set-cookie': ['name=fastify', 'love=my%20mom!; HttpOnly']
+            'set-cookie': 'name=fastify, love=my%20mom!; HttpOnly'
           },
           cookies: {
             love: {
