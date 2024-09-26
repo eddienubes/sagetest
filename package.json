@@ -58,7 +58,7 @@
   ],
   "devDependencies": {
     "@fastify/cookie": "^9.3.1",
-    "@fastify/multipart": "^8.3.0",
+    "@fastify/multipart": "^9.0.1",
     "@rollup/plugin-commonjs": "^26.0.1",
     "@rollup/plugin-node-resolve": "^15.2.3",
     "@rollup/plugin-typescript": "^11.1.6",
