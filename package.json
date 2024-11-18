@@ -92,6 +92,6 @@
     "vitest": "^1.6.0"
   },
   "dependencies": {
-    "undici": "^6.20.0"
+    "undici": "^6.21.0"
   }
 }
