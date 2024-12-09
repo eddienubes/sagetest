@@ -81,7 +81,7 @@
     "mime-db": "^1.53.0",
     "multer": "1.4.5-lts.1",
     "prettier": "^3.3.3",
-    "rollup": "^4.22.5",
+    "rollup": "^4.28.1",
     "rollup-plugin-esbuild": "^6.1.1",
     "rollup-plugin-tsconfig-paths": "^1.5.2",
     "supertest": "^7.0.0",
