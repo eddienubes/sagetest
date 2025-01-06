@@ -57,7 +57,7 @@
     "sagetest"
   ],
   "devDependencies": {
-    "@fastify/cookie": "^9.3.1",
+    "@fastify/cookie": "^11.0.2",
     "@fastify/multipart": "^8.3.0",
     "@rollup/plugin-commonjs": "^26.0.1",
     "@rollup/plugin-node-resolve": "^15.2.3",
