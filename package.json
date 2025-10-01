@@ -78,7 +78,7 @@
     "express": "^4.21.2",
     "fastify": "^4.28.1",
     "form-data": "^4.0.4",
-    "mime-db": "^1.53.0",
+    "mime-db": "^1.54.0",
     "multer": "2.0.2",
     "rollup": "^4.52.3",
     "prettier": "^3.6.2",
