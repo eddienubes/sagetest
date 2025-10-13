@@ -80,7 +80,7 @@
     "form-data": "^4.0.4",
     "mime-db": "^1.54.0",
     "multer": "2.0.2",
-    "rollup": "^4.52.3",
+    "rollup": "^4.52.4",
     "prettier": "^3.6.2",
     "rollup-plugin-esbuild": "^6.2.1",
     "rollup-plugin-tsconfig-paths": "^1.5.2",
