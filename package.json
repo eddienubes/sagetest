@@ -89,9 +89,9 @@
     "tsx": "^4.19.2",
     "typedoc-plugin-markdown": "^4.0.3",
     "typescript": "^5.7.3",
-    "vitest": "^1.6.0"
+    "vitest": "^1.6.1"
   },
   "dependencies": {
-    "undici": "^6.20.0"
+    "undici": "^6.21.2"
   }
 }
