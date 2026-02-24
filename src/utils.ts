@@ -67,24 +67,23 @@ export const getFileDescriptorFromReadable = (
   readable: Readable
 ): { filename: string; path: string; mimetype: string } | null => {
   // Let's assume that it's a ReadStream first
-  let filePath = (readable as ReadStream).path;
+  const filePath = (readable as ReadStream).path;
 
   if (!filePath) {
     return null;
   }
 
-  if (filePath instanceof Buffer) {
-    filePath = filePath.toString();
-  }
+  const filePathStr: string =
+    typeof filePath === 'string' ? filePath : filePath.toString();
 
-  const filename = path.basename(filePath);
+  const filename = path.basename(filePathStr);
 
-  const extension = path.extname(filePath).slice(1);
+  const extension = path.extname(filePathStr).slice(1);
   const mimetype = MIME_TYPES[extension as keyof typeof MIME_TYPES];
 
   return {
     filename,
-    path: filePath,
+    path: filePathStr,
     mimetype
   };
 };
