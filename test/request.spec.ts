@@ -1089,7 +1089,8 @@ describe('request', () => {
 
         expect(res).toMatchObject({
           headers: {
-            'set-cookie': 'name=fastify; SameSite=Lax, love=my%20mom!; HttpOnly; SameSite=Lax'
+            'set-cookie':
+              'name=fastify; SameSite=Lax, love=my%20mom!; HttpOnly; SameSite=Lax'
           },
           cookies: {
             love: {

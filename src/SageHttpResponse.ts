@@ -69,7 +69,9 @@ export class SageHttpResponse<T = any> {
   cookies: Record<string, CookieOptions>;
 
   constructor(
-    props: Partial<Omit<SageHttpResponse<T>, 'get' | 'headers' | 'wrapHeaders'>> &
+    props: Partial<
+      Omit<SageHttpResponse<T>, 'get' | 'headers' | 'wrapHeaders'>
+    > &
       SageHttpResponseProps
   ) {
     Object.assign(this, {

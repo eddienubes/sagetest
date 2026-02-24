@@ -377,7 +377,6 @@ export class Sage<T> {
 
       this.assert(res);
 
-
       const buffer = Buffer.from(await res.body.arrayBuffer());
       const text = buffer.toString('utf-8');
       const json = parseJsonStr(text);
