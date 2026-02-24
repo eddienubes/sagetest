@@ -7,7 +7,7 @@ describe(SageHttpResponse.name, () => {
         headers: {
           'some-header': ['i', 'love', 'my mom!']
         }
-      } as any);
+      });
 
       const result = response.get('some-header');
 
@@ -19,7 +19,7 @@ describe(SageHttpResponse.name, () => {
         headers: {
           'some-header': ['i', 'love', 'my mom!']
         }
-      } as any);
+      });
 
       const result = response.get('Some-Header');
 
@@ -31,7 +31,7 @@ describe(SageHttpResponse.name, () => {
         headers: {
           'some-header': ['i', 'love', 'my mom!']
         }
-      } as any);
+      });
 
       const result = response.get('Some-Other-Header');
 
@@ -43,7 +43,7 @@ describe(SageHttpResponse.name, () => {
         headers: {
           'content-type': 'application/json'
         }
-      } as any);
+      });
 
       const result = response.get('Content-Type');
 

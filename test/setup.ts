@@ -1,4 +1,3 @@
-import '../src/polyfill.js';
 import fs from 'node:fs';
 import { compare } from 'compare-versions';
 import { Blob } from 'node:buffer';

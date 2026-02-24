@@ -9,7 +9,7 @@ export interface SageHttpResponseProps {
 export class SageHttpResponse<T = any> {
   /**
    * Beware that body will fall back to buffer if the response is a file or server has redirected the request.
-   * If you want to stream the file, the response promise implements NodeJS Readable, just don't await it.
+   * For file downloads, use the `buffer` field instead.
    * The type includes "any" to ease the migration from supertest.
    * If you stand against it, please open an issue here https://github.com/eddienubes/sagetest
    */
@@ -69,7 +69,9 @@ export class SageHttpResponse<T = any> {
   cookies: Record<string, CookieOptions>;
 
   constructor(
-    props: Omit<SageHttpResponse, 'get' | 'headers' | 'wrapHeaders'> &
+    props: Partial<
+      Omit<SageHttpResponse<T>, 'get' | 'headers' | 'wrapHeaders'>
+    > &
       SageHttpResponseProps
   ) {
     Object.assign(this, {
