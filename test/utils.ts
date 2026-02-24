@@ -12,6 +12,7 @@ import Fastify, {
 import multer from 'multer';
 import { fastifyMultipart } from '@fastify/multipart';
 import fastifyCookie from '@fastify/cookie';
+import fs from 'node:fs';
 
 export const getExpressApp = (): Express => {
   const app = express();
@@ -63,6 +64,12 @@ export const getExpressApp = (): Express => {
     });
   });
 
+  app.get('/download', async (req, res, next) => {
+    const stream = fs.createReadStream('test/fixtures/cat.jpg');
+    res.setHeader('Content-Type', 'image/jpeg');
+    stream.pipe(res);
+  });
+
   app.get('/error', (req, res, next) => {
     next(new Error('This is a test error'));
   });
@@ -91,7 +98,7 @@ export const getFastifyApp = (): FastifyInstance => {
   fastify.register(fastifyCookie);
 
   fastify.post('/ping-pong', async (request, reply) => {
-    reply.send({
+    return reply.send({
       message: 'Success!',
       body: request.body || {},
       query: request.query || {},
@@ -100,11 +107,11 @@ export const getFastifyApp = (): FastifyInstance => {
   });
 
   fastify.get('/redirect', async (request, reply) => {
-    reply.redirect(301, 'https://www.google.com');
+    return reply.redirect('https://www.google.com', 301);
   });
 
   fastify.post('/upload', async (request, reply) => {
-    const files = [];
+    const files: any[] = [];
     const filesIterator = request.files({
       limits: {
         fileSize: 1024 * 1000 * 1000000 // 1gb
@@ -124,7 +131,7 @@ export const getFastifyApp = (): FastifyInstance => {
       });
     }
 
-    reply.send({
+    return reply.send({
       message: 'Success!',
       body: request.body || {},
       query: request.query || {},
@@ -142,6 +149,12 @@ export const getFastifyApp = (): FastifyInstance => {
       files: request.files,
       reqHeaders: request.headers
     });
+  });
+
+  fastify.get('/download', async (request, reply) => {
+    const stream = fs.createReadStream('test/fixtures/cat.jpg');
+    reply.header('Content-Type', 'image/jpeg');
+    return reply.send(stream);
   });
 
   fastify.get('/error', () => {

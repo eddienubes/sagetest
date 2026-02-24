@@ -134,3 +134,7 @@ test/fixtures/temp/*
 .rollup.cache
 
 build
+.idea
+.DS_Store
+.serena
+.claude

@@ -1,0 +1,38 @@
+---
+title: Introduction
+---
+import { Tabs, TabItem } from '@astrojs/starlight/components';
+
+> Installation and API of this library in general is super simple and resembles that of supertest.
+
+<Tabs>
+  <TabItem label="npm">
+
+    ```sh
+    npm install -D sagetest
+    ```
+
+  </TabItem>
+  <TabItem label="yarn">
+
+    ```sh
+    yarn add -D sagetest
+    ```
+
+  </TabItem>
+  <TabItem label="pnpm">
+
+    ```sh
+    pnpm add -D sagetest
+    ```
+
+  </TabItem>
+</Tabs>
+
+And then import it like so:
+
+```ts
+import { request } from 'sagetest';
+```
+
+> Note: default export is not supported, it's a bad practice to have both default and named exports in the same module.

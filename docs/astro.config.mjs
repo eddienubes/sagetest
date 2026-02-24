@@ -35,10 +35,15 @@ export default defineConfig({
           {
             label: 'Cookies',
             link: '/getting-started/cookies'
-          },
+          }
+        ]
+      },
+      {
+        label: 'Advanced',
+        items: [
           {
-            label: 'Dedicated Mode',
-            link: '/getting-started/dedicated-mode'
+            label: 'Dedicated mode',
+            link: '/advanced/dedicated-mode'
           }
         ]
       },

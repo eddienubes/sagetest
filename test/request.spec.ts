@@ -2,8 +2,11 @@ import { getExpressApp, getFastifyApp } from './utils.js';
 import { request, SageHttpResponse } from '../src/index.js';
 import fs from 'node:fs';
 import { readdir, unlink } from 'node:fs/promises';
+import { Buffer } from 'node:buffer';
+import { describe } from 'vitest';
+import { SageAssertException } from '../src/SageAssertException.js';
 
-const expectedExpressResponse: SageHttpResponse = {
+const expectedExpressResponse = new SageHttpResponse({
   statusCode: 200,
   status: 200,
   statusText: 'OK',
@@ -27,15 +30,16 @@ const expectedExpressResponse: SageHttpResponse = {
     query: {},
     files: {}
   },
+  buffer: expect.any(Buffer),
   text: expect.any(String),
   ok: true,
   redirect: false,
   location: undefined,
   error: false,
   cookies: {}
-};
+}) as Partial<SageHttpResponse>;
 
-const expectedFastifyResponse: SageHttpResponse = {
+const expectedFastifyResponse = new SageHttpResponse({
   statusCode: 200,
   status: 200,
   statusText: 'OK',
@@ -66,13 +70,14 @@ const expectedFastifyResponse: SageHttpResponse = {
       }
     ]
   },
+  buffer: expect.any(Buffer),
   text: expect.any(String),
   ok: true,
   redirect: false,
   location: undefined,
   error: false,
   cookies: {}
-};
+}) as Partial<SageHttpResponse>;
 
 describe('request', () => {
   afterAll(async () => {
@@ -89,8 +94,128 @@ describe('request', () => {
   const expressApp = getExpressApp();
   const fastifyApp = getFastifyApp();
 
+  describe('assert', () => {
+    describe('successful assertions', () => {
+      it('should assert multiple conditions successfully', async () => {
+        try {
+          await request(expressApp)
+            .get('/download')
+            .expect(200)
+            .expect('content-type', 'image/jpeg');
+        } catch (err) {
+          expect(true).toBe(false);
+        }
+      });
+    });
+
+    describe('failing assertions', () => {
+      it('should assert status code', async () => {
+        try {
+          await request(expressApp).get('/download').expect(401);
+          expect(true).toBe(false);
+        } catch (err) {
+          expect(err).toBeInstanceOf(SageAssertException);
+        }
+      });
+
+      it('should assert multiple status codes', async () => {
+        try {
+          await request(expressApp).get('/download').expect([401, 401]);
+          expect(true).toBe(false);
+        } catch (err) {
+          expect(err).toBeInstanceOf(SageAssertException);
+        }
+      });
+
+      it('should assert header by string', async () => {
+        try {
+          await request(expressApp)
+            .get('/download')
+            .expect('content-type', 'image/png');
+          expect(true).toBe(false);
+        } catch (err) {
+          expect(err).toBeInstanceOf(SageAssertException);
+        }
+      });
+
+      it('should assert header by regexp', async () => {
+        try {
+          await request(expressApp)
+            .get('/download')
+            .expect('content-type', /png/);
+          expect(true).toBe(false);
+        } catch (err) {
+          expect(err).toBeInstanceOf(SageAssertException);
+        }
+      });
+
+      it('should assert header by array', async () => {
+        try {
+          await request(expressApp)
+            .get('/download')
+            .expect('content-type', ['whatever', 'image/png']);
+          expect(true).toBe(false);
+        } catch (err) {
+          expect(err).toBeInstanceOf(SageAssertException);
+        }
+      });
+    });
+  });
+
+  describe('close', () => {
+    it('should close the server in dedicated mode', async () => {
+      const test = request(expressApp, { dedicated: true });
+      await test.close();
+    });
+
+    it('should throw an error if mode is not set to dedicated', async () => {
+      const test = request(expressApp);
+      await expect(test.close()).rejects.toThrowError();
+    });
+  });
+
   describe('express', () => {
+    describe('downloads', () => {
+      it('should download and buffer file if sent by the server', async () => {
+        const res = await request(expressApp).get('/download');
+
+        // long string comparison breaks the test
+        delete expectedFastifyResponse.text;
+
+        expect(res).toMatchObject({
+          ...expectedFastifyResponse,
+          body: expect.any(Buffer),
+          headers: {
+            connection: 'keep-alive',
+            'content-type': 'image/jpeg',
+            date: expect.any(String)
+          }
+        });
+      });
+    });
+
     describe('multipart/form-data', () => {
+      it('should strip content-type header', async () => {
+        const res = await request(expressApp)
+          .post('/upload')
+          .attach('picture', 'test/fixtures/cat.jpg')
+          .set('content-type', 'multipart/form-data; boundary=fail-boundary');
+
+        expect(res).toMatchObject({
+          ...expectedExpressResponse,
+          body: {
+            ...expectedExpressResponse.body,
+            reqHeaders: {
+              ...expectedExpressResponse.body.reqHeaders,
+              'content-type': expect.stringContaining('multipart/form-data')
+            }
+          }
+        });
+        expect(res.body.reqHeaders['content-type']).not.toContain(
+          'fail-boundary'
+        );
+      });
+
       it('should work with filename', async () => {
         const res = await request(expressApp)
           .post('/upload')
@@ -328,6 +453,7 @@ describe('request', () => {
         } as SageHttpResponse);
       });
     });
+
     describe('application/json', () => {
       it('should properly call sage assistant and respond in expected format', async () => {
         const res = await request(expressApp)
@@ -380,12 +506,15 @@ describe('request', () => {
         });
       });
     });
+
     describe('redirects', () => {
       it('should properly operate with redirects', async () => {
         const res = await request(expressApp).get('/redirect');
 
+        console.log(res.body.toString('utf-8'));
+
         expect(res).toMatchObject({
-          body: null,
+          body: expect.any(Buffer),
           headers: {
             connection: 'keep-alive',
             date: expect.any(String),
@@ -406,6 +535,7 @@ describe('request', () => {
         });
       });
     });
+
     describe('header', () => {
       it('should set and pass a single header', async () => {
         const res = await request(expressApp)
@@ -469,17 +599,32 @@ describe('request', () => {
           }
         } as SageHttpResponse);
       });
+
+      it('should accept objects', async () => {
+        const res = await request(expressApp).post('/ping-pong').set({
+          'x-custom-header': 'custom-value1',
+          'x-custom-header2': 'custom-value2'
+        });
+
+        expect(res).toMatchObject({
+          body: {
+            reqHeaders: {
+              'x-custom-header': 'custom-value1',
+              'x-custom-header2': 'custom-value2'
+            }
+          }
+        } as SageHttpResponse);
+      });
     });
+
     describe('cookies', () => {
       it('should parse cookies properly for response', async () => {
         const res = await request(expressApp).get('/cookie');
 
         expect(res).toMatchObject({
           headers: {
-            'set-cookie': [
-              'name=express; Path=/',
-              'name=I%20love%20my%20mom!; Path=/; HttpOnly'
-            ]
+            'set-cookie':
+              'name=express; Path=/, name=I%20love%20my%20mom!; Path=/; HttpOnly'
           },
           cookies: {
             name: {
@@ -547,7 +692,47 @@ describe('request', () => {
       await fastifyApp.ready();
     });
 
+    describe('downloads', () => {
+      it('should download and buffer file if sent by the server', async () => {
+        const res = await request(fastifyApp.server).get('/download');
+
+        // long string comparison breaks the test
+        delete expectedFastifyResponse.text;
+
+        expect(res).toMatchObject({
+          ...expectedFastifyResponse,
+          body: expect.any(Buffer),
+          headers: {
+            connection: 'keep-alive',
+            'content-type': 'image/jpeg',
+            date: expect.any(String)
+          }
+        });
+      });
+    });
+
     describe('multipart/form-data', () => {
+      it('should strip content-type header', async () => {
+        const res = await request(fastifyApp.server)
+          .post('/upload')
+          .attach('picture', 'test/fixtures/cat.jpg')
+          .set('content-type', 'multipart/form-data; boundary=fail-boundary');
+
+        expect(res).toMatchObject({
+          ...expectedFastifyResponse,
+          body: {
+            ...expectedFastifyResponse.body,
+            reqHeaders: {
+              ...expectedFastifyResponse.body.reqHeaders,
+              'content-type': expect.stringContaining('multipart/form-data')
+            }
+          }
+        });
+        expect(res.body.reqHeaders['content-type']).not.toContain(
+          'fail-boundary'
+        );
+      });
+
       it('should work with filename', async () => {
         const res = await request(fastifyApp.server)
           .post('/upload')
@@ -787,7 +972,7 @@ describe('request', () => {
 
         expect(res).toMatchObject({
           ...expectedFastifyResponse,
-          body: null,
+          body: expect.any(Buffer),
           headers: {
             connection: 'keep-alive',
             location: 'https://www.google.com'
@@ -799,7 +984,7 @@ describe('request', () => {
           statusCode: 301,
           text: '',
           ok: false
-        } as SageHttpResponse);
+        } as Partial<SageHttpResponse>);
       });
     });
 
@@ -880,6 +1065,22 @@ describe('request', () => {
           }
         } as SageHttpResponse);
       });
+
+      it('should accept objects', async () => {
+        const res = await request(expressApp).post('/ping-pong').set({
+          'x-custom-header': 'custom-value1',
+          'x-custom-header2': 'custom-value2'
+        });
+
+        expect(res).toMatchObject({
+          body: {
+            reqHeaders: {
+              'x-custom-header': 'custom-value1',
+              'x-custom-header2': 'custom-value2'
+            }
+          }
+        } as SageHttpResponse);
+      });
     });
 
     describe('cookies', () => {
@@ -888,7 +1089,8 @@ describe('request', () => {
 
         expect(res).toMatchObject({
           headers: {
-            'set-cookie': ['name=fastify', 'love=my%20mom!; HttpOnly']
+            'set-cookie':
+              'name=fastify; SameSite=Lax, love=my%20mom!; HttpOnly; SameSite=Lax'
           },
           cookies: {
             love: {

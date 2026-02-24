@@ -11,7 +11,7 @@ import {
   CookieSameSiteProperty,
   SetCookieHeaderProperties
 } from './types.js';
-import { Blob } from 'node:buffer';
+import { Blob, Buffer } from 'node:buffer';
 
 export const serializeToString = (value: unknown): string => {
   const result = JSON.stringify(value);
