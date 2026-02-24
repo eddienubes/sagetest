@@ -2,7 +2,7 @@ export interface SageConfig {
   /**
    * Launch a dedicated server which will be preserved between requests.
    * When you call request(), it will spin up a new server for you.
-   * This server will persist throughout testing, so you'll have to shut down it manually via shutdown().
+   * This server will persist throughout testing, so you'll have to shut it down manually via close().
    * When this option is set to false, sagetest mimics supertest behaviour and spins up a new server for each request,
    * as well as handles its graceful shutdown.
    * @default false

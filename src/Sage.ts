@@ -1,7 +1,15 @@
-import { HttpMethod, ThenableResolve } from './types.js';
+import {
+  HttpMethod,
+  RequestHeader,
+  ResponseHeader,
+  SageAssert,
+  SageResponseHeaders,
+  ThenableReject,
+  ThenableResolve
+} from './types.js';
 import { SageHttpRequest } from './SageHttpRequest.js';
 import { Readable } from 'node:stream';
-import { Client, FormData } from 'undici';
+import { Client, Dispatcher, FormData } from 'undici';
 import { Blob } from 'node:buffer';
 import { SageException } from './SageException.js';
 import {
@@ -18,24 +26,28 @@ import {
   streamToBuffer,
   wrapInPromise
 } from './utils.js';
-import { SageHttpResponse, SageResponseHeaders } from './SageHttpResponse.js';
+import { SageHttpResponse } from './SageHttpResponse.js';
 import path from 'node:path';
 import { FormDataOptions } from './FormDataOptions.js';
 import { createReadStream } from 'node:fs';
 import { SageConfig } from './SageConfig.js';
 import { SageServer } from './SageServer.js';
+import { SageAssertException } from './SageAssertException.js';
+import { IncomingHttpHeaders } from 'undici/types/header.js';
+import { HttpStatus } from './constants.js';
 
 /**
  * Greetings, I'm Sage - a chainable HTTP Testing Assistant.
  * Not meant to be used directly.
  */
-export class Sage extends Readable {
+export class Sage<T> {
   private sageServer: SageServer;
   private config: SageConfig;
   private request: SageHttpRequest = {};
   private client: Client;
   // Promises await of which is deferred until .then() is called
   private deferredPromises: Promise<unknown>[] = [];
+  private asserts: SageAssert[] = [];
 
   /**
    * Sets the HTTP method and path for the request.
@@ -51,8 +63,6 @@ export class Sage extends Readable {
     path: string,
     config: SageConfig
   ) {
-    super();
-
     this.sageServer = sageServer;
     this.config = config;
     this.request.method = method;
@@ -117,14 +127,40 @@ export class Sage extends Readable {
   /**
    * Sets a header for the request.
    * Consider using this at the end of the chain if you want to override any of the defaults.
+   * Note: you can pass multiple values as an array for a request header.
+   * However, response headers are always concatenated into a string with a comma separator.
+   * It's done for the sake of testing simplicity.
    * @param key
-   * @param value
    */
-  set(key: string, value: string | string[]): this {
+  set(key: IncomingHttpHeaders): this;
+  set(key: RequestHeader, value: string | string[]): this;
+  set(key: RequestHeader, value: string): this;
+  set(
+    key: RequestHeader | IncomingHttpHeaders,
+    value?: string | string[]
+  ): this {
     if (!this.request.headers) {
       this.request.headers = {};
     }
 
+    if (typeof key === 'object' && value === undefined) {
+      for (const [k, v] of Object.entries(key)) {
+        if (v === undefined) {
+          continue;
+        }
+
+        this.set(k, v);
+      }
+      return this;
+    }
+
+    if (typeof key === 'object' || value === undefined) {
+      throw new SageException(
+        'When setting headers one by one, both key and value are required'
+      );
+    }
+
+    key = key.toLowerCase();
     value = wrapArray(value);
 
     // If already an array
@@ -179,10 +215,12 @@ export class Sage extends Readable {
   /**
    * Method is designed to work only with FormData requests.
    * Cannot be combined with .send().
-   * If file is a string, it will be treated as a path to a file starting from the working directory (process.cwd()).
+   * If file is a relative path, it will be treated starting from the working directory (process.cwd()).
+   * When using form-data requests, you can skip setting the Content-Type header.
+   * It will be set automatically.
    * @throws SageException if body is already set
    * @param field
-   * @param file a Blob, Buffer, Readable stream or a file path (staring from the working directory)
+   * @param file a Blob, Buffer, Readable stream or a file path either staring from the working directory, or an absolute path
    * @param options you can pass either object with type and filename or just a string with filename
    */
   attach(
@@ -199,9 +237,12 @@ export class Sage extends Readable {
         this.request.formData = new FormData();
       }
 
-      // If a string always treat it as a file path
+      // If string, always treat it as a file path
       if (typeof file === 'string') {
-        file = createReadStream(path.join(process.cwd(), file));
+        // Leave absolute paths as is
+        file = path.isAbsolute(file) ? file : path.join(process.cwd(), file);
+
+        file = createReadStream(file);
       }
 
       if (typeof options === 'string') {
@@ -252,7 +293,13 @@ export class Sage extends Readable {
     return this;
   }
 
-  field(field: string, value: string | string[]): this {
+  /**
+   * When using form-data requests, you can skip setting the Content-Type header.
+   * It will be set automatically.
+   * @param field
+   * @param value
+   */
+  field(field: string, value: string | string[] | number | boolean): this {
     if (!this.request.formData) {
       this.request.formData = new FormData();
     }
@@ -269,12 +316,51 @@ export class Sage extends Readable {
     return this;
   }
 
-  async then(resolve: ThenableResolve<SageHttpResponse>): Promise<void> {
+  expect(
+    header: ResponseHeader,
+    expectedHeader: string | string[] | RegExp
+  ): this;
+  expect(statuses: HttpStatus[]): this;
+  expect(status: HttpStatus): this;
+  expect(
+    statusOrStatuses: HttpStatus | HttpStatus[] | ResponseHeader,
+    expectedHeaderValue?: string | string[] | RegExp
+  ): this {
+    const expectedStack = new Error().stack?.split('\n')[2] as string;
+
+    if (typeof statusOrStatuses === 'string' && expectedHeaderValue) {
+      this.expectHeaders(statusOrStatuses, expectedHeaderValue, expectedStack);
+      return this;
+    }
+
+    if (
+      typeof statusOrStatuses === 'number' ||
+      Array.isArray(statusOrStatuses)
+    ) {
+      this.expectStatuses(statusOrStatuses, expectedStack);
+    }
+
+    return this;
+  }
+
+  async then(
+    resolve: ThenableResolve<SageHttpResponse<T>>,
+    reject: ThenableReject
+  ): Promise<void> {
     // Wait for all deferred promises to resolve
     await Promise.all(this.deferredPromises);
 
     if (this.config.baseUrl) {
       this.request.path = `${this.config.baseUrl}${this.request.path}`;
+    }
+
+    // unidici will set the Content-Type header automatically for FormData
+    if (
+      this.request.formData &&
+      this.request.headers &&
+      'content-type' in this.request.headers
+    ) {
+      delete this.request.headers['content-type'];
     }
 
     try {
@@ -289,29 +375,40 @@ export class Sage extends Readable {
         reset: !this.config.keepAlive
       });
 
+      this.assert(res);
+
+
       const buffer = Buffer.from(await res.body.arrayBuffer());
       const text = buffer.toString('utf-8');
       const json = parseJsonStr(text);
 
-      // TODO: add stream for piping files
-      resolve({
+      const response = new SageHttpResponse<T>({
         statusCode: res.statusCode,
         status: res.statusCode,
         statusText: statusCodeToMessage(res.statusCode),
         headers: res.headers as SageResponseHeaders,
         buffer: buffer,
-        body: json || buffer,
+        body: (json as T) || (buffer as T),
         text: text,
         ok: isOkay(res.statusCode),
         redirect: isRedirect(res.statusCode),
         location: res.headers?.['location'] as string,
         error: isError(res.statusCode),
         cookies: parseSetCookieHeader(res.headers['set-cookie'])
-      } satisfies SageHttpResponse);
+      });
+
+      resolve(response);
     } catch (e) {
-      throw new SageException(
-        `Failed to make a request to the underlying server, please take a look at the upstream error for more details: `,
-        e
+      if (e instanceof SageAssertException) {
+        reject(e);
+        return;
+      }
+
+      reject(
+        new SageException(
+          `Failed to make a request to the underlying error, please take a look at the upstream for more details: `,
+          e
+        )
       );
     } finally {
       // If there is a dedicated server, skip its shutdown. User is responsible for it.
@@ -329,12 +426,164 @@ export class Sage extends Readable {
    * @param path
    * @param config
    */
-  static fromRequestLine(
+  static fromRequestLine<T>(
     sageServer: SageServer,
     method: HttpMethod,
     path: string,
     config: SageConfig
-  ): Sage {
+  ): Sage<T> {
     return new Sage(sageServer, method, path, config);
+  }
+
+  private expectStatuses(
+    statuses: number | number[],
+    expectStackTrace: string
+  ): void {
+    if (typeof statuses === 'number') {
+      this.asserts.push({
+        type: 'status-code',
+        expected: statuses,
+        fn: (actual) => {
+          if (actual !== statuses) {
+            throw new SageAssertException(
+              `Expected status code to be ${statuses}, but got ${actual}`,
+              expectStackTrace
+            );
+          }
+        }
+      });
+    }
+
+    if (Array.isArray(statuses)) {
+      this.asserts.push({
+        type: 'status-code-arr',
+        expected: statuses,
+        fn: (actual) => {
+          if (!statuses.some((status) => status === actual)) {
+            throw new SageAssertException(
+              `Expected status code to be one of ${statuses.join(', ')}, but got ${actual}`,
+              expectStackTrace
+            );
+          }
+        }
+      });
+    }
+  }
+
+  private expectHeaders(
+    header: string,
+    expected: string | string[] | RegExp,
+    expectStackTrace: string
+  ): void {
+    header = header.toLowerCase();
+
+    if (Array.isArray(expected)) {
+      this.asserts.push({
+        type: 'header',
+        header: header,
+        expected,
+        fn: (actual) => {
+          if (actual === null || actual === undefined) {
+            throw new SageAssertException(
+              `Header ${header} is not present`,
+              expectStackTrace
+            );
+          }
+
+          if (!Array.isArray(actual)) {
+            throw new SageAssertException(
+              `Expected header ${header} to be an array ${expected.join(', ')}, but got ${typeof actual}: ${actual}`,
+              expectStackTrace
+            );
+          }
+
+          if (!expected.every((header) => actual.includes(header))) {
+            throw new SageAssertException(
+              `Expected header ${header} to include ${expected.join(', ')}, but got ${actual.join(', ')}`,
+              expectStackTrace
+            );
+          }
+        }
+      });
+    }
+
+    if (typeof expected === 'string') {
+      this.asserts.push({
+        type: 'header',
+        header: header,
+        expected,
+        fn: (actual) => {
+          if (actual === null || actual === undefined) {
+            throw new SageAssertException(
+              `Header ${header} is not present`,
+              expectStackTrace
+            );
+          }
+
+          if (typeof actual !== 'string') {
+            throw new SageAssertException(
+              `Expected header ${header} to be a string ${expected}, but got ${typeof actual}: ${actual}`,
+              expectStackTrace
+            );
+          }
+
+          if (actual !== expected) {
+            throw new SageAssertException(
+              `Expected header ${header} to be ${expected}, but got ${actual}`,
+              expectStackTrace
+            );
+          }
+        }
+      });
+    }
+
+    if (expected instanceof RegExp) {
+      this.asserts.push({
+        type: 'header',
+        header: header,
+        expected,
+        fn: (actual) => {
+          if (actual === null || actual === undefined) {
+            throw new SageAssertException(
+              `Header ${header} is not present`,
+              expectStackTrace
+            );
+          }
+
+          if (Array.isArray(actual)) {
+            if (!actual.some((header) => expected.test(header))) {
+              throw new SageAssertException(
+                `Expected header ${header} to match ${expected}, but got ${actual.join(', ')}`,
+                expectStackTrace
+              );
+            }
+          } else if (typeof actual === 'string') {
+            if (!expected.test(actual)) {
+              throw new SageAssertException(
+                `Expected header ${header} to match ${expected}, but got ${actual}`,
+                expectStackTrace
+              );
+            }
+          }
+        }
+      });
+    }
+  }
+
+  private assert(response: Dispatcher.ResponseData): void {
+    for (const assert of this.asserts) {
+      if (assert.type === 'status-code') {
+        assert.fn(response.statusCode);
+      }
+
+      if (assert.type === 'status-code-arr') {
+        assert.fn(response.statusCode);
+      }
+
+      if (assert.type === 'header') {
+        const header = response.headers[assert.header];
+        assert.fn(header);
+      }
+    }
   }
 }

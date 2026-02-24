@@ -47,6 +47,7 @@ describe('Fastify Test Suite', () => {
         'sweet-cookie': {
           httpOnly: true,
           path: '/',
+          sameSite: 'lax',
           value: 'choco'
         }
       },
@@ -58,7 +59,7 @@ describe('Fastify Test Suite', () => {
         'content-type': 'application/json; charset=utf-8',
         date: expect.any(String),
         'keep-alive': expect.stringContaining('timeout'),
-        'set-cookie': 'sweet-cookie=choco; HttpOnly'
+        'set-cookie': 'sweet-cookie=choco; HttpOnly; SameSite=Lax'
       },
       location: undefined,
       ok: true,

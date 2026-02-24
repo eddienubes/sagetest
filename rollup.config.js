@@ -15,14 +15,14 @@ export default defineConfig({
       dir: 'build',
       preserveModules: true,
       format: 'cjs',
-      sourcemap: true,
+      sourcemap: false,
       entryFileNames: '[name].js'
     },
     {
       dir: 'build',
       preserveModules: true,
       format: 'es',
-      sourcemap: true,
+      sourcemap: false,
       entryFileNames: '[name].mjs'
     }
   ]

@@ -43,8 +43,8 @@ export const request = (
 
   // Fills up the factory with HTTP methods.
   for (const method of HTTP_METHODS) {
-    factory[method] = (path: string): Sage =>
-      Sage.fromRequestLine(
+    factory[method] = <T>(path: string): Sage<T> =>
+      Sage.fromRequestLine<T>(
         server,
         method.toUpperCase() as HttpMethod,
         path,
