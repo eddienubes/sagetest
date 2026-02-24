@@ -285,7 +285,6 @@ export class Sage<T> {
         return;
       }
 
-
       throw new SageException('Cannot attach a non-binary file');
     });
 
