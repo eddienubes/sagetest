@@ -476,22 +476,6 @@ export class Sage<T> {
   ): void {
     header = header.toLowerCase();
 
-    if (typeof expected === 'string') {
-      this.asserts.push({
-        type: 'header',
-        header: header,
-        expected,
-        fn: (actual) => {
-          if (actual !== expected) {
-            throw new SageAssertException(
-              `Expected header ${header} to be ${expected}, but got ${actual}`,
-              expectStackTrace
-            );
-          }
-        }
-      });
-    }
-
     if (Array.isArray(expected)) {
       this.asserts.push({
         type: 'header',

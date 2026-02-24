@@ -136,3 +136,5 @@ test/fixtures/temp/*
 build
 .idea
 .DS_Store
+.serena/
+.claude

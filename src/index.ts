@@ -1,4 +1,3 @@
-import './polyfill.js';
 import { DeepPartial, HttpMethod, ServerSource } from './types.js';
 import { HTTP_METHODS, SAGE_DEFAULT_CONFIG } from './constants.js';
 import { Sage } from './Sage.js';
