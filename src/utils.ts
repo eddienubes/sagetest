@@ -49,7 +49,9 @@ export const parseJsonStr = (jsonString: string): object | null => {
   }
 };
 
-export const isBinary = (value: unknown): boolean => {
+export const isBinary = (
+  value: unknown
+): value is ArrayBuffer | Blob | Buffer => {
   return (
     value instanceof ArrayBuffer ||
     value instanceof Blob ||
