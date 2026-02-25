@@ -78,7 +78,6 @@
     "eslint-plugin-import-x": "^4.0.0",
     "express": "^5.0.0",
     "fastify": "^5.7.4",
-    "form-data": "^4.0.5",
     "mime-db": "^1.54.0",
     "multer": "2.0.2",
     "prettier": "^3.0.0",
@@ -94,7 +93,8 @@
     "vitest": "^3.0.0"
   },
   "dependencies": {
+    "form-data": "^4.0.5",
     "undici": "^7.0.0"
   },
-  "packageManager": "pnpm@11.0.0-dev.1005+sha512.91f84a392eea348ea4852a182912d2520273a4336f933b78cc44bc931eb999923c097e9433a9b355adc1f725725ea99082fc9f032a559df832632e764c92c798"
+  "packageManager": "pnpm@10.30.2+sha512.36cdc707e7b7940a988c9c1ecf88d084f8514b5c3f085f53a2e244c2921d3b2545bc20dd4ebe1fc245feec463bb298aecea7a63ed1f7680b877dc6379d8d0cb4"
 }

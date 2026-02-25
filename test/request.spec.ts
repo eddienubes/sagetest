@@ -23,7 +23,7 @@ const expectedExpressResponse = new SageHttpResponse({
       connection: 'keep-alive',
       'content-type': expect.any(String),
       host: expect.stringContaining('localhost'),
-      'content-length': expect.any(String)
+      'transfer-encoding': 'chunked'
     },
     message: 'Success!',
     body: {},
@@ -54,7 +54,7 @@ const expectedFastifyResponse = new SageHttpResponse({
       connection: 'keep-alive',
       'content-type': expect.any(String),
       host: expect.stringContaining('localhost'),
-      'content-length': expect.any(String)
+      'transfer-encoding': 'chunked'
     },
     message: 'Success!',
     body: {},

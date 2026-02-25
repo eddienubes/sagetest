@@ -9,7 +9,8 @@ import {
 } from './types.js';
 import { SageHttpRequest } from './SageHttpRequest.js';
 import { Readable } from 'node:stream';
-import { Client, Dispatcher, FormData } from 'undici';
+import { Client, Dispatcher } from 'undici';
+import FormData from 'form-data';
 import { Blob } from 'node:buffer';
 import { SageException } from './SageException.js';
 import {
@@ -263,15 +264,13 @@ export class Sage<T> {
 
       if (file instanceof Readable) {
         const descriptor = getFileDescriptorFromReadable(file);
-        // undici v7+ no longer accepts custom blobLike stream wrappers in FormData.
-        // makeEntry() wraps non-File values with new File([value], 'blob'), losing stream data.
-        // We buffer the stream upfront so we can pass a real Blob with known size.
-        const buf = await streamToBuffer(file);
-        const blob = new Blob([buf], {
-          type: options?.type || descriptor?.mimetype
-        });
+
+        const type = options?.type || descriptor?.mimetype;
         const filename = options?.filename || descriptor?.filename;
-        this.request.formData.append(field, blob, filename);
+        this.request.formData.append(field, file, {
+          filename,
+          contentType: type
+        });
 
         return;
       }
