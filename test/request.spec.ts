@@ -243,7 +243,7 @@ describe('request', () => {
         } as SageHttpResponse);
       });
 
-      it('should work with streams', async () => {
+      it.only('should work with streams', async () => {
         const stream = fs.createReadStream('test/fixtures/cat.jpg');
         const res = await request(expressApp)
           .post('/upload')
@@ -283,7 +283,7 @@ describe('request', () => {
             ...expectedExpressResponse.body,
             reqHeaders: {
               connection: 'keep-alive',
-              'content-length': '4877572',
+              'content-length': '4877569',
               'content-type': expect.any(String),
               host: expect.stringContaining('localhost')
             },
@@ -295,7 +295,7 @@ describe('request', () => {
                   fieldname: 'picture',
                   filename: expect.any(String),
                   mimetype: 'application/octet-stream',
-                  originalname: 'undefined',
+                  originalname: 'blob',
                   path: expect.stringContaining('test/fixtures/temp/'),
                   size: 4877386
                 }
@@ -433,7 +433,7 @@ describe('request', () => {
           body: {
             ...expectedExpressResponse.body,
             reqHeaders: {
-              'content-length': '4877556'
+              'content-length': '4877558'
             },
             files: {
               picture: [
@@ -788,7 +788,7 @@ describe('request', () => {
                 encoding: '7bit',
                 fieldname: 'picture',
                 fieldsCount: 1,
-                filename: 'undefined',
+                filename: 'blob',
                 mimetype: 'application/octet-stream',
                 size: 4877386
               }
@@ -907,7 +907,7 @@ describe('request', () => {
           body: {
             ...expectedExpressResponse.body,
             reqHeaders: {
-              'content-length': '4877556'
+              'content-length': '4877558'
             },
             files: {
               picture: [

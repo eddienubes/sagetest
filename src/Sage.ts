@@ -9,7 +9,8 @@ import {
 } from './types.js';
 import { SageHttpRequest } from './SageHttpRequest.js';
 import { Readable } from 'node:stream';
-import { Client, Dispatcher, FormData } from 'undici';
+import { Client, Dispatcher } from 'undici';
+import FormData from 'form-data';
 import { Blob } from 'node:buffer';
 import { SageException } from './SageException.js';
 import {
@@ -263,16 +264,12 @@ export class Sage<T> {
 
       if (file instanceof Readable) {
         const descriptor = getFileDescriptorFromReadable(file);
-        // script.js -> js
-        // Hacky way to handle streaming in multipart undici
-        // https://github.com/nodejs/undici/issues/2202#issuecomment-1664134203
-        // To pass isBlobLike check: https://github.com/nodejs/undici/blob/e48df9620edf1428bd457f481d47fa2c77f75322/lib/fetch/formdata.js#L40
-        // Filename is also required due to: https://github.com/nodejs/undici/blob/e48df9620edf1428bd457f481d47fa2c77f75322/lib/fetch/formdata.js#L239
-        this.request.formData.append(field, {
-          [Symbol.toStringTag]: 'File',
-          name: options?.filename || descriptor?.filename,
-          type: options?.type || descriptor?.mimetype,
-          stream: () => file
+
+        const type = options?.type || descriptor?.mimetype;
+        const filename = options?.filename || descriptor?.filename;
+        this.request.formData.append(field, file, {
+          filename,
+          contentType: type
         });
 
         return;
