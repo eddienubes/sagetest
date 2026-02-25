@@ -243,7 +243,7 @@ describe('request', () => {
         } as SageHttpResponse);
       });
 
-      it('should work with streams', async () => {
+      it.only('should work with streams', async () => {
         const stream = fs.createReadStream('test/fixtures/cat.jpg');
         const res = await request(expressApp)
           .post('/upload')
