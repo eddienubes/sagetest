@@ -14,7 +14,7 @@
     "@astrojs/starlight": "^0.18.0",
     "@astrojs/starlight-tailwind": "^2.0.1",
     "@astrojs/tailwind": "^5.1.0",
-    "astro": "^4.3.4",
+    "astro": "^5.15.6",
     "astro-live-code": "^0.0.1",
     "sharp": "^0.32.5",
     "starlight-typedoc": "^0.9.0",
