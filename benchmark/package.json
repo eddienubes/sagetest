@@ -1,0 +1,22 @@
+{
+  "name": "benchmark",
+  "private": true,
+  "type": "module",
+  "scripts": {
+    "start": "tsx src/main.ts"
+  },
+  "dependencies": {
+    "sagetest": "workspace:*",
+    "supertest": "^7.2.2",
+    "cronometro": "latest",
+    "express": "^5.2.1",
+    "multer": "2.0.2",
+    "tsx": "^4.21.0"
+  },
+  "devDependencies": {
+    "@types/express": "^5.0.6",
+    "@types/multer": "^2.0.0",
+    "@types/supertest": "^6.0.3",
+    "typescript": "^5.9.3"
+  }
+}
