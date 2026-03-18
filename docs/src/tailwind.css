@@ -1,11 +1,20 @@
-@tailwind base;
-@tailwind components;
-@tailwind utilities;
+@import 'tailwindcss';
+@import '@astrojs/starlight-tailwind';
 
-.card {
-    border-radius: 0.5rem;
+@theme {
+  --color-accent-200: #7ddbd9;
+  --color-accent-600: #007c7a;
+  --color-accent-900: #003b3a;
+  --color-accent-950: #002a2a;
+  --color-gray-100: #f5f6f8;
+  --color-gray-200: #eceef2;
+  --color-gray-300: #c0c2c7;
+  --color-gray-400: #888b96;
+  --color-gray-500: #545861;
+  --color-gray-700: #353841;
+  --color-gray-800: #24272f;
+  --color-gray-900: #17181c;
 }
 
-.hero {
-    padding-bottom: 0;
-}
+.card { border-radius: 0.5rem; }
+.hero { padding-bottom: 0; }

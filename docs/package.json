@@ -10,19 +10,25 @@
     "astro": "astro"
   },
   "dependencies": {
-    "@astrojs/check": "^0.5.2",
-    "@astrojs/starlight": "^0.18.0",
-    "@astrojs/starlight-tailwind": "^2.0.1",
-    "@astrojs/tailwind": "^5.1.0",
-    "astro": "^4.3.4",
-    "astro-live-code": "^0.0.1",
-    "sharp": "^0.32.5",
-    "starlight-typedoc": "^0.9.0",
-    "typedoc": "^0.25.8",
-    "typedoc-plugin-markdown": "4.0.0-next.53",
-    "typescript": "^5.3.3"
+    "@astrojs/check": "^0.9.8",
+    "@astrojs/starlight": "^0.38.1",
+    "@astrojs/starlight-tailwind": "^5.0.0",
+    "astro": "^6.0.6",
+    "astro-live-code": "^0.0.6",
+    "sharp": "^0.34.5",
+    "starlight-typedoc": "^0.21.5",
+    "tailwindcss": "^4.0.0",
+    "typedoc": "^0.28.17",
+    "typedoc-plugin-markdown": "^4.10.0",
+    "typescript": "^5.9.3"
   },
   "devDependencies": {
-    "serve": "^14.2.1"
+    "serve": "^14.2.6"
+  },
+  "pnpm": {
+    "onlyBuiltDependencies": [
+      "esbuild",
+      "sharp"
+    ]
   }
 }
