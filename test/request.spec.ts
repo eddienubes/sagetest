@@ -283,9 +283,9 @@ describe('request', () => {
             ...expectedExpressResponse.body,
             reqHeaders: {
               connection: 'keep-alive',
-              'content-length': '4877572',
               'content-type': expect.any(String),
-              host: expect.stringContaining('localhost')
+              host: expect.stringContaining('localhost'),
+              'transfer-encoding': 'chunked'
             },
             files: {
               picture: [
@@ -295,7 +295,7 @@ describe('request', () => {
                   fieldname: 'picture',
                   filename: expect.any(String),
                   mimetype: 'application/octet-stream',
-                  originalname: 'undefined',
+                  originalname: 'blob',
                   path: expect.stringContaining('test/fixtures/temp/'),
                   size: 4877386
                 }
@@ -320,9 +320,9 @@ describe('request', () => {
             ...expectedExpressResponse.body,
             reqHeaders: {
               connection: 'keep-alive',
-              'content-length': expect.any(String),
               host: expect.stringContaining('localhost'),
-              'content-type': expect.any(String)
+              'content-type': expect.any(String),
+              'transfer-encoding': 'chunked'
             },
             files: {
               picture: [
@@ -354,9 +354,9 @@ describe('request', () => {
             ...expectedExpressResponse.body,
             reqHeaders: {
               connection: 'keep-alive',
-              'content-length': expect.any(String),
               host: expect.stringContaining('localhost'),
-              'content-type': expect.any(String)
+              'content-type': expect.any(String),
+              'transfer-encoding': 'chunked'
             },
             files: {
               picture: [
@@ -365,7 +365,7 @@ describe('request', () => {
                   encoding: '7bit',
                   fieldname: 'picture',
                   filename: expect.any(String),
-                  mimetype: 'application/octet-stream',
+                  mimetype: 'image/jpeg',
                   originalname: 'cat.jpg',
                   path: expect.stringContaining('test/fixtures/temp/'),
                   size: 4877386
@@ -400,9 +400,9 @@ describe('request', () => {
             },
             reqHeaders: {
               connection: 'keep-alive',
-              'content-length': expect.any(String),
               host: expect.stringContaining('localhost'),
-              'content-type': expect.any(String)
+              'content-type': expect.any(String),
+              'transfer-encoding': 'chunked'
             },
             files: {
               picture: [
@@ -411,7 +411,7 @@ describe('request', () => {
                   encoding: '7bit',
                   fieldname: 'picture',
                   filename: expect.any(String),
-                  mimetype: 'application/octet-stream',
+                  mimetype: 'image/jpeg',
                   originalname: 'cat.jpg',
                   path: expect.stringContaining('test/fixtures/temp/'),
                   size: 4877386
@@ -433,7 +433,7 @@ describe('request', () => {
           body: {
             ...expectedExpressResponse.body,
             reqHeaders: {
-              'content-length': '4877556'
+              'transfer-encoding': 'chunked'
             },
             files: {
               picture: [
@@ -780,15 +780,15 @@ describe('request', () => {
             reqHeaders: {
               connection: 'keep-alive',
               'content-type': expect.any(String),
-              'content-length': expect.any(String),
-              host: expect.stringContaining('localhost')
+              host: expect.stringContaining('localhost'),
+              'transfer-encoding': 'chunked'
             },
             files: [
               {
                 encoding: '7bit',
                 fieldname: 'picture',
                 fieldsCount: 1,
-                filename: 'undefined',
+                filename: 'blob',
                 mimetype: 'application/octet-stream',
                 size: 4877386
               }
@@ -813,8 +813,8 @@ describe('request', () => {
             reqHeaders: {
               connection: 'keep-alive',
               'content-type': expect.any(String),
-              'content-length': expect.any(String),
-              host: expect.stringContaining('localhost')
+              host: expect.stringContaining('localhost'),
+              'transfer-encoding': 'chunked'
             },
             files: [
               {
@@ -843,8 +843,8 @@ describe('request', () => {
             reqHeaders: {
               connection: 'keep-alive',
               'content-type': expect.any(String),
-              'content-length': expect.any(String),
-              host: expect.stringContaining('localhost')
+              host: expect.stringContaining('localhost'),
+              'transfer-encoding': 'chunked'
             },
             files: [
               {
@@ -852,7 +852,7 @@ describe('request', () => {
                 fieldname: 'picture',
                 fieldsCount: 1,
                 filename: 'cat.jpg',
-                mimetype: 'application/octet-stream',
+                mimetype: 'image/jpeg',
                 size: 4877386
               }
             ]
@@ -879,8 +879,8 @@ describe('request', () => {
             reqHeaders: {
               connection: 'keep-alive',
               'content-type': expect.any(String),
-              'content-length': expect.any(String),
-              host: expect.stringContaining('localhost')
+              host: expect.stringContaining('localhost'),
+              'transfer-encoding': 'chunked'
             },
             files: [
               {
@@ -888,7 +888,7 @@ describe('request', () => {
                 fieldname: 'picture',
                 fieldsCount: 5,
                 filename: 'cat.jpg',
-                mimetype: 'application/octet-stream',
+                mimetype: 'image/jpeg',
                 size: 4877386
               }
             ]
@@ -907,7 +907,7 @@ describe('request', () => {
           body: {
             ...expectedExpressResponse.body,
             reqHeaders: {
-              'content-length': '4877556'
+              'transfer-encoding': 'chunked'
             },
             files: {
               picture: [

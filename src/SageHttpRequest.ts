@@ -1,5 +1,5 @@
 import { HttpMethod } from './types.js';
-import { FormData } from 'undici';
+import FormData from 'form-data';
 import { IncomingHttpHeaders } from 'undici/types/header.js';
 
 export interface SageHttpRequest {

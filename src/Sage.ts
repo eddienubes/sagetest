@@ -9,7 +9,8 @@ import {
 } from './types.js';
 import { SageHttpRequest } from './SageHttpRequest.js';
 import { Readable } from 'node:stream';
-import { Client, Dispatcher, FormData } from 'undici';
+import { Client, Dispatcher } from 'undici';
+import FormData from 'form-data';
 import { Blob } from 'node:buffer';
 import { SageException } from './SageException.js';
 import {
@@ -263,25 +264,25 @@ export class Sage<T> {
 
       if (file instanceof Readable) {
         const descriptor = getFileDescriptorFromReadable(file);
-        // script.js -> js
-        // Hacky way to handle streaming in multipart undici
-        // https://github.com/nodejs/undici/issues/2202#issuecomment-1664134203
-        // To pass isBlobLike check: https://github.com/nodejs/undici/blob/e48df9620edf1428bd457f481d47fa2c77f75322/lib/fetch/formdata.js#L40
-        // Filename is also required due to: https://github.com/nodejs/undici/blob/e48df9620edf1428bd457f481d47fa2c77f75322/lib/fetch/formdata.js#L239
-        this.request.formData.append(field, {
-          [Symbol.toStringTag]: 'File',
-          name: options?.filename || descriptor?.filename,
-          type: options?.type || descriptor?.mimetype,
-          stream: () => file
+
+        const type = options?.type || descriptor?.mimetype;
+        const filename = options?.filename || descriptor?.filename;
+        this.request.formData.append(field, file, {
+          filename,
+          contentType: type
         });
 
         return;
       }
 
       if (isBinary(file)) {
-        // Handle Buffer to blob conversion for now
-        const blob = new Blob([file], { type: options?.type });
-        this.request.formData.append(field, blob, options?.filename);
+        if (file instanceof Blob) {
+          file = Buffer.from(await file.arrayBuffer());
+        }
+        this.request.formData.append(field, file, {
+          filename: options?.filename || 'blob',
+          contentType: options?.type
+        });
         return;
       }
 
@@ -354,13 +355,12 @@ export class Sage<T> {
       this.request.path = `${this.config.baseUrl}${this.request.path}`;
     }
 
-    // unidici will set the Content-Type header automatically for FormData
-    if (
-      this.request.formData &&
-      this.request.headers &&
-      'content-type' in this.request.headers
-    ) {
-      delete this.request.headers['content-type'];
+    // form-data requires its headers (including Content-Type with boundary) to be set manually
+    if (this.request.formData) {
+      this.request.headers = {
+        ...this.request.headers,
+        ...this.request.formData.getHeaders()
+      };
     }
 
     try {
@@ -368,8 +368,6 @@ export class Sage<T> {
         method: this.request.method as HttpMethod,
         path: this.request.path as string,
         headers: this.request.headers,
-        // Only one of these is expected to be undefined at this point.
-        // If FormData is defined, undici will provide headers with the correct Content-Type
         body: this.request.body || this.request.formData,
         query: this.request.query,
         reset: !this.config.keepAlive

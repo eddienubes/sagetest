@@ -24,7 +24,7 @@
 - Built on top of [undici](https://github.com/nodejs/undici) for **maximum performance**.
 - Provides **easy-to-use**, supertest-like API.
 - Supports a **dedicated test server** to reduce the number of instances spawned during testing.
-- Supports **Node.js v18.0 and above**.
+- Supports **Node.js v20.0 and above**.
 - **No unnecessary** third-party dependencies.
 - Automatically handles **cookie parsing**.
 

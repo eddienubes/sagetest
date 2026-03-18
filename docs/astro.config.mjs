@@ -1,7 +1,6 @@
 import { defineConfig } from 'astro/config';
 import starlight from '@astrojs/starlight';
-import starlightTypeDoc, { typeDocSidebarGroup } from 'starlight-typedoc'
-import tailwind from '@astrojs/tailwind';
+import starlightTypeDoc from 'starlight-typedoc'
 
 // https://astro.build/config
 export default defineConfig({
@@ -17,9 +16,9 @@ export default defineConfig({
     customCss: [
       './src/tailwind.css'
     ],
-    social: {
-      github: 'https://github.com/eddienubes/sagetest'
-    },
+    social: [
+      { icon: 'github', label: 'GitHub', href: 'https://github.com/eddienubes/sagetest' }
+    ],
     sidebar: [
       {
         label: 'Getting Started',
@@ -47,8 +46,6 @@ export default defineConfig({
           }
         ]
       },
-      // Add the generated sidebar group to the sidebar.
-      typeDocSidebarGroup
     ],
     components: {
       Hero: './src/components/Hero.astro'
@@ -60,7 +57,5 @@ export default defineConfig({
         tsconfig: '../tsconfig.json',
       }),
     ]
-  }), tailwind({
-    applyBaseStyles: false
   })]
 });
