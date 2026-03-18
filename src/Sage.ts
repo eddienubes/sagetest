@@ -276,9 +276,13 @@ export class Sage<T> {
       }
 
       if (isBinary(file)) {
-        // Handle Buffer to blob conversion for now
-        const blob = new Blob([file], { type: options?.type });
-        this.request.formData.append(field, blob, options?.filename);
+        if (file instanceof Blob) {
+          file = Buffer.from(await file.arrayBuffer());
+        }
+        this.request.formData.append(field, file, {
+          filename: options?.filename || 'blob',
+          contentType: options?.type
+        });
         return;
       }
 
@@ -351,13 +355,12 @@ export class Sage<T> {
       this.request.path = `${this.config.baseUrl}${this.request.path}`;
     }
 
-    // unidici will set the Content-Type header automatically for FormData
-    if (
-      this.request.formData &&
-      this.request.headers &&
-      'content-type' in this.request.headers
-    ) {
-      delete this.request.headers['content-type'];
+    // form-data requires its headers (including Content-Type with boundary) to be set manually
+    if (this.request.formData) {
+      this.request.headers = {
+        ...this.request.headers,
+        ...this.request.formData.getHeaders()
+      };
     }
 
     try {
@@ -365,8 +368,6 @@ export class Sage<T> {
         method: this.request.method as HttpMethod,
         path: this.request.path as string,
         headers: this.request.headers,
-        // Only one of these is expected to be undefined at this point.
-        // If FormData is defined, undici will provide headers with the correct Content-Type
         body: this.request.body || this.request.formData,
         query: this.request.query,
         reset: !this.config.keepAlive

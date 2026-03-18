@@ -22,9 +22,9 @@
   "main": "build/index.js",
   "exports": {
     ".": {
+      "types": "./build/index.d.ts",
       "import": "./build/index.mjs",
-      "require": "./build/index.js",
-      "types": "./build/index.d.ts"
+      "require": "./build/index.js"
     }
   },
   "scripts": {
