@@ -36,7 +36,8 @@
     "build:prod": "rm -rf ./build && pnpm rollup -c && tsc -p tsconfig.build.json && pnpm tsc-alias -p tsconfig.build.json",
     "lint:check": "eslint --max-warnings=50 .",
     "lint:fix": "eslint --max-warnings=50 --fix .",
-    "valid": "pnpm lint:fix && pnpm build:dev"
+    "valid": "pnpm lint:fix && pnpm build:dev",
+    "bench": "tsx benchmarks/http.bench.ts"
   },
   "keywords": [
     "http",
@@ -79,6 +80,7 @@
     "express": "^5.2.1",
     "fastify": "^5.7.4",
     "mime-db": "^1.54.0",
+    "mitata": "^1.0.34",
     "multer": "2.0.2",
     "prettier": "^3.8.1",
     "rollup": "^4.59.0",

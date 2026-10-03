@@ -3,6 +3,7 @@ import { createServer, Server } from 'node:http';
 import { EventEmitter } from 'node:events';
 import { AddressInfo } from 'node:net';
 import { SageException } from './SageException.js';
+import { Client } from 'undici';
 
 export class SageServer {
   public launched = false;
@@ -10,6 +11,8 @@ export class SageServer {
 
   private server: Server;
   private listeningPromise: Promise<void> | null = null;
+  // One HTTP client per server, so connections are pooled and reused across requests
+  private client: Client | null = null;
 
   constructor(source: ServerSource) {
     this.server = createServer(source as Server, (req, res) => {
@@ -46,6 +49,10 @@ export class SageServer {
   }
 
   async close(): Promise<void> {
+    const client = this.client;
+    this.client = null;
+    await client?.close();
+
     return new Promise((resolve) => {
       this.server.close(() => {
         this.listening = false;
@@ -53,6 +60,14 @@ export class SageServer {
         resolve();
       });
     });
+  }
+
+  getClient(): Client {
+    if (!this.client) {
+      this.client = new Client(`http://localhost:${this.getPort()}`);
+    }
+
+    return this.client;
   }
 
   getPort(): number {

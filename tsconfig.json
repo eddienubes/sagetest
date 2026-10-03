@@ -27,6 +27,7 @@
   "include": [
     "src",
     "test",
+    "benchmarks",
     "vite.config.ts",
     "vitest.config.ts",
     "examples"

@@ -9,7 +9,7 @@ import {
 } from './types.js';
 import { SageHttpRequest } from './SageHttpRequest.js';
 import { Readable } from 'node:stream';
-import { Client, Dispatcher } from 'undici';
+import { Dispatcher } from 'undici';
 import FormData from 'form-data';
 import { Blob } from 'node:buffer';
 import { SageException } from './SageException.js';
@@ -45,7 +45,6 @@ export class Sage<T> {
   private sageServer: SageServer;
   private config: SageConfig;
   private request: SageHttpRequest = {};
-  private client: Client;
   // Promises await of which is deferred until .then() is called
   private deferredPromises: Promise<unknown>[] = [];
   private asserts: SageAssert[] = [];
@@ -69,24 +68,11 @@ export class Sage<T> {
     this.request.method = method;
     this.request.path = path;
 
-    const httpClientOptions: Client.Options = {
-      keepAliveTimeout: 1,
-      keepAliveMaxTimeout: 1
-    };
+    if (!this.sageServer.launched) {
+      void this.sageServer.listen(0);
+    }
 
     this.deferredPromises.push(this.sageServer.waitForListening());
-
-    // If the server is already launched, the port should be available
-    if (this.sageServer.launched) {
-      const port = sageServer.getPort();
-
-      this.client = new Client(`http://localhost:${port}`, httpClientOptions);
-    } else {
-      void this.sageServer.listen(0);
-      const port = sageServer.getPort();
-
-      this.client = new Client(`http://localhost:${port}`, httpClientOptions);
-    }
   }
 
   /**
@@ -364,7 +350,7 @@ export class Sage<T> {
     }
 
     try {
-      const res = await this.client.request({
+      const res = await this.sageServer.getClient().request({
         method: this.request.method as HttpMethod,
         path: this.request.path as string,
         headers: this.request.headers,
